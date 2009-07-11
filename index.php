@@ -6,6 +6,12 @@
 /**
  * Read-only globals class replaces all superglobals with read-only variants
  * @author Travis Hardman
+
+
+
+///Now on github
+
+
  *
  */
 class Globals {
