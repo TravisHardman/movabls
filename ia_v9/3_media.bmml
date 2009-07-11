@@ -1,0 +1,162 @@
+<mockup version="1.0" skin="sketch" measuredW="1165" measuredH="776">
+  <controls>
+    <control controlID="64" controlTypeID="com.balsamiq.mockups::Image" x="131" y="2" w="-1" h="-1" measuredW="1024" measuredH="764" zOrder="0" locked="true" isInGroup="-1">
+      <controlProperties>
+        <src>./0_background.png</src>
+      </controlProperties>
+    </control>
+    <control controlID="257" controlTypeID="com.balsamiq.mockups::Label" x="147" y="698" w="-1" h="-1" measuredW="180" measuredH="25" zOrder="10" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Last%20Saved%2015%20Minutes%20Ago</text>
+        <color>8355711</color>
+      </controlProperties>
+    </control>
+    <control controlID="66" controlTypeID="com.balsamiq.mockups::Label" x="147" y="122" w="187" h="34" measuredW="125" measuredH="34" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>20</size>
+        <text>Media%20Name</text>
+      </controlProperties>
+    </control>
+    <control controlID="269" controlTypeID="com.balsamiq.mockups::Canvas" x="828" y="113" w="323" h="628" measuredW="100" measuredH="70" zOrder="11" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>none</borderStyle>
+        <color>13158600</color>
+      </controlProperties>
+    </control>
+    <control controlID="270" controlTypeID="com.balsamiq.mockups::Label" x="848" y="132" w="231" h="25" measuredW="121" measuredH="25" zOrder="12" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Media%20In%20Context%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="271" controlTypeID="com.balsamiq.mockups::Canvas" x="848" y="199" w="282" h="483" measuredW="100" measuredH="70" zOrder="13" locked="false" isInGroup="-1"/>
+    <control controlID="272" controlTypeID="com.balsamiq.mockups::Canvas" x="848" y="203" w="282" h="34" measuredW="100" measuredH="70" zOrder="14" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>none</borderStyle>
+        <color>16777062</color>
+      </controlProperties>
+    </control>
+    <control controlID="273" controlTypeID="com.balsamiq.mockups::Icon" x="908" y="213" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="15" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>CursorIcon%7Csmall</icon>
+      </controlProperties>
+    </control>
+    <control controlID="274" controlTypeID="com.balsamiq.mockups::ComboBox" x="848" y="163" w="226" h="-1" measuredW="171" measuredH="25" zOrder="19" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>/my/place/where/used</text>
+      </controlProperties>
+    </control>
+    <control controlID="275" controlTypeID="com.balsamiq.mockups::Tree" x="848" y="199" w="282" h="483" measuredW="300" measuredH="220" zOrder="20" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%5B+%5D%20Interface%20A%0A%5B+%5D%20Interface%20B%0A%5B-%5D%20Interface%20C%0A._%20mytag%20%3D%20Lookup%20Media%0A._%20footag%20%3D%20Lookup%20Function%0A._%20bartag%20%3D%20Other%20Function</text>
+        <verticalScrollbar>true</verticalScrollbar>
+        <backgroundAlpha>0</backgroundAlpha>
+      </controlProperties>
+    </control>
+    <control controlID="276" controlTypeID="com.balsamiq.mockups::Link" x="1074" y="207" w="-1" h="-1" measuredW="30" measuredH="25" zOrder="21" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>edit</text>
+      </controlProperties>
+    </control>
+    <control controlID="277" controlTypeID="com.balsamiq.mockups::Button" x="848" y="696" w="-1" h="-1" measuredW="87" measuredH="28" zOrder="25" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Edit%20Place</text>
+      </controlProperties>
+    </control>
+    <control controlID="278" controlTypeID="com.balsamiq.mockups::Button" x="944" y="696" w="-1" h="-1" measuredW="108" measuredH="28" zOrder="22" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Preview%20Place</text>
+      </controlProperties>
+    </control>
+    <control controlID="279" controlTypeID="com.balsamiq.mockups::Canvas" x="1087" y="157" w="42" h="33" measuredW="100" measuredH="70" zOrder="23" locked="false" isInGroup="-1">
+      <controlProperties/>
+    </control>
+    <control controlID="280" controlTypeID="com.balsamiq.mockups::Icon" x="1095" y="161" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="24" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>CheckMarkIcon%7Csmall</icon>
+        <color>40463</color>
+      </controlProperties>
+    </control>
+    <control controlID="281" controlTypeID="com.balsamiq.mockups::Button" x="147" y="164" w="-1" h="-1" measuredW="43" measuredH="28" zOrder="27" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>for</text>
+      </controlProperties>
+    </control>
+    <control controlID="282" controlTypeID="com.balsamiq.mockups::Button" x="195" y="164" w="-1" h="-1" measuredW="35" measuredH="28" zOrder="28" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>if</text>
+      </controlProperties>
+    </control>
+    <control controlID="219" controlTypeID="com.balsamiq.mockups::Link" x="281" y="130" w="-1" h="-1" measuredW="34" measuredH="25" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>meta</text>
+      </controlProperties>
+    </control>
+    <control controlID="284" controlTypeID="com.balsamiq.mockups::Button" x="238" y="163" w="-1" h="-1" measuredW="66" measuredH="28" zOrder="30" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>else%20if</text>
+      </controlProperties>
+    </control>
+    <control controlID="213" controlTypeID="com.balsamiq.mockups::TextArea" x="179" y="199" w="623" h="483" measuredW="200" measuredH="140" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%3C%21DOCTYPE%20html%20PUBLIC%20%22-//W3C//DTD%20XHTML%201.0%20Strict//EN%22%20%22http%3A//www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd%22%3E%0A%3Chtml%20xmlns%3D%22http%3A//www.w3.org/1999/xhtml%22%3E%0A%3Chead%3E%0A%09%3Cmeta%20http-equiv%3D%22Content-Type%22%20content%3D%22text/html%3B%20charset%3Dutf-8%22%20/%3E%0A%09%3Ctitle%3EThe%20Juicy%20Bunch%3C/title%3E%0A%09%3Cscript%20type%3D%22text/javascript%22%20src%3D%22/js/myjs%22%3E%3C/script%3E%0A%09%3Clink%20href%3D%22/css/mycss%22%20media%3D%22screen%22%20rel%3D%22stylesheet%22%20type%3D%22text/css%22%20/%3E%0A%3C/head%3E%0A%20%0A%3Cbody%3E%0A%09%3Cdiv%20id%3D%22content%22%3E%0A%09%09%7Bfor%20newarray%20as%20newtag%7D%0A%09%09%3Cdiv%3E%7Bnewtag%5C%5B%27name%27%5C%5D%7D%20%3A%20%7Bnewtag%5C%5B0%5C%5D%7D%3C/div%3E%0A%09%09%7Bendfor%7D%0A%09%3C/div%3E%0A%3C/body%3E%0A%3C/html%3E</text>
+        <verticalScrollbar>true</verticalScrollbar>
+        <value>20</value>
+      </controlProperties>
+    </control>
+    <control controlID="222" controlTypeID="com.balsamiq.mockups::ButtonBar" x="637" y="126" w="-1" h="-1" measuredW="164" measuredH="29" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Code%2C%20WYSIWYG</text>
+      </controlProperties>
+    </control>
+    <control controlID="223" controlTypeID="com.balsamiq.mockups::ComboBox" x="520" y="126" w="-1" h="-1" measuredW="93" measuredH="25" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>text/html</text>
+      </controlProperties>
+    </control>
+    <control controlID="224" controlTypeID="com.balsamiq.mockups::HSplitter" x="818" y="111" w="-1" h="630" measuredW="12" measuredH="100" zOrder="26" locked="false" isInGroup="-1"/>
+    <control controlID="283" controlTypeID="com.balsamiq.mockups::Button" x="312" y="163" w="-1" h="-1" measuredW="50" measuredH="28" zOrder="29" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>else</text>
+      </controlProperties>
+    </control>
+    <control controlID="285" controlTypeID="com.balsamiq.mockups::Canvas" x="848" y="283" w="282" h="34" measuredW="100" measuredH="70" zOrder="16" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>none</borderStyle>
+        <color>16777062</color>
+      </controlProperties>
+    </control>
+    <control controlID="286" controlTypeID="com.balsamiq.mockups::Icon" x="908" y="293" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="17" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>CursorIcon%7Csmall</icon>
+      </controlProperties>
+    </control>
+    <control controlID="287" controlTypeID="com.balsamiq.mockups::Link" x="1074" y="287" w="-1" h="-1" measuredW="28" measuredH="25" zOrder="18" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>add</text>
+      </controlProperties>
+    </control>
+    <control controlID="232" controlTypeID="com.balsamiq.mockups::Button" x="705" y="697" w="-1" h="-1" measuredW="96" measuredH="28" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Save%20Media</text>
+      </controlProperties>
+    </control>
+    <control controlID="177" controlTypeID="com.balsamiq.mockups::TextArea" x="147" y="199" w="36" h="483" measuredW="200" measuredH="140" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>1%0A2%0A3%0A4%0A5%0A6%0A7%0A8%0A9%0A10%0A11%0A12%0A13%0A14%0A15%0A16%0A17%0A18%0A19%0A20%0A21%0A22%0A23%0A24%0A25%0A26</text>
+        <size>13</size>
+        <align>center</align>
+        <color>13158600</color>
+      </controlProperties>
+    </control>
+    <control controlID="253" controlTypeID="com.balsamiq.mockups::Button" x="404" y="125" w="-1" h="-1" measuredW="93" measuredH="28" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Import%20File</text>
+      </controlProperties>
+    </control>
+    <control controlID="254" controlTypeID="com.balsamiq.mockups::Link" x="594" y="700" w="-1" h="-1" measuredW="102" measuredH="25" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Save%20And%20Close</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>

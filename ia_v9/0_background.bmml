@@ -1,0 +1,41 @@
+<mockup version="1.0" skin="sketch" measuredW="1166" measuredH="783">
+  <controls>
+    <control controlID="298" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="132" y="9" w="1024" h="764" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Movabls%0Ahttp%3A//travis.movabls.com/%21</text>
+      </controlProperties>
+    </control>
+    <control controlID="212" controlTypeID="com.balsamiq.mockups::TabBar" x="135" y="92" w="1020" h="657" measuredW="638" measuredH="100" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Application%20Name%2C%20Media%20Name%2C%20Interface%20Name%2C%20Function%20Name%2C%20Current%20Item%20%28x%29</text>
+        <tabHPosition>center</tabHPosition>
+        <selectedIndex>4</selectedIndex>
+      </controlProperties>
+    </control>
+    <control controlID="214" controlTypeID="com.balsamiq.mockups::Icon" x="190" y="92" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>ShapesIcon%7Cxsmall</icon>
+      </controlProperties>
+    </control>
+    <control controlID="296" controlTypeID="com.balsamiq.mockups::Canvas" x="147" y="87" w="26" h="26" measuredW="100" measuredH="70" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>0</color>
+      </controlProperties>
+    </control>
+    <control controlID="297" controlTypeID="com.balsamiq.mockups::Label" x="149" y="91" w="-1" h="-1" measuredW="21" measuredH="20" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>10</size>
+        <underline>false</underline>
+        <text>///</text>
+        <color>16777215</color>
+        <bold>true</bold>
+        <italic>false</italic>
+      </controlProperties>
+    </control>
+    <control controlID="218" controlTypeID="com.balsamiq.mockups::ComboBox" x="181" y="88" w="163" h="-1" measuredW="103" measuredH="25" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%20%20%20%20Movabls</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>
