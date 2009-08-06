@@ -25,6 +25,8 @@ class Movabls_MediaRender {
         foreach ($this->intags as $tag) {
             $this->outtags[] = $this->render_tag($tag);
         }
+
+	 $this->string=str_replace ("%", "%%",$this->string);
         $this->output = vsprintf($this->string,$this->outtags);
     }
 
