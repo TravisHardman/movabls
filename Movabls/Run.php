@@ -15,7 +15,6 @@ class Movabls_Run {
     public function __construct() {
 
 	//TODO: Database Authentication and Permissions (and files for that matter)
-	//TODO: Binary
 
         $this->mvsdb = new mysqli('localhost','root','h4ppyf4rmers','db_ribeye');
         $place = $this->get_place();
@@ -129,9 +128,14 @@ class Movabls_Run {
         if (empty($result))
             throw new Exception ("No Media Found",500);
         while ($row = $result->fetch_object()) {
-//var_dump($row->content);
-//$row->content=unicode_decode($row->content);
-           $row->content = json_decode($row->content);
+
+            $content_mime_type=split("/",$row->mimetype);
+            if ($content_mime_type[0]=="text")
+              $row->content = json_decode($row->content);
+            else 
+               $row->content  = (binary)$row->content;
+
+
            $row->inputs = json_decode($row->inputs);
 
             if (empty($row->inputs)) {
@@ -142,12 +146,18 @@ class Movabls_Run {
                 $argstring = '$'.implode(',$',$row->inputs);
 
             $renderer = new Movabls_MediaRender($row->content,$row->inputs);
-            $renderer->output = str_replace ('\<\?', '?>',$renderer->output);
-            $renderer->output = str_replace ('\?\>', '?>',$renderer->output);
- //$renderer->output=utf8_decode($renderer->output);
-            $code = "ob_start(); ?>{$renderer->output}<? return ob_get_clean();";
+
+
+            if ($content_mime_type[0]=="text"){
+              $code = "ob_start(); ?>{$renderer->output}<? return ob_get_clean();";
+            }else{ 
+              $safe_binary_string = base64_encode($renderer->output);
+              $code = "return base64_decode(\"$safe_binary_string\");";
+            }
+
             $this->media->{$row->media_GUID} = new StdClass();
             $this->media->{$row->media_GUID}->inputs = $row->inputs;
+
             $this->media->{$row->media_GUID}->handle = create_function($argstring, $code);
             if ($row->media_GUID == $primary_GUID)
                 header('Content-Type: '.$row->mimetype);
