@@ -15,6 +15,8 @@ class Movabls_Run {
     public function __construct() {
 
 	//TODO: Database Authentication and Permissions (and files for that matter)
+	//TODO: Binary
+
         $this->mvsdb = new mysqli('localhost','root','h4ppyf4rmers','db_ribeye');
         $place = $this->get_place();
 	if (!empty($place->interface_GUID))
