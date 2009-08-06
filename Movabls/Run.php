@@ -127,17 +127,22 @@ class Movabls_Run {
         if (empty($result))
             throw new Exception ("No Media Found",500);
         while ($row = $result->fetch_object()) {
-            $row->content = json_decode($row->content);
-            $row->inputs = json_decode($row->inputs);
+//var_dump($row->content);
+//$row->content=unicode_decode($row->content);
+           $row->content = json_decode($row->content);
+           $row->inputs = json_decode($row->inputs);
+
             if (empty($row->inputs)) {
                 $row->inputs = array();
                 $argstring = '';
             }
             else
                 $argstring = '$'.implode(',$',$row->inputs);
+
             $renderer = new Movabls_MediaRender($row->content,$row->inputs);
             $renderer->output = str_replace ('\<\?', '?>',$renderer->output);
             $renderer->output = str_replace ('\?\>', '?>',$renderer->output);
+ //$renderer->output=utf8_decode($renderer->output);
             $code = "ob_start(); ?>{$renderer->output}<? return ob_get_clean();";
             $this->media->{$row->media_GUID} = new StdClass();
             $this->media->{$row->media_GUID}->inputs = $row->inputs;

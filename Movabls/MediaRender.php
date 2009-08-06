@@ -25,8 +25,8 @@ class Movabls_MediaRender {
         foreach ($this->intags as $tag) {
             $this->outtags[] = $this->render_tag($tag);
         }
-
 	 $this->string=str_replace ('%', '%%',$this->string);
+	 $this->string=str_replace ('#$#s', '%s',$this->string);
 	 $this->string=str_replace ('<?', '\<\?',$this->string);
 	 $this->string=str_replace ('?>', '\?\>',$this->string);
         $this->output = vsprintf($this->string,$this->outtags);
@@ -38,15 +38,16 @@ class Movabls_MediaRender {
      * @param $view = view content
      */
     private function extract_tags($view) {
-        $view = str_replace('%s','%%s',$view);
+	  $view = str_replace('%s','%%s',$view);
         //have to do these one at a time in order to test for "\" escape character and deal with that
         while(preg_match("/[^\\\]{{.*?}}/",$view,$tag) > 0) { //matches .{x} but not \{x}
             $this->intags[] = substr($tag[0],1);
             $fill = substr($tag[0],0,1);
-            $view = preg_replace("/[^\\\]{{.*?}}/",$fill.'%s',$view,1);
+            $view = preg_replace("/[^\\\]{{.*?}}/",$fill.'#$#s',$view,1);
         }
         $view = str_replace('\{{','{{',$view);
         $this->string = $view;
+
     }
 
     /**
