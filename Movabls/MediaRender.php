@@ -11,7 +11,7 @@ class Movabls_MediaRender {
     private $outtags; //array of <? x ? > tags to put into the output
     private $string; //string format to use for the final vsprintf
 
-    //TODO: Escape <? tags within media (can't use htmlentitites b/c not necessarily html...can we?)
+    //Done, here & in Run.php: Escape <? tags within media (can't use htmlentitites b/c not necessarily html...can we?)
 
     /**
      * Constructor function renders the view and puts it in the output variable
@@ -26,7 +26,9 @@ class Movabls_MediaRender {
             $this->outtags[] = $this->render_tag($tag);
         }
 
-	 $this->string=str_replace ("%", "%%",$this->string);
+	 $this->string=str_replace ('%', '%%',$this->string);
+	 $this->string=str_replace ('<?', '\<\?',$this->string);
+	 $this->string=str_replace ('?>', '\?\>',$this->string);
         $this->output = vsprintf($this->string,$this->outtags);
     }
 

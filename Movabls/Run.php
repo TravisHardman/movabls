@@ -136,6 +136,8 @@ class Movabls_Run {
             else
                 $argstring = '$'.implode(',$',$row->inputs);
             $renderer = new Movabls_MediaRender($row->content,$row->inputs);
+            $renderer->output = str_replace ('\<\?', '?>',$renderer->output);
+            $renderer->output = str_replace ('\?\>', '?>',$renderer->output);
             $code = "ob_start(); ?>{$renderer->output}<? return ob_get_clean();";
             $this->media->{$row->media_GUID} = new StdClass();
             $this->media->{$row->media_GUID}->inputs = $row->inputs;
