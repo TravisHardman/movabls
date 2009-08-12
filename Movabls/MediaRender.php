@@ -29,8 +29,8 @@ class Movabls_MediaRender {
 	
 // special #$#s used for tag replacement vsprintf format
 	 $this->string=str_replace ('#$#s', '%s',$this->string);
-	 $this->string=str_replace ('<?', '< ?',$this->string);
-	 $this->string=str_replace ('?>', '? >',$this->string);
+	 $this->string=str_replace ('<?', '<!?',$this->string);
+	 $this->string=str_replace ('?>', '?!>',$this->string);
         $this->output = vsprintf($this->string,$this->outtags);
     }
 

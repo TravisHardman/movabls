@@ -149,6 +149,10 @@ class Movabls_Run {
             $renderer = new Movabls_MediaRender($row->content,$row->inputs);
 
             if ($content_mime_type[0]=="text"){
+
+	 $renderer->output=str_replace ('<!?', '<?php echo \'<?\'; ?>',$renderer->output);
+	 $renderer->output=str_replace ('?!>', '<?php echo \'?>\'; ?>',$renderer->output);
+
               $code = 'ob_start(); ?>'.$renderer->output.'<?php return ob_get_clean();';
             }else{ 
               $safe_binary_string = base64_encode($renderer->output);
