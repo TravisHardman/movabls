@@ -78,25 +78,25 @@ class Movabls_MediaRender {
         $tag = trim($tag," \t\n\r\0\x0B{}");
         //determine tag type
         if ($tag == 'else')
-            return '<? else: ?>';
+            return '<?php else: ?>';
         elseif ($tag == 'endif')
-            return '<? endif; ?>';
+            return '<?php endif; ?>';
         elseif ($tag == 'endfor')
-            return '<? endforeach; ?>';
+            return '<?php endforeach; ?>';
         elseif (strpos($tag,'if') === 0) {
             $tag = substr($tag,2);
-            return '<? if ('.$this->render_if(trim($tag)).'): ?>';
+            return '<?php if ('.$this->render_if(trim($tag)).'): ?>';
         }
         elseif (strpos($tag,'else if') === 0) {
             $tag = substr($tag,7);
-            return '<? elseif ('.$this->render_if(trim($tag)).'): ?>';
+            return '<?php elseif ('.$this->render_if(trim($tag)).'): ?>';
         }
         elseif (strpos($tag,'for') === 0) {
             $tag = substr($tag,3);
-            return '<? foreach ('.$this->render_for(trim($tag)).'): ?>';
+            return '<?php foreach ('.$this->render_for(trim($tag)).'): ?>';
         }
         else
-            return "<? print_r(".$this->variable($tag)."); ?>";
+            return "<?php print_r(".$this->variable($tag)."); ?>";
     }
 
     /**

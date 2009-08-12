@@ -130,6 +130,7 @@ class Movabls_Run {
         while ($row = $result->fetch_object()) {
 
             $content_mime_type=split("/",$row->mimetype);
+
             if ($content_mime_type[0]=="text")
               $row->content = json_decode($row->content);
             else 
@@ -147,9 +148,8 @@ class Movabls_Run {
 
             $renderer = new Movabls_MediaRender($row->content,$row->inputs);
 
-
             if ($content_mime_type[0]=="text"){
-              $code = "ob_start(); ?>{$renderer->output}<? return ob_get_clean();";
+              $code = 'ob_start(); ?>'.$renderer->output.'<?php return ob_get_clean();';
             }else{ 
               $safe_binary_string = base64_encode($renderer->output);
               $code = "return base64_decode(\"$safe_binary_string\");";
