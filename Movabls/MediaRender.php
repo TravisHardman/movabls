@@ -11,45 +11,40 @@ class Movabls_MediaRender {
     private $outtags; //array of <? x ? > tags to put into the output
     private $string; //string format to use for the final vsprintf
 
-    //Done, here & in Run.php: Escape <? tags within media (can't use htmlentitites b/c not necessarily html...can we?)
-
     /**
      * Constructor function renders the view and puts it in the output variable
      * @param $view = view content
      * @param $available = available tags in interface
      */
     public function __construct($view,$available) {
-        $this->intags = array();
+	 $this->intags = array();
+	 $view = str_replace ('%', '%%',$view);
+	 $view = str_replace ('<?', "<? echo '<?'; %1\$s",$view);
+	 $view = str_replace ('?>', "<? echo '?>'; ?>",$view);
+	 $view = sprintf($view,'?>');
+	 $view = str_replace ('%', '%%',$view);
         $this->extract_tags($view);
         $this->available = $available;
         foreach ($this->intags as $tag) {
             $this->outtags[] = $this->render_tag($tag);
         }
-	 $this->string=str_replace ('%', '%%',$this->string);
-	
-// special #$#s used for tag replacement vsprintf format
-	 $this->string=str_replace ('#$#s', '%s',$this->string);
-	 $this->string=str_replace ('<?', '<!?',$this->string);
-	 $this->string=str_replace ('?>', '?!>',$this->string);
         $this->output = vsprintf($this->string,$this->outtags);
     }
 
     /**
-     * Extracts tags from the view template, then escapes <? characters and saves a string format to this->string
+     * Extracts tags from the view template, then saves a string format to this->string
      * and the tags to this->intags
      * @param $view = view content
      */
     private function extract_tags($view) {
-	  $view = str_replace('%s','%%s',$view);
         //have to do these one at a time in order to test for "\" escape character and deal with that
         while(preg_match("/[^\\\]{{.*?}}/",$view,$tag) > 0) { //matches .{x} but not \{x}
             $this->intags[] = substr($tag[0],1);
             $fill = substr($tag[0],0,1);
-            $view = preg_replace("/[^\\\]{{.*?}}/",$fill.'#$#s',$view,1);
+            $view = preg_replace("/[^\\\]{{.*?}}/",$fill.'%s',$view,1);
         }
         $view = str_replace('\{{','{{',$view);
         $this->string = $view;
-
     }
 
     /**

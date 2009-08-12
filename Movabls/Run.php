@@ -150,8 +150,6 @@ class Movabls_Run {
 
             if ($content_mime_type[0]=="text"){
 
-	 $renderer->output=str_replace ('<!?', '<?php echo \'<?\'; ?>',$renderer->output);
-	 $renderer->output=str_replace ('?!>', '<?php echo \'?>\'; ?>',$renderer->output);
 
               $code = 'ob_start(); ?>'.$renderer->output.'<?php return ob_get_clean();';
             }else{ 
@@ -161,7 +159,6 @@ class Movabls_Run {
 
             $this->media->{$row->media_GUID} = new StdClass();
             $this->media->{$row->media_GUID}->inputs = $row->inputs;
-
             $this->media->{$row->media_GUID}->handle = create_function($argstring, $code);
             if ($row->media_GUID == $primary_GUID)
                 header('Content-Type: '.$row->mimetype);
