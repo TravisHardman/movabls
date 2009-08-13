@@ -7,15 +7,15 @@
     </control>
     <control controlID="65" controlTypeID="com.balsamiq.mockups::Canvas" x="135" y="110" w="1020" h="633" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1">
       <controlProperties>
-        <color>0</color>
         <borderStyle>none</borderStyle>
+        <color>0</color>
         <backgroundAlpha>0.5</backgroundAlpha>
       </controlProperties>
     </control>
     <control controlID="66" controlTypeID="com.balsamiq.mockups::TitleWindow" x="327" y="184" w="585" h="436" measuredW="450" measuredH="400" zOrder="2" locked="false" isInGroup="-1">
       <controlProperties>
+        <text>Select%20A%20Media%20Movabl%20To%20Live%20At%20%22/foo/bar%22</text>
         <topheight>26</topheight>
-        <text>Select%20A%20Media%20Item%20To%20Live%20At%20%22/foo/bar%22</text>
         <bottomheight>0</bottomheight>
       </controlProperties>
     </control>
@@ -27,8 +27,8 @@
     <control controlID="68" controlTypeID="com.balsamiq.mockups::Accordion" x="342" y="259" w="555" h="342" measuredW="150" measuredH="300" zOrder="4" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Foo%20Media%0ABar%20Media%0ABaz%20Media%0AFoobar%20Media%0AMedia%20Item%20One%0AMedia%20Item%20Two</text>
-        <verticalScrollbar>false</verticalScrollbar>
         <selectedIndex>3</selectedIndex>
+        <verticalScrollbar>false</verticalScrollbar>
       </controlProperties>
     </control>
     <control controlID="69" controlTypeID="com.balsamiq.mockups::VerticalScrollBar" x="881" y="260" w="-1" h="341" measuredW="16" measuredH="100" zOrder="5" locked="false" isInGroup="-1"/>
