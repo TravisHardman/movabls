@@ -80,14 +80,14 @@
       </controlProperties>
     </control>
     <control controlID="290" controlTypeID="com.balsamiq.mockups::FormattingToolbar" x="147" y="195" w="-1" h="-1" measuredW="270" measuredH="29" zOrder="22" locked="false" isInGroup="-1"/>
-    <control controlID="291" controlTypeID="com.balsamiq.mockups::Label" x="848" y="216" w="271" h="25" measuredW="131" measuredH="25" zOrder="23" locked="false" isInGroup="-1">
+    <control controlID="291" controlTypeID="com.balsamiq.mockups::Label" x="848" y="216" w="271" h="25" measuredW="132" measuredH="25" zOrder="23" locked="false" isInGroup="-1">
       <controlProperties>
         <text>My%20Interface%20%28%5Bedit%5D%29</text>
       </controlProperties>
     </control>
-    <control controlID="292" controlTypeID="com.balsamiq.mockups::DataGrid" x="848" y="251" w="281" h="408" measuredW="246" measuredH="118" zOrder="24" locked="false" isInGroup="-1">
+    <control controlID="292" controlTypeID="com.balsamiq.mockups::DataGrid" x="848" y="251" w="281" h="408" measuredW="247" measuredH="118" zOrder="24" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Tag%2C%20Movabl%20%20%20%20%20%20%20%20%20%20%20%20%0Amyarg1%20%28%5Badd%5D%29%2C%20My%20Media%20%28%5Bedit%5D%29%0Amyarg2%2C%20My%20Function%0Amyarg3%2C%20Foo%20Function</text>
+        <text>Input%2C%20Movabl%20%20%20%20%20%20%20%20%20%20%20%20%0Amyarg1%20%28%5Badd%5D%29%2C%20My%20Media%20%28%5Bedit%5D%29%0Amyarg2%2C%20My%20Function%0Amyarg3%2C%20Foo%20Function</text>
         <verticalScrollbar>true</verticalScrollbar>
       </controlProperties>
     </control>
@@ -114,7 +114,7 @@
         <text>else</text>
       </controlProperties>
     </control>
-    <control controlID="301" controlTypeID="com.balsamiq.mockups::Link" x="1074" y="316" w="-1" h="-1" measuredW="28" measuredH="25" zOrder="28" locked="false" isInGroup="-1">
+    <control controlID="301" controlTypeID="com.balsamiq.mockups::Link" x="1074" y="316" w="-1" h="-1" measuredW="29" measuredH="25" zOrder="28" locked="false" isInGroup="-1">
       <controlProperties>
         <text>add</text>
       </controlProperties>
@@ -135,7 +135,7 @@
     </control>
     <control controlID="288" controlTypeID="com.balsamiq.mockups::TextArea" x="147" y="161" w="654" h="27" measuredW="200" measuredH="140" zOrder="20" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Arguments%3A%20Int%20x%2C%20Array%20y%2C%20String%20z</text>
+        <text>Inputs%3A%20Int%20x%2C%20Array%20y%2C%20String%20z</text>
         <state>disabled</state>
         <color>13158600</color>
       </controlProperties>

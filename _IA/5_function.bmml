@@ -13,7 +13,7 @@
     </control>
     <control controlID="251" controlTypeID="com.balsamiq.mockups::TextArea" x="147" y="163" w="654" h="27" measuredW="200" measuredH="140" zOrder="7" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Arguments%3A%20Int%20x%2C%20Array%20y%2C%20String%20z</text>
+        <text>Inputs%3A%20Int%20x%2C%20Array%20y%2C%20String%20z</text>
         <state>disabled</state>
         <color>13158600</color>
       </controlProperties>
@@ -31,9 +31,15 @@
     <control controlID="264" controlTypeID="com.balsamiq.mockups::Canvas" x="1016" y="191" w="113" h="33" measuredW="100" measuredH="70" zOrder="13" locked="false" isInGroup="-1">
       <controlProperties/>
     </control>
-    <control controlID="265" controlTypeID="com.balsamiq.mockups::Label" x="848" y="196" w="271" h="25" measuredW="131" measuredH="25" zOrder="14" locked="false" isInGroup="-1">
+    <control controlID="265" controlTypeID="com.balsamiq.mockups::Label" x="848" y="196" w="271" h="25" measuredW="132" measuredH="25" zOrder="14" locked="false" isInGroup="-1">
       <controlProperties>
         <text>My%20Interface%20%28%5Bedit%5D%29</text>
+      </controlProperties>
+    </control>
+    <control controlID="266" controlTypeID="com.balsamiq.mockups::DataGrid" x="848" y="231" w="281" h="379" measuredW="247" measuredH="118" zOrder="15" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Input%2C%20Movabl%20%20%20%20%20%20%20%20%20%20%20%20%0Amyarg1%20%28%5Badd%5D%29%2C%20My%20Media%20%28%5Bedit%5D%29%0Amyarg2%2C%20My%20Function%0Amyarg3%2C%20Foo%20Function</text>
+        <verticalScrollbar>true</verticalScrollbar>
       </controlProperties>
     </control>
     <control controlID="267" controlTypeID="com.balsamiq.mockups::IconLabel" x="1023" y="194" w="106" h="-1" measuredW="99" measuredH="25" zOrder="16" locked="false" isInGroup="-1">
@@ -56,7 +62,7 @@
     </control>
     <control controlID="271" controlTypeID="com.balsamiq.mockups::TextArea" x="848" y="621" w="281" h="29" measuredW="200" measuredH="140" zOrder="19" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Return%3A%20array%280%3D%3E%27test%27%2C1%3D%3E%27arr%27...%20%5Bview%5D</text>
+        <text>Output%3A%20array%280%3D%3E%27test%27%2C1%3D%3E%27arr%27...%20%5Bview%5D</text>
       </controlProperties>
     </control>
     <control controlID="232" controlTypeID="com.balsamiq.mockups::Button" x="689" y="697" w="-1" h="-1" measuredW="112" measuredH="28" zOrder="6" locked="false" isInGroup="-1">
@@ -65,10 +71,10 @@
       </controlProperties>
     </control>
     <control controlID="224" controlTypeID="com.balsamiq.mockups::HSplitter" x="818" y="111" w="-1" h="630" measuredW="12" measuredH="100" zOrder="5" locked="false" isInGroup="-1"/>
-    <control controlID="266" controlTypeID="com.balsamiq.mockups::DataGrid" x="848" y="231" w="281" h="379" measuredW="246" measuredH="118" zOrder="15" locked="false" isInGroup="-1">
+    <control controlID="274" controlTypeID="com.balsamiq.mockups::Label" x="972" y="382" w="-1" h="-1" measuredW="102" measuredH="25" zOrder="22" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Tag%2C%20Movabl%20%20%20%20%20%20%20%20%20%20%20%20%0Amyarg1%20%28%5Badd%5D%29%2C%20My%20Media%20%28%5Bedit%5D%29%0Amyarg2%2C%20My%20Function%0Amyarg3%2C%20Foo%20Function</text>
-        <verticalScrollbar>true</verticalScrollbar>
+        <text>Other%20Function</text>
+        <color>10066329</color>
       </controlProperties>
     </control>
     <control controlID="275" controlTypeID="com.balsamiq.mockups::Accordion" x="828" y="111" w="327" h="630" measuredW="165" measuredH="152" zOrder="10" locked="false" isInGroup="-1">
@@ -102,12 +108,6 @@
         <size>13</size>
         <align>center</align>
         <color>13158600</color>
-      </controlProperties>
-    </control>
-    <control controlID="274" controlTypeID="com.balsamiq.mockups::Label" x="972" y="382" w="-1" h="-1" measuredW="102" measuredH="25" zOrder="22" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Other%20Function</text>
-        <color>10066329</color>
       </controlProperties>
     </control>
     <control controlID="219" controlTypeID="com.balsamiq.mockups::Link" x="297" y="130" w="-1" h="-1" measuredW="34" measuredH="25" zOrder="2" locked="false" isInGroup="-1">

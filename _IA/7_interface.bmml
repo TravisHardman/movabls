@@ -58,7 +58,7 @@
     </control>
     <control controlID="268" controlTypeID="com.balsamiq.mockups::TextArea" x="147" y="158" w="554" h="30" measuredW="200" measuredH="140" zOrder="6" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Tag%09%09%20%20%20%20%20%20%20%20%20%20%20Lookups</text>
+        <text>Input%20Name%09%20%20%20%20Movabl%20Lookups</text>
         <color>11776947</color>
       </controlProperties>
     </control>
@@ -89,7 +89,7 @@
     <control controlID="283" controlTypeID="com.balsamiq.mockups::Image" x="750" y="265" w="380" h="437" measuredW="141" measuredH="144" zOrder="17" locked="false" isInGroup="-1"/>
     <control controlID="285" controlTypeID="com.balsamiq.mockups::TextArea" x="750" y="199" w="380" h="52" measuredW="200" measuredH="140" zOrder="18" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Unset%20Tags%20In%20This%20Instance%3A%20%5BMyThirdTag%5D%2C%20%5BMyFourthTag%5D%2C%20%5BMyFifthTag%5D%2C%20%5BFooTag%5D%2C%20%5BBarTag%5D</text>
+        <text>Unset%20Inputs%20In%20This%20Instance%3A%20%5BMyThirdTag%5D%2C%20%5BMyFourthTag%5D%2C%20%5BMyFifthTag%5D%2C%20%5BFooTag%5D%2C%20%5BBarTag%5D</text>
       </controlProperties>
     </control>
     <control controlID="286" controlTypeID="com.balsamiq.mockups::Canvas" x="1087" y="157" w="42" h="33" measuredW="100" measuredH="70" zOrder="19" locked="false" isInGroup="-1">

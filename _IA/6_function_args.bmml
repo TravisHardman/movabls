@@ -52,14 +52,14 @@
     <control controlID="269" controlTypeID="com.balsamiq.mockups::Canvas" x="1016" y="191" w="113" h="33" measuredW="100" measuredH="70" zOrder="14" locked="false" isInGroup="-1">
       <controlProperties/>
     </control>
-    <control controlID="270" controlTypeID="com.balsamiq.mockups::Label" x="848" y="196" w="271" h="25" measuredW="131" measuredH="25" zOrder="15" locked="false" isInGroup="-1">
+    <control controlID="270" controlTypeID="com.balsamiq.mockups::Label" x="848" y="196" w="271" h="25" measuredW="132" measuredH="25" zOrder="15" locked="false" isInGroup="-1">
       <controlProperties>
         <text>My%20Interface%20%28%5Bedit%5D%29</text>
       </controlProperties>
     </control>
-    <control controlID="271" controlTypeID="com.balsamiq.mockups::DataGrid" x="848" y="231" w="281" h="379" measuredW="246" measuredH="118" zOrder="16" locked="false" isInGroup="-1">
+    <control controlID="271" controlTypeID="com.balsamiq.mockups::DataGrid" x="848" y="231" w="281" h="379" measuredW="231" measuredH="118" zOrder="16" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Tag%2C%20Movabl%20%20%20%20%20%20%20%20%20%20%20%20%0Amyarg1%20%28%5Badd%5D%29%2C%20My%20Media%20%28%5Bedit%5D%29%0Amyarg2%2C%20My%20Function%0Amyarg3%2C%20Foo%20Function</text>
+        <text>Input%2C%20Movabl%20%20%20%20%20%20%20%20%20%20%20%20%0Amyarg1%20%28%5Badd%5D%29%2C%20My%20Media%20%28%5Bedit%5D%29%0Amyarg2%2C%20My%20Function%0Amyarg3%2C%20Foo%20Function</text>
         <verticalScrollbar>true</verticalScrollbar>
       </controlProperties>
     </control>
@@ -83,7 +83,7 @@
     </control>
     <control controlID="275" controlTypeID="com.balsamiq.mockups::TextArea" x="848" y="621" w="281" h="29" measuredW="200" measuredH="140" zOrder="20" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Return%3A%20array%280%3D%3E%27test%27%2C1%3D%3E%27arr%27...%20%5Bview%5D</text>
+        <text>Output%3A%20array%280%3D%3E%27test%27%2C1%3D%3E%27arr%27...%20%5Bview%5D</text>
       </controlProperties>
     </control>
     <control controlID="276" controlTypeID="com.balsamiq.mockups::Label" x="854" y="351" w="-1" h="-1" measuredW="49" measuredH="25" zOrder="21" locked="false" isInGroup="-1">
