@@ -1,0 +1,191 @@
+<mockup version="1.0" skin="sketch" measuredW="1627" measuredH="776">
+  <controls>
+    <control controlID="64" controlTypeID="com.balsamiq.mockups::Image" x="131" y="2" w="-1" h="-1" measuredW="1024" measuredH="764" zOrder="0" locked="true" isInGroup="-1">
+      <controlProperties>
+        <src>./0_background.png</src>
+      </controlProperties>
+    </control>
+    <control controlID="66" controlTypeID="com.balsamiq.mockups::Label" x="147" y="122" w="187" h="34" measuredW="174" measuredH="34" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>20</size>
+        <text>Application%20Name</text>
+      </controlProperties>
+    </control>
+    <control controlID="323" controlTypeID="com.balsamiq.mockups::IconLabel" x="380" y="268" w="52" h="-1" measuredW="51" measuredH="25" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>OK</text>
+        <labelPosition>right</labelPosition>
+        <icon>CheckMarkIcon%7Csmall</icon>
+        <color>40463</color>
+      </controlProperties>
+    </control>
+    <control controlID="325" controlTypeID="com.balsamiq.mockups::Icon" x="167" y="305" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="14" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>LockIcon%7Csmall</icon>
+      </controlProperties>
+    </control>
+    <control controlID="326" controlTypeID="com.balsamiq.mockups::IconLabel" x="380" y="304" w="74" h="-1" measuredW="73" measuredH="25" zOrder="15" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Inputs</text>
+        <labelPosition>right</labelPosition>
+        <icon>XIcon%7Csmall</icon>
+        <color>16711680</color>
+      </controlProperties>
+    </control>
+    <control controlID="320" controlTypeID="com.balsamiq.mockups::DataGrid" x="157" y="231" w="517" h="482" measuredW="499" measuredH="188" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%5BHTTPS%5D%2C%20%5BPlace%20Label%5D%20%20%20%20%20%20%20%20%20%20%20%2C%5BPlace%20URL%5D%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%0A%2CHome%20Page%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%5B/my/place%5D%0A%2C%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%5B/my/broken/place%5D%0A%20%0A%2CMy%20Logo%2C%20%5Bfile.png%5D</text>
+        <verticalScrollbar>true</verticalScrollbar>
+        <hLines>false</hLines>
+        <rowHeight>40</rowHeight>
+        <vLines>true</vLines>
+      </controlProperties>
+    </control>
+    <control controlID="322" controlTypeID="com.balsamiq.mockups::Icon" x="171" y="266" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>LockOpenIcon%7Csmall</icon>
+      </controlProperties>
+    </control>
+    <control controlID="334" controlTypeID="com.balsamiq.mockups::Button" x="595" y="268" w="49" h="-1" measuredW="48" measuredH="28" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%3E%3E%3E</text>
+      </controlProperties>
+    </control>
+    <control controlID="335" controlTypeID="com.balsamiq.mockups::DataGrid" x="704" y="230" w="424" h="485" measuredW="320" measuredH="228" zOrder="22" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%5BMovabl%5D%20%20%20%20%20%20%20%20%20%20%20%2C%5BUsage%5D%0A%20%20%20%20%20%20%5Bfile.png%5D%2C%20As%20Place%3A%5BMy%20Logo%5D%0A%20%20%20%20%20%20%5BHome%20Page%5D%2C%20As%20Place%3A%5BHome%20Page%5D%0A%20%20%20%20%20%20%5BBroken%20MDA%5D%2C%20As%20Place%3A%5B/my/broken/place%5D%0A%20%20%20%20%20%20%5BAnother%20MDA%5D%2C%20%5B3%20Places%5D%20%26%20%5B2%20Inputs%5D%0A%20%20%20%20%20%20%5BA%20Function%21%5D%2C%20As%20Input%3A%5BHome%20Page%5D</text>
+        <verticalScrollbar>true</verticalScrollbar>
+        <hLines>false</hLines>
+        <rowHeight>40</rowHeight>
+        <vLines>false</vLines>
+      </controlProperties>
+    </control>
+    <control controlID="336" controlTypeID="com.balsamiq.mockups::Canvas" x="689" y="158" w="445" h="570" measuredW="100" measuredH="70" zOrder="10" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>11776947</color>
+      </controlProperties>
+    </control>
+    <control controlID="337" controlTypeID="com.balsamiq.mockups::Button" x="1033" y="198" w="94" h="-1" measuredW="93" measuredH="28" zOrder="11" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Import%20File</text>
+      </controlProperties>
+    </control>
+    <control controlID="338" controlTypeID="com.balsamiq.mockups::Button" x="704" y="198" w="109" h="-1" measuredW="107" measuredH="28" zOrder="12" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Create%20Media</text>
+      </controlProperties>
+    </control>
+    <control controlID="339" controlTypeID="com.balsamiq.mockups::Button" x="819" y="198" w="93" h="-1" measuredW="92" measuredH="28" zOrder="13" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Add%20Media</text>
+      </controlProperties>
+    </control>
+    <control controlID="340" controlTypeID="com.balsamiq.mockups::Button" x="595" y="306" w="49" h="-1" measuredW="48" measuredH="28" zOrder="16" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%3E%3E%3E</text>
+        <italic>false</italic>
+        <state>up</state>
+      </controlProperties>
+    </control>
+    <control controlID="341" controlTypeID="com.balsamiq.mockups::Button" x="318" y="263" w="51" h="-1" measuredW="50" measuredH="28" zOrder="17" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Edit</text>
+        <italic>false</italic>
+        <state>up</state>
+      </controlProperties>
+    </control>
+    <control controlID="342" controlTypeID="com.balsamiq.mockups::Button" x="238" y="303" w="113" h="-1" measuredW="47" measuredH="28" zOrder="18" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Set</text>
+        <italic>false</italic>
+        <state>up</state>
+      </controlProperties>
+    </control>
+    <control controlID="343" controlTypeID="com.balsamiq.mockups::Icon" x="174" y="385" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="19" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>LockOpenIcon%7Csmall</icon>
+      </controlProperties>
+    </control>
+    <control controlID="344" controlTypeID="com.balsamiq.mockups::Button" x="318" y="383" w="51" h="-1" measuredW="50" measuredH="28" zOrder="20" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Edit</text>
+        <italic>false</italic>
+        <state>up</state>
+      </controlProperties>
+    </control>
+    <control controlID="345" controlTypeID="com.balsamiq.mockups::Button" x="595" y="386" w="49" h="-1" measuredW="48" measuredH="28" zOrder="21" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%3E%3E%3E</text>
+        <italic>false</italic>
+        <state>up</state>
+      </controlProperties>
+    </control>
+    <control controlID="346" controlTypeID="com.balsamiq.mockups::Label" x="159" y="169" w="159" h="25" measuredW="145" measuredH="29" zOrder="23" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Places%20in%20this%20App</text>
+        <size>16</size>
+      </controlProperties>
+    </control>
+    <control controlID="347" controlTypeID="com.balsamiq.mockups::Label" x="704" y="166" w="163" h="29" measuredW="156" measuredH="29" zOrder="24" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Movabls%20in%20this%20App</text>
+        <size>16</size>
+      </controlProperties>
+    </control>
+    <control controlID="348" controlTypeID="com.balsamiq.mockups::Image" x="711" y="267" w="25" h="26" measuredW="141" measuredH="144" zOrder="25" locked="false" isInGroup="-1"/>
+    <control controlID="349" controlTypeID="com.balsamiq.mockups::Button" x="1200" y="409" w="56" h="-1" measuredW="56" measuredH="28" zOrder="26" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Place</text>
+        <italic>false</italic>
+        <state>up</state>
+      </controlProperties>
+    </control>
+    <control controlID="351" controlTypeID="com.balsamiq.mockups::Button" x="1260" y="409" w="56" h="-1" measuredW="59" measuredH="28" zOrder="27" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Input</text>
+        <italic>false</italic>
+        <state>up</state>
+      </controlProperties>
+    </control>
+    <control controlID="352" controlTypeID="com.balsamiq.mockups::Image" x="711" y="304" w="25" h="26" measuredW="141" measuredH="144" zOrder="28" locked="false" isInGroup="-1"/>
+    <control controlID="353" controlTypeID="com.balsamiq.mockups::Image" x="711" y="344" w="25" h="26" measuredW="141" measuredH="144" zOrder="29" locked="false" isInGroup="-1"/>
+    <control controlID="354" controlTypeID="com.balsamiq.mockups::Image" x="711" y="384" w="25" h="26" measuredW="141" measuredH="144" zOrder="30" locked="false" isInGroup="-1"/>
+    <control controlID="219" controlTypeID="com.balsamiq.mockups::Link" x="323" y="130" w="-1" h="-1" measuredW="34" measuredH="25" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>meta</text>
+      </controlProperties>
+    </control>
+    <control controlID="357" controlTypeID="com.balsamiq.mockups::StickyNote" x="1076" y="350" w="109" h="146" measuredW="109" measuredH="123" zOrder="32" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Use%20as%20Place/Input%20CTA%27s%20show%20on%20Mouseover</text>
+      </controlProperties>
+    </control>
+    <control controlID="358" controlTypeID="com.balsamiq.mockups::StickyNote" x="1236" y="97" w="381" h="119" measuredW="109" measuredH="123" zOrder="33" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Not%20sure%20if%20we%20want%20%27add%20media%27%20here%20-%20seems%20a%20little%20unbalanced%20to%20not%20have%20functions%20at%20this%20level.%20%20the%20only%20one%20we%20really%20really%20need%20is%20import%20file.</text>
+      </controlProperties>
+    </control>
+    <control controlID="359" controlTypeID="com.balsamiq.mockups::Arrow" x="1100" y="149" w="144" h="38" measuredW="150" measuredH="100" zOrder="34" locked="false" isInGroup="-1">
+      <controlProperties>
+        <direction>bottom</direction>
+        <rightArrow>false</rightArrow>
+      </controlProperties>
+    </control>
+    <control controlID="355" controlTypeID="com.balsamiq.mockups::Image" x="711" y="417" w="25" h="26" measuredW="141" measuredH="144" zOrder="31" locked="false" isInGroup="-1"/>
+    <control controlID="315" controlTypeID="com.balsamiq.mockups::Canvas" x="152" y="158" w="537" h="570" measuredW="100" measuredH="70" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>11776947</color>
+      </controlProperties>
+    </control>
+    <control controlID="316" controlTypeID="com.balsamiq.mockups::TextInput" x="157" y="198" w="450" h="-1" measuredW="115" measuredH="29" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>New%20Place%20/URL</text>
+      </controlProperties>
+    </control>
+    <control controlID="318" controlTypeID="com.balsamiq.mockups::Button" x="607" y="198" w="67" h="-1" measuredW="66" measuredH="28" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Create</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>
