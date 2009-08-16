@@ -17,7 +17,7 @@
         <text>Media%20Name</text>
       </controlProperties>
     </control>
-    <control controlID="222" controlTypeID="com.balsamiq.mockups::ButtonBar" x="977" y="126" w="-1" h="-1" measuredW="164" measuredH="29" zOrder="5" locked="false" isInGroup="-1">
+    <control controlID="222" controlTypeID="com.balsamiq.mockups::ButtonBar" x="977" y="126" w="-1" h="-1" measuredW="160" measuredH="31" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Code%2C%20WYSIWYG</text>
         <selectedIndex>1</selectedIndex>
@@ -25,7 +25,7 @@
     </control>
     <control controlID="288" controlTypeID="com.balsamiq.mockups::TextArea" x="147" y="161" w="992" h="27" measuredW="200" measuredH="140" zOrder="11" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>%5BAdd%20Inputs%5D</text>
+        <text>%5BCreate%20an%20Interface%20by%20Adding%20Inputs%5D</text>
         <state>up</state>
         <color>13158600</color>
       </controlProperties>
