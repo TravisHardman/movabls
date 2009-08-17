@@ -1,5 +1,10 @@
 <mockup version="1.0" skin="sketch" measuredW="1233" measuredH="796">
   <controls>
+    <control controlID="120" controlTypeID="com.balsamiq.mockups::Button" x="544" y="574" w="-1" h="-1" measuredW="130" measuredH="28" zOrder="49" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Reuse%20This%20Input</text>
+      </controlProperties>
+    </control>
     <control controlID="65" controlTypeID="com.balsamiq.mockups::Canvas" x="151" y="92" w="1020" h="669" measuredW="100" measuredH="70" zOrder="30" locked="false" isInGroup="-1">
       <controlProperties>
         <borderStyle>none</borderStyle>
@@ -26,7 +31,7 @@
         <verticalScrollbar>false</verticalScrollbar>
       </controlProperties>
     </control>
-    <control controlID="70" controlTypeID="com.balsamiq.mockups::Icon" x="546" y="547" w="-1" h="-1" measuredW="32" measuredH="32" zOrder="50" locked="false" isInGroup="-1">
+    <control controlID="70" controlTypeID="com.balsamiq.mockups::Icon" x="500" y="547" w="-1" h="-1" measuredW="32" measuredH="32" zOrder="48" locked="false" isInGroup="-1">
       <controlProperties>
         <icon>CursorIcon%7Cmedium</icon>
       </controlProperties>
@@ -203,7 +208,7 @@
         <text>X</text>
       </controlProperties>
     </control>
-    <control controlID="109" controlTypeID="com.balsamiq.mockups::DataGrid" x="319" y="425" w="554" h="228" measuredW="336" measuredH="228" zOrder="37" locked="false" isInGroup="-1">
+    <control controlID="109" controlTypeID="com.balsamiq.mockups::DataGrid" x="319" y="425" w="554" h="228" measuredW="335" measuredH="228" zOrder="37" locked="false" isInGroup="-1">
       <controlProperties>
         <text>%5BMovabl%5D%20%20%20%20%20%20%20%20%20%20%20%2C%5BUsage%5D%0A%20%20%20%20%20%20%5Bfile.png%5D%2C%20As%20Place%3A%5BMy%20Logo%5D%0A%20%20%20%20%20%20%5BHome%20Page%5D%2C%20As%20Place%3A%5BHome%20Page%5D%0A%20%20%20%20%20%20%5BBroken%20MDA%5D%2C%20As%20Place%3A%5B/my/broken/place%5D%0A%20%20%20%20%20%20%5BAnother%20MDA%5D%2C%20%5B3%20Places%5D%20%26%20%5B2%20Inputs%5D%0A%20%20%20%20%20%20%5BA%20Function%21%5D%2C%20As%20Input%3A%5BHome%20Page%5D</text>
         <rowHeight>40</rowHeight>
@@ -230,19 +235,14 @@
         <borderStyle>none</borderStyle>
       </controlProperties>
     </control>
-    <control controlID="120" controlTypeID="com.balsamiq.mockups::Button" x="653" y="569" w="186" h="-1" measuredW="189" measuredH="28" zOrder="47" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Reuse%20for%20%22MySecondTag%22</text>
-      </controlProperties>
-    </control>
-    <control controlID="124" controlTypeID="com.balsamiq.mockups::Button" x="653" y="569" w="186" h="-1" measuredW="189" measuredH="28" zOrder="48" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Reuse%20for%20%22MySecondTag%22</text>
-      </controlProperties>
-    </control>
-    <control controlID="125" controlTypeID="com.balsamiq.mockups::Button" x="418" y="505" w="-1" h="-1" measuredW="82" measuredH="28" zOrder="49" locked="false" isInGroup="-1">
+    <control controlID="125" controlTypeID="com.balsamiq.mockups::Button" x="418" y="505" w="-1" h="-1" measuredW="82" measuredH="28" zOrder="47" locked="false" isInGroup="-1">
       <controlProperties>
         <text>New%20Use</text>
+      </controlProperties>
+    </control>
+    <control controlID="126" controlTypeID="com.balsamiq.mockups::Button" x="682" y="574" w="-1" h="-1" measuredW="157" measuredH="28" zOrder="50" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Reuse%20This%20Interface</text>
       </controlProperties>
     </control>
   </controls>

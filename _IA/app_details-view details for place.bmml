@@ -143,15 +143,6 @@
         <text>Edit</text>
       </controlProperties>
     </control>
-    <control controlID="372" controlTypeID="com.balsamiq.mockups::IconLabel" x="1010" y="436" w="165" h="-1" measuredW="96" measuredH="32" zOrder="41" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Inputs</text>
-        <size>18</size>
-        <labelPosition>right</labelPosition>
-        <icon>XIcon%7Cmedium</icon>
-        <color>16711680</color>
-      </controlProperties>
-    </control>
     <control controlID="361" controlTypeID="com.balsamiq.mockups::IconLabel" x="708" y="505" w="34" h="-1" measuredW="38" measuredH="25" zOrder="22" locked="false" isInGroup="-1">
       <controlProperties>
         <text>%20</text>
@@ -193,6 +184,15 @@
       <controlProperties>
         <text>PrimaryMovablAtThisPlaceName</text>
         <size>16</size>
+      </controlProperties>
+    </control>
+    <control controlID="372" controlTypeID="com.balsamiq.mockups::IconLabel" x="1010" y="436" w="165" h="-1" measuredW="96" measuredH="32" zOrder="41" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Inputs</text>
+        <size>18</size>
+        <labelPosition>right</labelPosition>
+        <icon>XIcon%7Cmedium</icon>
+        <color>16711680</color>
       </controlProperties>
     </control>
     <control controlID="373" controlTypeID="com.balsamiq.mockups::Paragraph" x="703" y="253" w="200" h="107" measuredW="200" measuredH="140" zOrder="29" locked="false" isInGroup="-1">

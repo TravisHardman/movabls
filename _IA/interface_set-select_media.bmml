@@ -221,7 +221,7 @@
     </control>
     <control controlID="108" controlTypeID="com.balsamiq.mockups::TextArea" x="328" y="572" w="514" h="28" measuredW="200" measuredH="140" zOrder="42" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Interface%3A%20MyArg%2C%20MyArg1%2C%20BrokenInput%2C%20MousedOver</text>
+        <text>Inputs%3A%20MyArg%2C%20MyArg1%2C%20BrokenInput%2C%20MousedOver</text>
         <state>disabled</state>
         <color>13158600</color>
       </controlProperties>

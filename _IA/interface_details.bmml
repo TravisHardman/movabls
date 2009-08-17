@@ -5,10 +5,10 @@
         <src>./0_background.png</src>
       </controlProperties>
     </control>
-    <control controlID="66" controlTypeID="com.balsamiq.mockups::Label" x="147" y="122" w="187" h="34" measuredW="159" measuredH="34" zOrder="1" locked="false" isInGroup="-1">
+    <control controlID="66" controlTypeID="com.balsamiq.mockups::Label" x="147" y="122" w="187" h="34" measuredW="146" measuredH="34" zOrder="1" locked="false" isInGroup="-1">
       <controlProperties>
         <size>20</size>
-        <text>Interface%20Label</text>
+        <text>Inputset%20Label</text>
       </controlProperties>
     </control>
     <control controlID="262" controlTypeID="com.balsamiq.mockups::Label" x="154" y="241" w="102" h="24" measuredW="92" measuredH="25" zOrder="7" locked="false" isInGroup="-1">
@@ -40,9 +40,9 @@
       </controlProperties>
     </control>
     <control controlID="224" controlTypeID="com.balsamiq.mockups::HSplitter" x="720" y="111" w="-1" h="630" measuredW="12" measuredH="100" zOrder="4" locked="false" isInGroup="-1"/>
-    <control controlID="226" controlTypeID="com.balsamiq.mockups::Label" x="750" y="128" w="231" h="25" measuredW="65" measuredH="25" zOrder="5" locked="false" isInGroup="-1">
+    <control controlID="226" controlTypeID="com.balsamiq.mockups::Label" x="750" y="128" w="231" h="25" measuredW="67" measuredH="25" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Instances</text>
+        <text>Interface</text>
       </controlProperties>
     </control>
     <control controlID="283" controlTypeID="com.balsamiq.mockups::Image" x="747" y="198" w="383" h="244" measuredW="141" measuredH="144" zOrder="11" locked="false" isInGroup="-1"/>
