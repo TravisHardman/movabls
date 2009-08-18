@@ -17,6 +17,12 @@
         <text>Media%20Name</text>
       </controlProperties>
     </control>
+    <control controlID="291" controlTypeID="com.balsamiq.mockups::TextArea" x="872" y="192" w="265" h="34" measuredW="200" measuredH="140" zOrder="13" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>This%20Media%20is%20used%20in%20%5B5%20places%5D</text>
+        <color>16777062</color>
+      </controlProperties>
+    </control>
     <control controlID="222" controlTypeID="com.balsamiq.mockups::ButtonBar" x="977" y="126" w="-1" h="-1" measuredW="160" measuredH="31" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Code%2C%20WYSIWYG</text>
