@@ -60,11 +60,6 @@
         <icon>SquaredPlusIcon%7Cxsmall</icon>
       </controlProperties>
     </control>
-    <control controlID="331" controlTypeID="com.balsamiq.mockups::Button" x="686" y="199" w="-1" h="-1" measuredW="113" measuredH="28" zOrder="40" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Insert%20Movabl</text>
-      </controlProperties>
-    </control>
     <control controlID="317" controlTypeID="com.balsamiq.mockups::IconLabel" x="982" y="632" w="-1" h="-1" measuredW="151" measuredH="22" zOrder="27" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Create%20Media%20from%20File</text>

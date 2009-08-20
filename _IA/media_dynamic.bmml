@@ -198,11 +198,6 @@
         <icon>SquaredPlusIcon%7Cxsmall</icon>
       </controlProperties>
     </control>
-    <control controlID="424" controlTypeID="com.balsamiq.mockups::Button" x="654" y="208" w="-1" h="-1" measuredW="113" measuredH="28" zOrder="47" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Insert%20Movabl</text>
-      </controlProperties>
-    </control>
     <control controlID="177" controlTypeID="com.balsamiq.mockups::TextArea" x="147" y="236" w="36" h="446" measuredW="200" measuredH="140" zOrder="3" locked="false" isInGroup="-1">
       <controlProperties>
         <text>1%0A2%0A3%0A4%0A5%0A6%0A7%0A8%0A9%0A10%0A11%0A12%0A13%0A14%0A15%0A16%0A17%0A18%0A19%0A20%0A21%0A22%0A23%0A24%0A25%0A26</text>
@@ -230,7 +225,7 @@
       </controlProperties>
     </control>
     <control controlID="369" controlTypeID="com.balsamiq.mockups::HSplitter" x="782" y="111" w="-1" h="630" measuredW="12" measuredH="100" zOrder="16" locked="false" isInGroup="-1"/>
-    <control controlID="425" controlTypeID="com.balsamiq.mockups::Label" x="1090" y="609" w="-1" h="-1" measuredW="45" measuredH="25" zOrder="48" locked="false" isInGroup="-1">
+    <control controlID="425" controlTypeID="com.balsamiq.mockups::Label" x="1090" y="609" w="-1" h="-1" measuredW="45" measuredH="25" zOrder="47" locked="false" isInGroup="-1">
       <controlProperties>
         <text>%5Bdelete%5D</text>
       </controlProperties>

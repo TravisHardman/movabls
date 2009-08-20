@@ -101,35 +101,30 @@
         <text>Attach%20Interface%20To%20This%20Media</text>
       </controlProperties>
     </control>
-    <control controlID="106" controlTypeID="com.balsamiq.mockups::Button" x="652" y="203" w="-1" h="-1" measuredW="113" measuredH="28" zOrder="20" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Insert%20Movabl</text>
-      </controlProperties>
-    </control>
-    <control controlID="107" controlTypeID="com.balsamiq.mockups::TextArea" x="147" y="171" w="612" h="27" measuredW="200" measuredH="140" zOrder="21" locked="false" isInGroup="-1">
+    <control controlID="107" controlTypeID="com.balsamiq.mockups::TextArea" x="147" y="171" w="612" h="27" measuredW="200" measuredH="140" zOrder="20" locked="false" isInGroup="-1">
       <controlProperties>
         <text>%20%20%20Inputs%20used%3A%20newarray%2CanotherInput%2CaThirdInput</text>
         <state>disabled</state>
         <color>13158600</color>
       </controlProperties>
     </control>
-    <control controlID="108" controlTypeID="com.balsamiq.mockups::Link" x="707" y="172" w="-1" h="-1" measuredW="50" measuredH="25" zOrder="22" locked="false" isInGroup="-1">
+    <control controlID="108" controlTypeID="com.balsamiq.mockups::Link" x="707" y="172" w="-1" h="-1" measuredW="50" measuredH="25" zOrder="21" locked="false" isInGroup="-1">
       <controlProperties>
         <text>expand</text>
       </controlProperties>
     </control>
-    <control controlID="109" controlTypeID="com.balsamiq.mockups::Link" x="522" y="171" w="-1" h="-1" measuredW="177" measuredH="25" zOrder="23" locked="false" isInGroup="-1">
+    <control controlID="109" controlTypeID="com.balsamiq.mockups::Link" x="522" y="171" w="-1" h="-1" measuredW="177" measuredH="25" zOrder="22" locked="false" isInGroup="-1">
       <controlProperties>
         <text>create%20interface%20for%20these</text>
       </controlProperties>
     </control>
-    <control controlID="110" controlTypeID="com.balsamiq.mockups::DataGrid" x="809" y="313" w="326" h="189" measuredW="219" measuredH="118" zOrder="24" locked="false" isInGroup="-1">
+    <control controlID="110" controlTypeID="com.balsamiq.mockups::DataGrid" x="809" y="313" w="326" h="189" measuredW="219" measuredH="118" zOrder="23" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Inputs%20required%20by%20this%20media%0Anewarray%0AanotherInput%0AaThirdInput</text>
         <verticalScrollbar>true</verticalScrollbar>
       </controlProperties>
     </control>
-    <control controlID="111" controlTypeID="com.balsamiq.mockups::Icon" x="151" y="176" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="25" locked="false" isInGroup="-1">
+    <control controlID="111" controlTypeID="com.balsamiq.mockups::Icon" x="151" y="176" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="24" locked="false" isInGroup="-1">
       <controlProperties>
         <icon>SquaredPlusIcon%7Cxsmall</icon>
       </controlProperties>
