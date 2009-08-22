@@ -1,0 +1,63 @@
+<mockup version="1.0" skin="sketch" measuredW="1165" measuredH="776">
+  <controls>
+    <control controlID="64" controlTypeID="com.balsamiq.mockups::Image" x="131" y="2" w="-1" h="-1" measuredW="1024" measuredH="764" zOrder="0" locked="true" isInGroup="-1">
+      <controlProperties>
+        <src>./site_landing.png</src>
+      </controlProperties>
+    </control>
+    <control controlID="428" controlTypeID="com.balsamiq.mockups::Canvas" x="133" y="75" w="1020" h="669" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <backgroundAlpha>0.5</backgroundAlpha>
+        <borderStyle>none</borderStyle>
+        <color>0</color>
+      </controlProperties>
+    </control>
+    <control controlID="437" controlTypeID="com.balsamiq.mockups::TitleWindow" x="299" y="185" w="748" h="384" measuredW="450" measuredH="400" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Create%20a%20Place%20for%20%22MediaMovabl%22</text>
+        <topheight>26</topheight>
+        <bottomheight>0</bottomheight>
+      </controlProperties>
+    </control>
+    <control controlID="438" controlTypeID="com.balsamiq.mockups::Button" x="860" y="425" w="67" h="-1" measuredW="66" measuredH="28" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Create</text>
+      </controlProperties>
+    </control>
+    <control controlID="439" controlTypeID="com.balsamiq.mockups::TextInput" x="518" y="343" w="409" h="-1" measuredW="295" measuredH="29" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>enter/your/place/url%20-%20Use%20%25%20as%20a%20wildcard.</text>
+      </controlProperties>
+    </control>
+    <control controlID="440" controlTypeID="com.balsamiq.mockups::Link" x="806" y="428" w="-1" h="-1" measuredW="46" measuredH="25" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Cancel</text>
+      </controlProperties>
+    </control>
+    <control controlID="441" controlTypeID="com.balsamiq.mockups::TextInput" x="518" y="303" w="174" h="-1" measuredW="79" measuredH="29" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="442" controlTypeID="com.balsamiq.mockups::Label" x="433" y="306" w="-1" h="-1" measuredW="81" measuredH="25" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Place%20Label%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="443" controlTypeID="com.balsamiq.mockups::Label" x="393" y="346" w="-1" h="-1" measuredW="125" measuredH="25" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>travis.movabls.com/</text>
+      </controlProperties>
+    </control>
+    <control controlID="444" controlTypeID="com.balsamiq.mockups::Label" x="433" y="386" w="-1" h="-1" measuredW="79" measuredH="25" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Application%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="445" controlTypeID="com.balsamiq.mockups::ComboBox" x="518" y="385" w="174" h="-1" measuredW="48" measuredH="92" zOrder="10" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>--%0AMy%20Application%0AFoo%20Application%0A%5BCreate%20Application%5D</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>
