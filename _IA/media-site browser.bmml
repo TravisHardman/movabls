@@ -98,6 +98,13 @@
         <value>20</value>
       </controlProperties>
     </control>
+    <control controlID="342" controlTypeID="com.balsamiq.mockups::PointyButton" x="856" y="561" w="-1" h="-1" measuredW="48" measuredH="28" zOrder="37" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Prev</text>
+        <direction>left</direction>
+        <state>disabled</state>
+      </controlProperties>
+    </control>
     <control controlID="317" controlTypeID="com.balsamiq.mockups::IconLabel" x="842" y="626" w="-1" h="-1" measuredW="151" measuredH="22" zOrder="20" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Create%20Media%20from%20File</text>
@@ -113,7 +120,12 @@
         <text>meta</text>
       </controlProperties>
     </control>
-    <control controlID="222" controlTypeID="com.balsamiq.mockups::ButtonBar" x="637" y="126" w="-1" h="-1" measuredW="164" measuredH="29" zOrder="7" locked="false" isInGroup="-1">
+    <control controlID="341" controlTypeID="com.balsamiq.mockups::PointyButton" x="1075" y="561" w="-1" h="-1" measuredW="54" measuredH="28" zOrder="36" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Next</text>
+      </controlProperties>
+    </control>
+    <control controlID="222" controlTypeID="com.balsamiq.mockups::ButtonBar" x="637" y="126" w="-1" h="-1" measuredW="160" measuredH="31" zOrder="7" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Code%2C%20WYSIWYG</text>
         <selectedIndex>1</selectedIndex>
@@ -138,12 +150,12 @@
         <color>13158600</color>
       </controlProperties>
     </control>
-    <control controlID="306" controlTypeID="com.balsamiq.mockups::DataGrid" x="832" y="187" w="317" h="417" measuredW="357" measuredH="228" zOrder="13" locked="false" isInGroup="-1">
+    <control controlID="306" controlTypeID="com.balsamiq.mockups::DataGrid" x="832" y="187" w="317" h="394" measuredW="358" measuredH="228" zOrder="13" locked="false" isInGroup="-1">
       <controlProperties>
         <text>%5BMovabl%5D%20%20%20%20%20%20%20%20%20%20%20%2C%5BUsage%5D%0A%20%20%20%20%20%20%20%20%20%20%5Bfile.png%5D%2C%20As%20Place%3A%5BMy%20Logo%5D%0A%20%20%20%20%20%20%20%20%20%20%5BHome%20Page%5D%2C%20As%20Place%3A%5BHome%20Page%5D%0A%20%20%20%20%20%20%20%20%20%20%5BBroken%20MDA%5D%2C%20As%20Place%3A%5B/my/broken/place%5D%0A%20%20%20%20%20%20%20%20%20%20%5BAnother%20MDA%5D%2C%20%5B3%20Places%5D%20%26%20%5B2%20Inputs%5D%0A%20%20%20%20%20%20%20%20%20%20%5BA%20Function%21%5D%2C%20As%20Input%3A%5BHome%20Page%5D</text>
-        <rowHeight>40</rowHeight>
         <verticalScrollbar>true</verticalScrollbar>
         <hLines>false</hLines>
+        <rowHeight>40</rowHeight>
         <vLines>false</vLines>
       </controlProperties>
     </control>
