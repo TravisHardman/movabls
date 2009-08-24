@@ -31,7 +31,7 @@
         <value>20</value>
       </controlProperties>
     </control>
-    <control controlID="69" controlTypeID="com.balsamiq.mockups::ButtonBar" x="599" y="126" w="-1" h="-1" measuredW="164" measuredH="29" zOrder="5" locked="false" isInGroup="-1">
+    <control controlID="69" controlTypeID="com.balsamiq.mockups::ButtonBar" x="599" y="126" w="-1" h="-1" measuredW="160" measuredH="31" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Code%2C%20WYSIWYG</text>
         <selectedIndex>1</selectedIndex>
@@ -63,21 +63,16 @@
         <color>8355711</color>
       </controlProperties>
     </control>
-    <control controlID="80" controlTypeID="com.balsamiq.mockups::HSplitter" x="782" y="111" w="-1" h="630" measuredW="12" measuredH="100" zOrder="11" locked="false" isInGroup="-1"/>
-    <control controlID="81" controlTypeID="com.balsamiq.mockups::Accordion" x="790" y="111" w="365" h="630" measuredW="187" measuredH="189" zOrder="12" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Application%20Browser%3A%20My%20App%0APlaces%20This%20Media%20Is%20Used%0AInterfaces%20Attached%20to%20This%20Media</text>
-        <selectedIndex>1</selectedIndex>
-      </controlProperties>
-    </control>
     <control controlID="143" controlTypeID="com.balsamiq.mockups::Button" x="804" y="667" w="-1" h="-1" measuredW="246" measuredH="28" zOrder="23" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Create%20New%20Place%20With%20This%20Media</text>
       </controlProperties>
     </control>
-    <control controlID="136" controlTypeID="com.balsamiq.mockups::Button" x="1018" y="245" w="-1" h="-1" measuredW="50" measuredH="28" zOrder="22" locked="false" isInGroup="-1">
+    <control controlID="80" controlTypeID="com.balsamiq.mockups::HSplitter" x="782" y="111" w="-1" h="630" measuredW="12" measuredH="100" zOrder="11" locked="false" isInGroup="-1"/>
+    <control controlID="81" controlTypeID="com.balsamiq.mockups::Accordion" x="790" y="111" w="365" h="630" measuredW="187" measuredH="189" zOrder="12" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Edit</text>
+        <text>Site%20Library%20Browser%0APlaces%20This%20Media%20Is%20Used%0AInterfaces%20Attached%20to%20This%20Media</text>
+        <selectedIndex>1</selectedIndex>
       </controlProperties>
     </control>
     <control controlID="146" controlTypeID="com.balsamiq.mockups::Button" x="1070" y="245" w="-1" h="-1" measuredW="71" measuredH="28" zOrder="24" locked="false" isInGroup="-1">
@@ -94,6 +89,11 @@
       <controlProperties>
         <text>Broken%20Page</text>
         <color>16711680</color>
+      </controlProperties>
+    </control>
+    <control controlID="136" controlTypeID="com.balsamiq.mockups::Button" x="1018" y="245" w="-1" h="-1" measuredW="50" measuredH="28" zOrder="22" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Edit</text>
       </controlProperties>
     </control>
     <control controlID="112" controlTypeID="com.balsamiq.mockups::Button" x="421" y="200" w="-1" h="-1" measuredW="43" measuredH="28" zOrder="13" locked="false" isInGroup="-1">

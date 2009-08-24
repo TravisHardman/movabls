@@ -76,7 +76,7 @@
     <control controlID="334" controlTypeID="com.balsamiq.mockups::HSplitter" x="817" y="111" w="-1" h="630" measuredW="12" measuredH="100" zOrder="4" locked="false" isInGroup="-1"/>
     <control controlID="335" controlTypeID="com.balsamiq.mockups::Accordion" x="825" y="112" w="327" h="630" measuredW="192" measuredH="189" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Application%20Browser%3A%20My%20App%0APlaces%20This%20Interface%20Is%20Used%0AMovabls%20Attached%20to%20This%20Interface</text>
+        <text>Site%20Library%20Browser%0APlaces%20This%20Interface%20Is%20Used%0AMovabls%20Attached%20to%20This%20Interface</text>
         <selectedIndex>2</selectedIndex>
       </controlProperties>
     </control>

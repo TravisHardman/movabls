@@ -12,25 +12,15 @@
         <text>InterfaceName</text>
       </controlProperties>
     </control>
-    <control controlID="379" controlTypeID="com.balsamiq.mockups::Icon" x="305" y="265" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="9" locked="false" isInGroup="-1">
+    <control controlID="387" controlTypeID="com.balsamiq.mockups::Icon" x="911" y="251" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="18" locked="false" isInGroup="-1">
       <controlProperties>
-        <icon>GearIcon%7Csmall</icon>
+        <icon>CursorIcon%7Csmall</icon>
       </controlProperties>
     </control>
     <control controlID="388" controlTypeID="com.balsamiq.mockups::Label" x="834" y="307" w="75" h="25" measuredW="81" measuredH="25" zOrder="19" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Broken%20Page</text>
         <color>16711680</color>
-      </controlProperties>
-    </control>
-    <control controlID="381" controlTypeID="com.balsamiq.mockups::Icon" x="784" y="269" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="12" locked="false" isInGroup="-1">
-      <controlProperties>
-        <icon>XIcon%7Cxsmall</icon>
-      </controlProperties>
-    </control>
-    <control controlID="382" controlTypeID="com.balsamiq.mockups::Button" x="153" y="344" w="-1" h="-1" measuredW="94" measuredH="28" zOrder="11" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Add%20A%20Tag</text>
       </controlProperties>
     </control>
     <control controlID="384" controlTypeID="com.balsamiq.mockups::Button" x="1030" y="245" w="47" h="-1" measuredW="50" measuredH="28" zOrder="15" locked="false" isInGroup="-1">
@@ -45,21 +35,16 @@
     </control>
     <control controlID="322" controlTypeID="com.balsamiq.mockups::Accordion" x="825" y="112" w="327" h="630" measuredW="192" measuredH="189" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Application%20Browser%3A%20My%20App%0APlaces%20This%20Interface%20Is%20Used%0AMovabls%20Attached%20to%20This%20Interface</text>
+        <text>Site%20Library%20Browser%0APlaces%20This%20Interface%20Is%20Used%0AMovabls%20Attached%20to%20This%20Interface</text>
         <selectedIndex>1</selectedIndex>
-      </controlProperties>
-    </control>
-    <control controlID="387" controlTypeID="com.balsamiq.mockups::Icon" x="911" y="251" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="18" locked="false" isInGroup="-1">
-      <controlProperties>
-        <icon>CursorIcon%7Csmall</icon>
       </controlProperties>
     </control>
     <control controlID="364" controlTypeID="com.balsamiq.mockups::DataGrid" x="147" y="191" w="663" h="536" measuredW="527" measuredH="148" zOrder="6" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Tag%2C%20Movabl%20%2CInterface%20%0Amyarg1%2C%20%20%20%20%20%20My%20Media%2C%20My%20Interface%0Amyarg2%20%20%28%5Brename%5D%29%2C%20%20%20%20%20%20My%20Function%20%28%5Bedit%5D%5C%2C%20%5Bchange%5D%29%2C%20An%20Interface%20%28%5Bedit%5D%5C%2C%20%5Bchange%5D%29%0A%2C%5BSet%20Movabl%5D%2C%5BSet%20Interface%5D</text>
-        <rowHeight>40</rowHeight>
         <verticalScrollbar>false</verticalScrollbar>
         <vLines>false</vLines>
+        <rowHeight>40</rowHeight>
         <hLines>false</hLines>
       </controlProperties>
     </control>
@@ -74,12 +59,6 @@
         <text>Preview</text>
       </controlProperties>
     </control>
-    <control controlID="377" controlTypeID="com.balsamiq.mockups::TabBar" x="147" y="166" w="663" h="559" measuredW="359" measuredH="100" zOrder="13" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Edit%20Interface%2C%20Browse%20Functional%20Tree</text>
-        <selectedIndex>0</selectedIndex>
-      </controlProperties>
-    </control>
     <control controlID="310" controlTypeID="com.balsamiq.mockups::IconLabel" x="713" y="125" w="103" h="-1" measuredW="96" measuredH="32" zOrder="3" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Inputs</text>
@@ -87,6 +66,17 @@
         <icon>XIcon%7Cmedium</icon>
         <color>16711680</color>
         <labelPosition>right</labelPosition>
+      </controlProperties>
+    </control>
+    <control controlID="379" controlTypeID="com.balsamiq.mockups::Icon" x="305" y="265" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>GearIcon%7Csmall</icon>
+      </controlProperties>
+    </control>
+    <control controlID="377" controlTypeID="com.balsamiq.mockups::TabBar" x="147" y="166" w="663" h="559" measuredW="359" measuredH="100" zOrder="13" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Edit%20Interface%2C%20Browse%20Functional%20Tree</text>
+        <selectedIndex>0</selectedIndex>
       </controlProperties>
     </control>
     <control controlID="378" controlTypeID="com.balsamiq.mockups::Icon" x="307" y="223" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="8" locked="false" isInGroup="-1">
@@ -102,6 +92,16 @@
     <control controlID="380" controlTypeID="com.balsamiq.mockups::Icon" x="266" y="271" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="10" locked="false" isInGroup="-1">
       <controlProperties>
         <icon>CursorIcon%7Csmall</icon>
+      </controlProperties>
+    </control>
+    <control controlID="381" controlTypeID="com.balsamiq.mockups::Icon" x="784" y="269" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="12" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>XIcon%7Cxsmall</icon>
+      </controlProperties>
+    </control>
+    <control controlID="382" controlTypeID="com.balsamiq.mockups::Button" x="153" y="344" w="-1" h="-1" measuredW="94" measuredH="28" zOrder="11" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Add%20A%20Tag</text>
       </controlProperties>
     </control>
     <control controlID="383" controlTypeID="com.balsamiq.mockups::DataGrid" x="829" y="187" w="318" h="465" measuredW="247" measuredH="148" zOrder="14" locked="false" isInGroup="-1">

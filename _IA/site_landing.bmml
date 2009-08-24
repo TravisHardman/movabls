@@ -115,7 +115,7 @@
         <icon>DownloadIcon%7Cxsmall</icon>
       </controlProperties>
     </control>
-    <control controlID="406" controlTypeID="com.balsamiq.mockups::Button" x="959" y="394" w="-1" h="-1" measuredW="50" measuredH="28" zOrder="35" locked="false" isInGroup="-1">
+    <control controlID="406" controlTypeID="com.balsamiq.mockups::Button" x="923" y="397" w="-1" h="-1" measuredW="50" measuredH="28" zOrder="35" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Edit</text>
       </controlProperties>
@@ -195,9 +195,9 @@
         <state>disabled</state>
       </controlProperties>
     </control>
-    <control controlID="422" controlTypeID="com.balsamiq.mockups::Button" x="1023" y="518" w="88" h="-1" measuredW="64" measuredH="28" zOrder="48" locked="false" isInGroup="-1">
+    <control controlID="422" controlTypeID="com.balsamiq.mockups::Icon" x="1094" y="393" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="48" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Delete</text>
+        <icon>DownFillTriangleIcon%7Csmall</icon>
       </controlProperties>
     </control>
     <control controlID="415" controlTypeID="com.balsamiq.mockups::IconLabel" x="466" y="164" w="-1" h="-1" measuredW="32" measuredH="57" zOrder="43" locked="false" isInGroup="-1">
@@ -208,7 +208,7 @@
         <color>255</color>
       </controlProperties>
     </control>
-    <control controlID="360" controlTypeID="com.balsamiq.mockups::Canvas" x="734" y="385" w="397" h="170" measuredW="100" measuredH="70" zOrder="6" locked="false" isInGroup="-1"/>
+    <control controlID="360" controlTypeID="com.balsamiq.mockups::Canvas" x="734" y="385" w="397" h="153" measuredW="100" measuredH="70" zOrder="6" locked="false" isInGroup="-1"/>
     <control controlID="361" controlTypeID="com.balsamiq.mockups::Image" x="766" y="392" w="25" h="26" measuredW="141" measuredH="144" zOrder="7" locked="false" isInGroup="-1">
       <controlProperties/>
     </control>
@@ -217,23 +217,23 @@
         <text>Movabl</text>
       </controlProperties>
     </control>
-    <control controlID="364" controlTypeID="com.balsamiq.mockups::Button" x="1062" y="487" w="-1" h="-1" measuredW="50" measuredH="28" zOrder="10" locked="false" isInGroup="-1">
+    <control controlID="364" controlTypeID="com.balsamiq.mockups::Button" x="1068" y="495" w="-1" h="-1" measuredW="50" measuredH="28" zOrder="10" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Edit</text>
       </controlProperties>
     </control>
-    <control controlID="366" controlTypeID="com.balsamiq.mockups::Button" x="1061" y="456" w="-1" h="-1" measuredW="50" measuredH="28" zOrder="12" locked="false" isInGroup="-1">
+    <control controlID="366" controlTypeID="com.balsamiq.mockups::Button" x="1067" y="464" w="-1" h="-1" measuredW="50" measuredH="28" zOrder="12" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Edit</text>
       </controlProperties>
     </control>
-    <control controlID="367" controlTypeID="com.balsamiq.mockups::DataGrid" x="740" y="427" w="374" h="88" measuredW="236" measuredH="88" zOrder="9" locked="false" isInGroup="-1">
+    <control controlID="367" controlTypeID="com.balsamiq.mockups::DataGrid" x="745" y="434" w="374" h="89" measuredW="236" measuredH="88" zOrder="9" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Usage%0AIn%20Interface%3A%5BHome%20Page%20Interface%5D%0AAs%20Place%3A%5BProfile%20Page%5D</text>
         <borderStyle>none</borderStyle>
       </controlProperties>
     </control>
-    <control controlID="370" controlTypeID="com.balsamiq.mockups::Button" x="1011" y="394" w="-1" h="-1" measuredW="103" measuredH="28" zOrder="12" locked="false" isInGroup="-1">
+    <control controlID="370" controlTypeID="com.balsamiq.mockups::Button" x="975" y="397" w="-1" h="-1" measuredW="103" measuredH="28" zOrder="12" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Create%20Place</text>
       </controlProperties>
