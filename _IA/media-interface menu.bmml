@@ -44,7 +44,7 @@
         <icon>SquaredPlusIcon%7Cxsmall</icon>
       </controlProperties>
     </control>
-    <control controlID="429" controlTypeID="com.balsamiq.mockups::DataGrid" x="804" y="333" w="341" h="216" measuredW="189" measuredH="148" zOrder="20" locked="false" isInGroup="-1">
+    <control controlID="429" controlTypeID="com.balsamiq.mockups::DataGrid" x="804" y="333" w="341" h="216" measuredW="188" measuredH="148" zOrder="20" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Tag%2C%20Actions%0A%20%20%20%20%20myarg1%2C%20%5B%3C%20insert%5D%5C%2C%20%5Bedit%5D%0A%20%20%20%20%20myarg2%2C%20%5B%3C%20insert%5D%5C%2C%20%5Bedit%5D%0A%20%20%20%20%20myarg3%2C%20%5B%3C%20insert%5D%5C%2C%20%5Bedit%5D%0A%2C%20%5B%3C%20insert%5D%5C%2C%20%5Bset%5D</text>
         <verticalScrollbar>false</verticalScrollbar>
@@ -150,7 +150,7 @@
         <text>Media%20Name</text>
       </controlProperties>
     </control>
-    <control controlID="451" controlTypeID="com.balsamiq.mockups::Label" x="902" y="431" w="-1" h="-1" measuredW="59" measuredH="25" zOrder="40" locked="false" isInGroup="-1">
+    <control controlID="451" controlTypeID="com.balsamiq.mockups::Label" x="902" y="431" w="-1" h="-1" measuredW="58" measuredH="25" zOrder="40" locked="false" isInGroup="-1">
       <controlProperties>
         <text>%28%5Brename%5D%29</text>
       </controlProperties>
@@ -217,6 +217,11 @@
       </controlProperties>
     </control>
     <control controlID="467" controlTypeID="com.balsamiq.mockups::HRule" x="782" y="723" w="-1" h="-1" measuredW="100" measuredH="5" zOrder="52" locked="false" isInGroup="-1"/>
+    <control controlID="468" controlTypeID="com.balsamiq.mockups::Icon" x="1042" y="636" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="53" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>DownLeftArrowIcon%7Cxsmall</icon>
+      </controlProperties>
+    </control>
     <control controlID="213" controlTypeID="com.balsamiq.mockups::TextArea" x="179" y="236" w="588" h="446" measuredW="200" measuredH="140" zOrder="4" locked="false" isInGroup="-1">
       <controlProperties>
         <text>%3C%21DOCTYPE%20html%20PUBLIC%20%22-//W3C//DTD%20XHTML%201.0%20Strict//EN%22%20%22http%3A//www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd%22%3E%0A%3Chtml%20xmlns%3D%22http%3A//www.w3.org/1999/xhtml%22%3E%0A%3Chead%3E%0A%09%3Cmeta%20http-equiv%3D%22Content-Type%22%20content%3D%22text/html%3B%20charset%3Dutf-8%22%20/%3E%0A%09%3Ctitle%3EThe%20Juicy%20Bunch%3C/title%3E%0A%09%3Cscript%20type%3D%22text/javascript%22%20src%3D%22/js/myjs%22%3E%3C/script%3E%0A%09%3Clink%20href%3D%22/css/mycss%22%20media%3D%22screen%22%20rel%3D%22stylesheet%22%20type%3D%22text/css%22%20/%3E%0A%3C/head%3E%0A%20%0A%3Cbody%3E%0A%09%3Cdiv%20id%3D%22content%22%3E%0A%09%09%7Bfor%20newarray%20as%20newtag%7D%0A%09%09%3Cdiv%3E%7Bnewtag%5C%5B%27name%27%5C%5D%7D%20%3A%20%7Bnewtag%5C%5B0%5C%5D%7D%3C/div%3E%0A%09%09%7Bendfor%7D%0A%09%3C/div%3E%0A%3C/body%3E%0A%3C/html%3E</text>
@@ -237,6 +242,11 @@
     <control controlID="219" controlTypeID="com.balsamiq.mockups::Link" x="281" y="130" w="-1" h="-1" measuredW="34" measuredH="25" zOrder="2" locked="false" isInGroup="-1">
       <controlProperties>
         <text>meta</text>
+      </controlProperties>
+    </control>
+    <control controlID="469" controlTypeID="com.balsamiq.mockups::Icon" x="1042" y="658" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="54" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>DownLeftArrowIcon%7Cxsmall</icon>
       </controlProperties>
     </control>
     <control controlID="222" controlTypeID="com.balsamiq.mockups::ButtonBar" x="599" y="126" w="-1" h="-1" measuredW="160" measuredH="31" zOrder="5" locked="false" isInGroup="-1">

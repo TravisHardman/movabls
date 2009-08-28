@@ -109,14 +109,10 @@
         <icon>CartIcon%7Cxsmall</icon>
       </controlProperties>
     </control>
-    <control controlID="317" controlTypeID="com.balsamiq.mockups::IconLabel" x="820" y="618" w="-1" h="-1" measuredW="151" measuredH="22" zOrder="19" locked="false" isInGroup="-1">
+    <control controlID="344" controlTypeID="com.balsamiq.mockups::Icon" x="1128" y="140" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="39" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Create%20Media%20from%20File</text>
-        <size>11</size>
-        <underline>true</underline>
-        <icon>DownloadIcon%7Cxsmall</icon>
+        <icon>DownTriangleIcon%7Cxsmall</icon>
         <color>255</color>
-        <labelPosition>right</labelPosition>
       </controlProperties>
     </control>
     <control controlID="345" controlTypeID="com.balsamiq.mockups::IconLabel" x="1061" y="122" w="-1" h="-1" measuredW="63" measuredH="38" zOrder="40" locked="false" isInGroup="-1">
@@ -128,9 +124,19 @@
         <icon>CartIcon%7Cxsmall</icon>
       </controlProperties>
     </control>
+    <control controlID="346" controlTypeID="com.balsamiq.mockups::Icon" x="1088" y="282" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="41" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>DownLeftArrowIcon%7Cxsmall</icon>
+      </controlProperties>
+    </control>
     <control controlID="219" controlTypeID="com.balsamiq.mockups::Link" x="281" y="130" w="-1" h="-1" measuredW="34" measuredH="25" zOrder="3" locked="false" isInGroup="-1">
       <controlProperties>
         <text>meta</text>
+      </controlProperties>
+    </control>
+    <control controlID="348" controlTypeID="com.balsamiq.mockups::Icon" x="1099" y="322" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="42" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>DownLeftArrowIcon%7Cxsmall</icon>
       </controlProperties>
     </control>
     <control controlID="341" controlTypeID="com.balsamiq.mockups::HRule" x="782" y="167" w="-1" h="-1" measuredW="100" measuredH="5" zOrder="36" locked="false" isInGroup="-1"/>
@@ -145,10 +151,14 @@
         <text>text/html</text>
       </controlProperties>
     </control>
-    <control controlID="344" controlTypeID="com.balsamiq.mockups::Icon" x="1128" y="140" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="39" locked="false" isInGroup="-1">
+    <control controlID="317" controlTypeID="com.balsamiq.mockups::IconLabel" x="820" y="618" w="-1" h="-1" measuredW="151" measuredH="22" zOrder="19" locked="false" isInGroup="-1">
       <controlProperties>
-        <icon>DownTriangleIcon%7Cxsmall</icon>
+        <text>Create%20Media%20from%20File</text>
+        <size>11</size>
+        <underline>true</underline>
+        <icon>DownloadIcon%7Cxsmall</icon>
         <color>255</color>
+        <labelPosition>right</labelPosition>
       </controlProperties>
     </control>
     <control controlID="232" controlTypeID="com.balsamiq.mockups::Button" x="679" y="696" w="-1" h="-1" measuredW="96" measuredH="28" zOrder="8" locked="false" isInGroup="-1">
@@ -164,7 +174,7 @@
         <color>13158600</color>
       </controlProperties>
     </control>
-    <control controlID="306" controlTypeID="com.balsamiq.mockups::DataGrid" x="812" y="243" w="317" h="338" measuredW="358" measuredH="228" zOrder="12" locked="false" isInGroup="-1">
+    <control controlID="306" controlTypeID="com.balsamiq.mockups::DataGrid" x="812" y="243" w="317" h="338" measuredW="357" measuredH="228" zOrder="12" locked="false" isInGroup="-1">
       <controlProperties>
         <text>%5BMovabl%5D%20%20%20%20%20%20%20%20%20%20%20%2C%5BUsage%5D%0A%20%20%20%20%20%20%20%20%20%20%5Bfile.png%5D%2C%20As%20Place%3A%5BMy%20Logo%5D%0A%20%20%20%20%20%20%20%20%20%20%5BHome%20Page%5D%2C%20As%20Place%3A%5BHome%20Page%5D%0A%20%20%20%20%20%20%20%20%20%20%5BBroken%20MDA%5D%2C%20As%20Place%3A%5B/my/broken/place%5D%0A%20%20%20%20%20%20%20%20%20%20%5BAnother%20MDA%5D%2C%20%5B3%20Places%5D%20%26%20%5B2%20Inputs%5D%0A%20%20%20%20%20%20%20%20%20%20%5BA%20Function%21%5D%2C%20As%20Input%3A%5BHome%20Page%5D</text>
         <rowHeight>40</rowHeight>

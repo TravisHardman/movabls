@@ -16,26 +16,26 @@
         <text>InterfaceName</text>
       </controlProperties>
     </control>
-    <control controlID="387" controlTypeID="com.balsamiq.mockups::Icon" x="913" y="304" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="17" locked="false" isInGroup="-1">
+    <control controlID="387" controlTypeID="com.balsamiq.mockups::Icon" x="913" y="304" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="16" locked="false" isInGroup="-1">
       <controlProperties>
         <icon>CursorIcon%7Csmall</icon>
       </controlProperties>
     </control>
-    <control controlID="388" controlTypeID="com.balsamiq.mockups::Label" x="836" y="360" w="75" h="25" measuredW="81" measuredH="25" zOrder="18" locked="false" isInGroup="-1">
+    <control controlID="388" controlTypeID="com.balsamiq.mockups::Label" x="836" y="360" w="75" h="25" measuredW="81" measuredH="25" zOrder="17" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Broken%20Page</text>
         <color>16711680</color>
       </controlProperties>
     </control>
-    <control controlID="389" controlTypeID="com.balsamiq.mockups::HSplitter" x="816" y="166" w="-1" h="565" measuredW="12" measuredH="100" zOrder="19" locked="false" isInGroup="-1"/>
-    <control controlID="390" controlTypeID="com.balsamiq.mockups::HRule" x="816" y="166" w="-1" h="-1" measuredW="100" measuredH="5" zOrder="20" locked="false" isInGroup="-1"/>
-    <control controlID="391" controlTypeID="com.balsamiq.mockups::HRule" x="816" y="725" w="-1" h="-1" measuredW="100" measuredH="5" zOrder="21" locked="false" isInGroup="-1"/>
-    <control controlID="384" controlTypeID="com.balsamiq.mockups::Button" x="1032" y="298" w="47" h="-1" measuredW="50" measuredH="28" zOrder="14" locked="false" isInGroup="-1">
+    <control controlID="389" controlTypeID="com.balsamiq.mockups::HSplitter" x="816" y="166" w="-1" h="565" measuredW="12" measuredH="100" zOrder="18" locked="false" isInGroup="-1"/>
+    <control controlID="390" controlTypeID="com.balsamiq.mockups::HRule" x="816" y="166" w="-1" h="-1" measuredW="100" measuredH="5" zOrder="19" locked="false" isInGroup="-1"/>
+    <control controlID="391" controlTypeID="com.balsamiq.mockups::HRule" x="816" y="725" w="-1" h="-1" measuredW="100" measuredH="5" zOrder="20" locked="false" isInGroup="-1"/>
+    <control controlID="384" controlTypeID="com.balsamiq.mockups::Button" x="1063" y="302" w="47" h="-1" measuredW="50" measuredH="28" zOrder="14" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Edit</text>
       </controlProperties>
     </control>
-    <control controlID="393" controlTypeID="com.balsamiq.mockups::Icon" x="1130" y="138" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="23" locked="false" isInGroup="-1">
+    <control controlID="393" controlTypeID="com.balsamiq.mockups::Icon" x="1130" y="138" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="22" locked="false" isInGroup="-1">
       <controlProperties>
         <icon>DownTriangleIcon%7Cxsmall</icon>
         <color>255</color>
@@ -47,7 +47,17 @@
         <selectedIndex>1</selectedIndex>
       </controlProperties>
     </control>
-    <control controlID="392" controlTypeID="com.balsamiq.mockups::IconLabel" x="978" y="120" w="-1" h="-1" measuredW="63" measuredH="38" zOrder="22" locked="false" isInGroup="-1">
+    <control controlID="397" controlTypeID="com.balsamiq.mockups::Icon" x="1122" y="304" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="24" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>DownLeftArrowIcon%7Csmall</icon>
+      </controlProperties>
+    </control>
+    <control controlID="399" controlTypeID="com.balsamiq.mockups::Icon" x="1119" y="302" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="25" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>DownLeftArrowIcon%7Csmall</icon>
+      </controlProperties>
+    </control>
+    <control controlID="392" controlTypeID="com.balsamiq.mockups::IconLabel" x="978" y="120" w="-1" h="-1" measuredW="63" measuredH="38" zOrder="21" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Menu%20Item</text>
         <size>11</size>
@@ -56,18 +66,13 @@
         <icon>CartIcon%7Cxsmall</icon>
       </controlProperties>
     </control>
-    <control controlID="394" controlTypeID="com.balsamiq.mockups::IconLabel" x="1063" y="120" w="-1" h="-1" measuredW="63" measuredH="38" zOrder="24" locked="false" isInGroup="-1">
+    <control controlID="394" controlTypeID="com.balsamiq.mockups::IconLabel" x="1063" y="120" w="-1" h="-1" measuredW="63" measuredH="38" zOrder="23" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Menu%20Item</text>
         <size>11</size>
         <underline>true</underline>
         <color>255</color>
         <icon>CartIcon%7Cxsmall</icon>
-      </controlProperties>
-    </control>
-    <control controlID="386" controlTypeID="com.balsamiq.mockups::Button" x="1080" y="298" w="66" h="-1" measuredW="71" measuredH="28" zOrder="16" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Preview</text>
       </controlProperties>
     </control>
     <control controlID="219" controlTypeID="com.balsamiq.mockups::Link" x="311" y="130" w="-1" h="-1" measuredW="34" measuredH="25" zOrder="2" locked="false" isInGroup="-1">
@@ -75,7 +80,7 @@
         <text>meta</text>
       </controlProperties>
     </control>
-    <control controlID="364" controlTypeID="com.balsamiq.mockups::DataGrid" x="147" y="191" w="663" h="536" measuredW="528" measuredH="148" zOrder="5" locked="false" isInGroup="-1">
+    <control controlID="364" controlTypeID="com.balsamiq.mockups::DataGrid" x="147" y="191" w="663" h="536" measuredW="525" measuredH="148" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Tag%2C%20Movabl%20%2CInterface%20%0Amyarg1%2C%20%20%20%20%20%20My%20Media%2C%20My%20Interface%0Amyarg2%20%20%28%5Brename%5D%29%2C%20%20%20%20%20%20My%20Function%20%28%5Bedit%5D%5C%2C%20%5Bchange%5D%29%2C%20An%20Interface%20%28%5Bedit%5D%5C%2C%20%5Bchange%5D%29%0A%2C%5BSet%20Movabl%5D%2C%5BSet%20Interface%5D</text>
         <rowHeight>40</rowHeight>
