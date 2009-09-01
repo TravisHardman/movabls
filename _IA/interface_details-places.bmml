@@ -75,12 +75,21 @@
         <icon>CartIcon%7Cxsmall</icon>
       </controlProperties>
     </control>
+    <control controlID="400" controlTypeID="com.balsamiq.mockups::IconLabel" x="467" y="306" w="-1" h="-1" measuredW="79" measuredH="22" zOrder="26" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%5BExpression%5D</text>
+        <labelPosition>right</labelPosition>
+        <size>11</size>
+        <icon>PencilIcon%7Cxsmall</icon>
+        <color>255</color>
+      </controlProperties>
+    </control>
     <control controlID="219" controlTypeID="com.balsamiq.mockups::Link" x="311" y="130" w="-1" h="-1" measuredW="34" measuredH="25" zOrder="2" locked="false" isInGroup="-1">
       <controlProperties>
         <text>meta</text>
       </controlProperties>
     </control>
-    <control controlID="364" controlTypeID="com.balsamiq.mockups::DataGrid" x="147" y="191" w="663" h="536" measuredW="525" measuredH="148" zOrder="5" locked="false" isInGroup="-1">
+    <control controlID="364" controlTypeID="com.balsamiq.mockups::DataGrid" x="147" y="191" w="663" h="536" measuredW="527" measuredH="148" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Tag%2C%20Movabl%20%2CInterface%20%0Amyarg1%2C%20%20%20%20%20%20My%20Media%2C%20My%20Interface%0Amyarg2%20%20%28%5Brename%5D%29%2C%20%20%20%20%20%20My%20Function%20%28%5Bedit%5D%5C%2C%20%5Bchange%5D%29%2C%20An%20Interface%20%28%5Bedit%5D%5C%2C%20%5Bchange%5D%29%0A%2C%5BSet%20Movabl%5D%2C%5BSet%20Interface%5D</text>
         <rowHeight>40</rowHeight>
