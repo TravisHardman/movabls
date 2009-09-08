@@ -8,6 +8,7 @@ class Movabls_Run {
     private $mvsdb; //MySQLi database handle
     private $media; //Media lambda handles
     private $functions; //Function lambda handles
+    private $places; //Place urls
     private $interfaces; //Interface objects
 
     //TODO: PHP Functions in the tree?
@@ -16,7 +17,7 @@ class Movabls_Run {
 
 	//TODO: Database Authentication and Permissions (and files for that matter)
 
-        $this->mvsdb = new mysqli('localhost','root','h4ppyf4rmers','db_ribeye');
+        $this->mvsdb = new mysqli('localhost','root','','db_filet');
         $place = $this->get_place();
 	if (!empty($place->interface_GUID))
             $this->get_interface($place->interface_GUID);
@@ -28,14 +29,14 @@ class Movabls_Run {
     }
 
     /**
-     * Takes the Request URI and determines which place to run
+     * Takes the Request URI and determines which place to run, adding it to the place array along the way
      * @return array from database
      */
     private function get_place() {
 
 	//Find correct place to use (static places [without %] take precedence over dynamic places [with %])
 	$url = $GLOBALS->_SERVER['REQUEST_URI'];
-	$result = $this->mvsdb->query("SELECT url,https,media_GUID,interface_GUID FROM `mvs_places`
+	$result = $this->mvsdb->query("SELECT place_GUID,url,https,media_GUID,interface_GUID FROM `mvs_places`
 					   WHERE ('$url' LIKE url OR '$url/' LIKE url)");
         //Logic: Look for the URL with the greatest length before a '%' sign
         $max = 0;
@@ -54,6 +55,8 @@ class Movabls_Run {
 
 	if (!isset($place))
 	    throw new Exception ('Place Not Found',404);
+
+        $this->places->{$place->place_GUID} = $place->url;
 
         if ($place->https && !$GLOBALS->_SERVER['HTTPS']) {
             header('Location: https://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
@@ -99,6 +102,10 @@ class Movabls_Run {
             elseif (isset($value->movabl_GUID) && $value->movabl_type == 'function') {
                 if (!isset($this->functions->{$value->movabl_GUID}))
                     $this->functions->{$value->movabl_GUID} = null;
+            }
+            elseif (isset($value->movabl_GUID) && $value->movabl_type == 'place') {
+                if (!isset($this->places->{$value->movabl_GUID}))
+                    $this->places->{$value->movabl_GUID} = null;
             }
             if (isset($value->tags))
                 $this->get_tags($value->tags);
@@ -192,6 +199,24 @@ class Movabls_Run {
             
         }
 
+        if (!empty($this->places)) {
+
+            $places = '';
+            foreach ($this->places as $key => $val)
+                $places .= '"'.$key.'",';
+            $places = substr($places,0,strlen($places)-1);
+
+            $result = $this->mvsdb->query("SELECT place_GUID,url FROM mvs_places
+                                           WHERE place_GUID IN ($places)");
+            if (empty($result))
+                throw new Exception ("Places Not Found",500);
+            while ($row = $result->fetch_object()) {
+                $this->places->{$row->place_GUID} = $row->url;
+            }
+            $result->free();
+
+        }
+
     }
 
     /**
@@ -205,7 +230,9 @@ class Movabls_Run {
      */
     private function run_movabl($type,$movabl_GUID,$interface_GUID,$tags = null,$toplevel = true) {
 
-	if ($type == 'function')
+	if ($type == 'place')
+            return $this->places->$movabl_GUID;
+        elseif ($type == 'function')
             $type = 'functions';
         elseif ($type != 'media')
             return false;
@@ -227,7 +254,7 @@ class Movabls_Run {
     }
 
     /**
-     * Runs tags specified at a level of an interface
+     * Runs tags specified at a level of an interface, be they movabls, toplevel tags, or expressions
      * @param <string> $interface_GUID
      * @param <StdClass> $tags = all tags to set and their instructions
      * @param <array> $inputs = tags to return
@@ -238,8 +265,13 @@ class Movabls_Run {
 
         foreach ($tags as $name => $tag) {
 
-                if (isset($tag->toplevel_tag))
+                if (isset($tag->toplevel_tag)) {
                     $tags->$name = $this->interfaces->$interface_GUID->{$tag->toplevel_tag};
+                }
+                elseif (isset($tag->expression)) {
+                    $tempfunction = create_function('',"return $tag->expression;");
+                    $tags->$name = call_user_func($tempfunction);
+                }
                 elseif (isset($tag->movabl_GUID) && isset($tag->interface_GUID))
                     $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $tag->interface_GUID);
                 elseif (isset($tag->movabl_GUID) && isset($tag->tags))

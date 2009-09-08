@@ -23,12 +23,25 @@ $content = array(
                 'movabl_type' => 'media'
             )
         )
+    ),
+    'placetag' => array(
+        'movabl_GUID' => 'NESTED_PLACE',
+        'movabl_type' => 'place'
+    ),
+    'expressiontag' => array(
+        'expression' => "'hello there'"
+    ),
+    'otherexpressiontag' => array(
+        'expression' => '(rand(0,10) > 5 ? "HIGH NUMBER!!!" : "LOW NUMBER!!!")'
+    ),
+    'finalexpressiontag' => array(
+        'expression' => '3 + 5 + 75'
     )
 );
 // */
 
 
-//*
+/*
 $content = array(
     'tripletag' => array(
         'movabl_GUID' => 'FOO_MEDIA',
