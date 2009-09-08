@@ -29,7 +29,7 @@ $content = array(
         'movabl_type' => 'place'
     ),
     'expressiontag' => array(
-        'expression' => "'hello there'"
+        'expression' => "$GLOBALS->_SERVER['REQUEST_URI']"
     ),
     'otherexpressiontag' => array(
         'expression' => '(rand(0,10) > 5 ? "HIGH NUMBER!!!" : "LOW NUMBER!!!")'
