@@ -17,9 +17,9 @@ class Movabls_Run {
 
 	//TODO: Database Authentication and Permissions (and files for that matter)
 
-        $this->mvsdb = new mysqli('localhost','root','','db_filet');
+        $this->mvsdb = new mysqli('localhost','root','h4ppyf4rmers','db_filet');
         $place = $this->get_place();
-	if (!empty($place->interface_GUID))
+        if (!empty($place->interface_GUID))
             $this->get_interface($place->interface_GUID);
         else
             $place->interface_GUID = null;
@@ -230,7 +230,7 @@ class Movabls_Run {
      */
     private function run_movabl($type,$movabl_GUID,$interface_GUID,$tags = null,$toplevel = true) {
 
-	if ($type == 'place')
+        if ($type == 'place')
             return $this->places->$movabl_GUID;
         elseif ($type == 'function')
             $type = 'functions';
@@ -243,18 +243,20 @@ class Movabls_Run {
         $movabl = $this->$type->$movabl_GUID;
 
         if (empty($movabl->inputs) || (empty($tags) && !$toplevel))
-	    $inputs = array();
+            $inputs = array();
         elseif ($toplevel)
             $inputs = $this->run_tags($interface_GUID,$this->interfaces->$interface_GUID,$movabl->inputs,true);
-	else //Run tags within interface
-	    $inputs = $this->run_tags($interface_GUID,$tags,$movabl->inputs,false);
+        else //Run tags within interface
+            $inputs = $this->run_tags($interface_GUID,$tags,$movabl->inputs,false);
 
-	return call_user_func_array($movabl->handle,$inputs);
+        return call_user_func_array($movabl->handle,$inputs);
 
     }
 
     /**
      * Runs tags specified at a level of an interface, be they movabls, toplevel tags, or expressions
+     * Runs tags in order given by the interface (even the ones that don't apply to
+     * an input), then applies them to the inputs given in the $inputs argument.
      * @param <string> $interface_GUID
      * @param <StdClass> $tags = all tags to set and their instructions
      * @param <array> $inputs = tags to return
@@ -265,24 +267,25 @@ class Movabls_Run {
 
         foreach ($tags as $name => $tag) {
 
-                if (isset($tag->toplevel_tag)) {
-                    $tags->$name = $this->interfaces->$interface_GUID->{$tag->toplevel_tag};
-                }
-                elseif (isset($tag->expression)) {
-                    $tempfunction = create_function('',"return $tag->expression;");
-                    $tags->$name = call_user_func($tempfunction);
-                }
-                elseif (isset($tag->movabl_GUID) && isset($tag->interface_GUID))
-                    $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $tag->interface_GUID);
-                elseif (isset($tag->movabl_GUID) && isset($tag->tags))
-                    $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $interface_GUID, $tag->tags, false);
-                elseif (isset($tag->movabl_GUID))
-                    $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $interface_GUID, null, false);
-                else
-                    $tags->$name = null;
+            if (isset($tag->toplevel_tag)) {
+                $tags->$name = $this->interfaces->$interface_GUID->{$tag->toplevel_tag};
+            }
+            elseif (isset($tag->expression)) {
+                $tempfunction = create_function('',"return $tag->expression;");
+                $tags->$name = call_user_func($tempfunction);
+            }
+            elseif (isset($tag->movabl_GUID) && isset($tag->interface_GUID))
+                $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $tag->interface_GUID);
+            elseif (isset($tag->movabl_GUID) && isset($tag->tags))
+                $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $interface_GUID, $tag->tags, false);
+            elseif (isset($tag->movabl_GUID))
+                $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $interface_GUID, null, false);
+            else
+                $tags->$name = null;
 
-                if ($toplevel)//if this is top-level, set the tag in $this->interfaces
-                    $this->interfaces->$interface_GUID->$name = $tags->$name;
+            if ($toplevel)//if this is top-level, set the tag in $this->interfaces
+                $this->interfaces->$interface_GUID->$name = $tags->$name;
+                
         }
 
         $return = array();
