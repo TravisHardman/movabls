@@ -44,9 +44,10 @@
         <state>up</state>
       </controlProperties>
     </control>
-    <control controlID="257" controlTypeID="com.balsamiq.mockups::ButtonBar" x="467" y="533" w="-1" h="-1" measuredW="310" measuredH="29" zOrder="59" locked="false" isInGroup="-1">
+    <control controlID="257" controlTypeID="com.balsamiq.mockups::ButtonBar" x="467" y="533" w="-1" h="-1" measuredW="371" measuredH="29" zOrder="59" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Movabl%2C%20PHP%20Expression%2C%20Re-Use%20Tag</text>
+        <text>Movabl%2C%20PHP%20Expression%2C%20Re-Use%20Tag%2C%20Placeholder</text>
+        <size>11</size>
       </controlProperties>
     </control>
     <control controlID="266" controlTypeID="com.balsamiq.mockups::Label" x="467" y="509" w="-1" h="-1" measuredW="61" measuredH="25" zOrder="58" locked="false" isInGroup="-1">
@@ -121,7 +122,7 @@
         <text>meta</text>
       </controlProperties>
     </control>
-    <control controlID="295" controlTypeID="com.balsamiq.mockups::Label" x="634" y="651" w="-1" h="-1" measuredW="62" measuredH="25" zOrder="70" locked="false" isInGroup="-1">
+    <control controlID="295" controlTypeID="com.balsamiq.mockups::Label" x="634" y="651" w="-1" h="-1" measuredW="63" measuredH="25" zOrder="70" locked="false" isInGroup="-1">
       <controlProperties>
         <text>%28optional%29</text>
       </controlProperties>
@@ -197,7 +198,7 @@
         <color>16711680</color>
       </controlProperties>
     </control>
-    <control controlID="311" controlTypeID="com.balsamiq.mockups::DataGrid" x="949" y="611" w="247" h="122" measuredW="202" measuredH="208" zOrder="82" locked="false" isInGroup="-1">
+    <control controlID="311" controlTypeID="com.balsamiq.mockups::DataGrid" x="949" y="611" w="247" h="122" measuredW="218" measuredH="208" zOrder="82" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Interfaces%20In%20This%20Interface%0A%5BInterface%5D%0A%5BInterface%5D%0A%5BInterface%5D%0A%5BInterface%5D%0A%5BInterface%5D%0A%5BInterface%5D</text>
         <verticalScrollbar>true</verticalScrollbar>
@@ -214,7 +215,7 @@
         <text>%5BAdd%20A%20Tag%5D</text>
       </controlProperties>
     </control>
-    <control controlID="210" controlTypeID="com.balsamiq.mockups::DataGrid" x="202" y="195" w="730" h="538" measuredW="510" measuredH="308" zOrder="26" locked="false" isInGroup="-1">
+    <control controlID="210" controlTypeID="com.balsamiq.mockups::DataGrid" x="202" y="195" w="730" h="538" measuredW="526" measuredH="308" zOrder="26" locked="false" isInGroup="-1">
       <controlProperties>
         <verticalScrollbar>true</verticalScrollbar>
         <text>%2CTag%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2C%20Content%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2C%0A%2CFirstTag%2C%20%20%20%20%20%20%20My%20Media%20Item%20%282%20inputs%29%0A%20%0A%20%0A%20%0A%20%0A%2CThirdTag%2C%20%5Bset%20ThirdTag%5D%0A%2CFourthTag%2C%20%20%20%20%20%20%20Foo%20Function%20%285%20inputs%29%20+%20Bar%20Interface</text>

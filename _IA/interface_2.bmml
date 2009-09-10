@@ -117,9 +117,10 @@
         <text>Content%3A</text>
       </controlProperties>
     </control>
-    <control controlID="330" controlTypeID="com.balsamiq.mockups::ButtonBar" x="427" y="331" w="-1" h="-1" measuredW="310" measuredH="29" zOrder="58" locked="false" isInGroup="-1">
+    <control controlID="330" controlTypeID="com.balsamiq.mockups::ButtonBar" x="427" y="331" w="-1" h="-1" measuredW="371" measuredH="29" zOrder="58" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Movabl%2C%20PHP%20Expression%2C%20Re-Use%20Tag</text>
+        <text>Movabl%2C%20PHP%20Expression%2C%20Re-Use%20Tag%2C%20Placeholder</text>
+        <size>11</size>
         <selectedIndex>1</selectedIndex>
       </controlProperties>
     </control>
@@ -146,7 +147,7 @@
         <text>%5BAdd%20A%20Tag%5D</text>
       </controlProperties>
     </control>
-    <control controlID="210" controlTypeID="com.balsamiq.mockups::DataGrid" x="202" y="195" w="730" h="538" measuredW="510" measuredH="468" zOrder="26" locked="false" isInGroup="-1">
+    <control controlID="210" controlTypeID="com.balsamiq.mockups::DataGrid" x="202" y="195" w="730" h="538" measuredW="526" measuredH="468" zOrder="26" locked="false" isInGroup="-1">
       <controlProperties>
         <verticalScrollbar>true</verticalScrollbar>
         <text>%2CTag%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2C%20Content%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2C%0A%2CFirstTag%2C%20%20%20%20%20%20%20My%20Media%20Item%20%282%20inputs%29%0A%20%0A%20%0A%20%0A%20%0A%20%0A%20%0A%20%0A%20%0A%2CThirdTag%2C%20%5Bset%20ThirdTag%5D%0A%2CFourthTag%2C%20%20%20%20%20%20%20Foo%20Function%20%285%20inputs%29%20+%20Bar%20Interface</text>
@@ -227,16 +228,31 @@
         <color>16711680</color>
       </controlProperties>
     </control>
-    <control controlID="221" controlTypeID="com.balsamiq.mockups::Label" x="258" y="270" w="-1" h="-1" measuredW="73" measuredH="25" zOrder="35" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>SecondTag</text>
-      </controlProperties>
+    <control controlID="101" controlTypeID="__group__" x="1070" y="353" w="-1" h="-1" measuredW="80" measuredH="66" zOrder="23" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="19" controlTypeID="com.balsamiq.mockups::Image" x="19" y="0" w="41" h="41" measuredW="141" measuredH="144" zOrder="0" locked="false" isInGroup="21"/>
+        <control controlID="20" controlTypeID="com.balsamiq.mockups::Link" x="0" y="41" w="-1" h="-1" measuredW="80" measuredH="25" zOrder="1" locked="false" isInGroup="21">
+          <controlProperties>
+            <text>Media%20Label</text>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
     </control>
     <control controlID="85" controlTypeID="com.balsamiq.mockups::DataGrid" x="949" y="172" w="247" h="149" measuredW="231" measuredH="268" zOrder="8" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Places%20That%20Use%20This%20Interface%0A%20%20%20%5B/URL%5D%0A%20%20%20%5BPlace%20Label%5D%0A%20%20%20%5B/URL%5D%0A%20%20%20%5BPlace%20Label%5D%0A%20%20%20%5B/URL%5D%0A%20%20%20%5BPlace%20Label%5D%0A%20%20%20%5B/URL%5D%0A%20%20%20%5BPlace%20Label%5D</text>
         <verticalScrollbar>true</verticalScrollbar>
       </controlProperties>
+    </control>
+    <control controlID="103" controlTypeID="__group__" x="1072" y="431" w="-1" h="-1" measuredW="80" measuredH="66" zOrder="19" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="19" controlTypeID="com.balsamiq.mockups::Image" x="19" y="0" w="41" h="41" measuredW="141" measuredH="144" zOrder="0" locked="false" isInGroup="21"/>
+        <control controlID="20" controlTypeID="com.balsamiq.mockups::Link" x="0" y="41" w="-1" h="-1" measuredW="80" measuredH="25" zOrder="1" locked="false" isInGroup="21">
+          <controlProperties>
+            <text>Media%20Label</text>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
     </control>
     <control controlID="232" controlTypeID="com.balsamiq.mockups::Icon" x="709" y="229" w="-1" h="-1" measuredW="24" measuredH="24" zOrder="40" locked="false" isInGroup="-1">
       <controlProperties>
@@ -275,15 +291,11 @@
         <text>Other%20Media%20Item%20%281%20input%29</text>
       </controlProperties>
     </control>
-    <control controlID="103" controlTypeID="__group__" x="1072" y="431" w="-1" h="-1" measuredW="80" measuredH="66" zOrder="19" locked="false" isInGroup="-1">
-      <groupChildrenDescriptors>
-        <control controlID="19" controlTypeID="com.balsamiq.mockups::Image" x="19" y="0" w="41" h="41" measuredW="141" measuredH="144" zOrder="0" locked="false" isInGroup="21"/>
-        <control controlID="20" controlTypeID="com.balsamiq.mockups::Link" x="0" y="41" w="-1" h="-1" measuredW="80" measuredH="25" zOrder="1" locked="false" isInGroup="21">
-          <controlProperties>
-            <text>Media%20Label</text>
-          </controlProperties>
-        </control>
-      </groupChildrenDescriptors>
+    <control controlID="94" controlTypeID="com.balsamiq.mockups::Icon" x="1152" y="235" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="14" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>DownLeftArrowIcon%7Cxsmall</icon>
+        <color>16744448</color>
+      </controlProperties>
     </control>
     <control controlID="104" controlTypeID="com.balsamiq.mockups::DataGrid" x="949" y="512" w="247" h="99" measuredW="206" measuredH="178" zOrder="20" locked="false" isInGroup="-1">
       <controlProperties>
@@ -318,16 +330,6 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="101" controlTypeID="__group__" x="1070" y="353" w="-1" h="-1" measuredW="80" measuredH="66" zOrder="23" locked="false" isInGroup="-1">
-      <groupChildrenDescriptors>
-        <control controlID="19" controlTypeID="com.balsamiq.mockups::Image" x="19" y="0" w="41" h="41" measuredW="141" measuredH="144" zOrder="0" locked="false" isInGroup="21"/>
-        <control controlID="20" controlTypeID="com.balsamiq.mockups::Link" x="0" y="41" w="-1" h="-1" measuredW="80" measuredH="25" zOrder="1" locked="false" isInGroup="21">
-          <controlProperties>
-            <text>Media%20Label</text>
-          </controlProperties>
-        </control>
-      </groupChildrenDescriptors>
-    </control>
     <control controlID="102" controlTypeID="__group__" x="973" y="431" w="-1" h="-1" measuredW="80" measuredH="66" zOrder="18" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
         <control controlID="19" controlTypeID="com.balsamiq.mockups::Image" x="19" y="0" w="41" h="41" measuredW="141" measuredH="144" zOrder="0" locked="false" isInGroup="21"/>
@@ -338,10 +340,9 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="94" controlTypeID="com.balsamiq.mockups::Icon" x="1152" y="235" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="14" locked="false" isInGroup="-1">
+    <control controlID="221" controlTypeID="com.balsamiq.mockups::Label" x="258" y="270" w="-1" h="-1" measuredW="73" measuredH="25" zOrder="35" locked="false" isInGroup="-1">
       <controlProperties>
-        <icon>DownLeftArrowIcon%7Cxsmall</icon>
-        <color>16744448</color>
+        <text>SecondTag</text>
       </controlProperties>
     </control>
     <control controlID="95" controlTypeID="com.balsamiq.mockups::Icon" x="1152" y="266" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="15" locked="false" isInGroup="-1">
