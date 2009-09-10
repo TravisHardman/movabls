@@ -63,7 +63,7 @@
     </control>
     <control controlID="23" controlTypeID="com.balsamiq.mockups::TextArea" x="202" y="166" w="732" h="27" measuredW="200" measuredH="140" zOrder="10" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>%20%20%20%5BArguments%5D%3A%20newarray%2CanotherInput%2CaThirdInput</text>
+        <text>%20%20%20%5BInputs%5D%3A%20newarray%2CanotherInput%2CaThirdInput</text>
         <state>disabled</state>
         <color>13158600</color>
       </controlProperties>
@@ -196,6 +196,11 @@
       <controlProperties>
         <icon>DownLeftArrowIcon%7Cxsmall</icon>
         <color>16744448</color>
+      </controlProperties>
+    </control>
+    <control controlID="47" controlTypeID="com.balsamiq.mockups::Link" x="720" y="705" w="-1" h="-1" measuredW="102" measuredH="25" zOrder="33" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Save%20And%20Close</text>
       </controlProperties>
     </control>
   </controls>
