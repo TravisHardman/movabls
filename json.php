@@ -1,5 +1,5 @@
 <?php
-//*
+/*
 $content = array(
     'mytag' => array(
         'movabl_GUID' => 'NESTED_MEDIA',
@@ -36,6 +36,10 @@ $content = array(
     ),
     'finalexpressiontag' => array(
         'expression' => '3 + 5 + 75'
+    ),
+    'phptag' => array(
+        'php' => 'date',
+        'interface_GUID' => 'MY_SUPER_INTERFACE'
     )
 );
 // */
@@ -53,6 +57,17 @@ $content = array(
 /*
 $content = array(
     "hello dogtastic"
+);
+// */
+
+//*
+$content = array(
+    'format' => array(
+        'expression' => '"m/d/Y"'
+    ),
+    'time' => array(
+        'expression' => 'time()-86400'
+    )
 );
 // */
 
