@@ -456,7 +456,7 @@
         <color>16777062</color>
       </controlProperties>
     </control>
-    <control controlID="189" controlTypeID="com.balsamiq.mockups::Label" x="952" y="573" w="166" h="24" measuredW="58" measuredH="25" zOrder="82" locked="true" isInGroup="-1">
+    <control controlID="189" controlTypeID="com.balsamiq.mockups::Label" x="952" y="573" w="166" h="24" measuredW="57" measuredH="25" zOrder="82" locked="true" isInGroup="-1">
       <controlProperties>
         <text>%5BFunction%5D</text>
       </controlProperties>
@@ -586,7 +586,7 @@
         <icon>WriteIcon%7Clarge</icon>
       </controlProperties>
     </control>
-    <control controlID="214" controlTypeID="com.balsamiq.mockups::IconLabel" x="479" y="276" w="-1" h="-1" measuredW="58" measuredH="73" zOrder="106" locked="false" isInGroup="-1">
+    <control controlID="214" controlTypeID="com.balsamiq.mockups::IconLabel" x="479" y="276" w="-1" h="-1" measuredW="57" measuredH="73" zOrder="106" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Function</text>
         <icon>GearIcon%7Clarge</icon>
@@ -699,21 +699,21 @@
         <size>10</size>
       </controlProperties>
     </control>
-    <control controlID="234" controlTypeID="com.balsamiq.mockups::Button" x="890" y="166" w="92" h="-1" measuredW="101" measuredH="28" zOrder="126" locked="false" isInGroup="-1">
+    <control controlID="234" controlTypeID="com.balsamiq.mockups::Button" x="750" y="166" w="92" h="-1" measuredW="101" measuredH="28" zOrder="126" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Create%20Function</text>
         <size>10</size>
       </controlProperties>
     </control>
-    <control controlID="235" controlTypeID="com.balsamiq.mockups::Button" x="988" y="166" w="84" h="-1" measuredW="86" measuredH="28" zOrder="127" locked="false" isInGroup="-1">
+    <control controlID="235" controlTypeID="com.balsamiq.mockups::Button" x="848" y="166" w="84" h="-1" measuredW="86" measuredH="28" zOrder="127" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Create%20Place</text>
         <size>10</size>
       </controlProperties>
     </control>
-    <control controlID="236" controlTypeID="com.balsamiq.mockups::Button" x="742" y="166" w="-1" h="-1" measuredW="141" measuredH="28" zOrder="128" locked="false" isInGroup="-1">
+    <control controlID="236" controlTypeID="com.balsamiq.mockups::Button" x="937" y="166" w="-1" h="-1" measuredW="136" measuredH="28" zOrder="128" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Create%20Media%20From%20File</text>
+        <text>Create%20Place%20From%20File</text>
         <size>10</size>
       </controlProperties>
     </control>
