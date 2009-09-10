@@ -17,7 +17,7 @@ class Movabls_Run {
 
 	//TODO: Database Authentication and Permissions (and files for that matter)
 
-        $this->mvsdb = new mysqli('localhost','root','h4ppyf4rmers','db_filet');
+        $this->mvsdb = new mysqli('localhost','root','','db_filet');
         $place = $this->get_place();
         if (!empty($place->interface_GUID))
             $this->get_interface($place->interface_GUID);
@@ -77,7 +77,9 @@ class Movabls_Run {
             $result = $this->mvsdb->query("SELECT content FROM mvs_interfaces WHERE interface_GUID = '$interface_GUID'");
             $interface = $result->fetch_object();
             $result->free();
-
+            if (empty($interface))
+                return null;
+                
             $interface = json_decode($interface->content);
             $this->interfaces->$interface_GUID = $interface;
             $this->get_tags($this->interfaces->$interface_GUID);
@@ -235,7 +237,7 @@ class Movabls_Run {
         elseif ($type == 'function')
             $type = 'functions';
         elseif ($type != 'media')
-            return false;
+            return null;
 
         if (empty($this->$type->$movabl_GUID))
             return null;
@@ -254,12 +256,34 @@ class Movabls_Run {
     }
 
     /**
+     * Runs a specified php function with the interface or tags given, similar to
+     * running a movabls function
+     * @param <string> $function = php function name
+     * @param <string> $interface_GUID
+     * @param <StdClass> $tags
+     * @param <bool> $toplevel
+     * @return <mixed> return value
+     */
+    private function run_php($function,$interface_GUID,$tags = null,$toplevel = true) {
+
+        if (empty($tags) && !$toplevel)
+            $inputs = array();
+        elseif ($toplevel)
+            $inputs = $this->run_tags($interface_GUID,$this->interfaces->$interface_GUID,null,true);
+        else //Run tags within interface
+            $inputs = $this->run_tags($interface_GUID,$tags,null,false);
+
+        return call_user_func_array($function,$inputs);
+
+    }
+
+    /**
      * Runs tags specified at a level of an interface, be they movabls, toplevel tags, or expressions
      * Runs tags in order given by the interface (even the ones that don't apply to
      * an input), then applies them to the inputs given in the $inputs argument.
      * @param <string> $interface_GUID
      * @param <StdClass> $tags = all tags to set and their instructions
-     * @param <array> $inputs = tags to return
+     * @param <array> $inputs = tags to return (null if for a php standard library function)
      * @param <bool> $toplevel = whether this is an interface top-level
      * @return <array> set inputs
      */
@@ -267,37 +291,64 @@ class Movabls_Run {
 
         foreach ($tags as $name => $tag) {
 
-            if (isset($tag->toplevel_tag)) {
+            if (isset($tag->toplevel_tag))
                 $tags->$name = $this->interfaces->$interface_GUID->{$tag->toplevel_tag};
+            elseif (isset($tag->expression))
+                $tags->$name = $this->run_expression($tag->expression);
+            elseif (isset($tag->php)) {
+                if (isset($tag->interface_GUID))
+                    $tags->$name = $this->run_php($tag->php, $tag->interface_GUID);
+                elseif (isset($tag->tags))
+                    $tags->$name = $this->run_php($tag->php, $interface_GUID, $tag->tags, false);
+                else
+                    $tags->$name = $this->run_php($tag->php, $interface_GUID, null, false);
             }
-            elseif (isset($tag->expression)) {
-                $tempfunction = create_function('',"return $tag->expression;");
-                $tags->$name = call_user_func($tempfunction);
+            elseif (isset($tag->movabl_GUID)) {
+                if (isset($tag->interface_GUID))
+                    $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $tag->interface_GUID);
+                elseif (isset($tag->tags))
+                    $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $interface_GUID, $tag->tags, false);
+                else
+                    $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $interface_GUID, null, false);
             }
-            elseif (isset($tag->movabl_GUID) && isset($tag->interface_GUID))
-                $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $tag->interface_GUID);
-            elseif (isset($tag->movabl_GUID) && isset($tag->tags))
-                $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $interface_GUID, $tag->tags, false);
-            elseif (isset($tag->movabl_GUID))
-                $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $interface_GUID, null, false);
             else
                 $tags->$name = null;
 
             if ($toplevel)//if this is top-level, set the tag in $this->interfaces
                 $this->interfaces->$interface_GUID->$name = $tags->$name;
-                
+
         }
 
         $return = array();
-        foreach ($inputs as $input) {
-            if (isset($tags->$input))
-                $return[] = $tags->$input;
-            else
-                $return[] = null;
+        //PHP standard library functions do not have defined inputs - use all tags in order
+        if ($inputs === null) {
+            foreach ($tags as $tag)
+                $return[] = $tag;
+        }
+        //Otherwise, use inputs as specified
+        else {
+            foreach ($inputs as $input) {
+                if (isset($tags->$input))
+                    $return[] = $tags->$input;
+                else
+                    $return[] = null;
+            }
         }
         
         return $return;
         
+    }
+
+    /**
+     * Runs a php expression and returns its value;
+     * @param <string> $expression - php expression
+     * @return <mixed> evaluated value
+     */
+    private function run_expression($expression) {
+
+        $tempfunction = create_function('',"return $expression;");
+        return call_user_func($tempfunction);
+
     }
 
 }
