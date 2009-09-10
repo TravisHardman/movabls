@@ -14,8 +14,8 @@
     <control controlID="2" controlTypeID="com.balsamiq.mockups::TabBar" x="190" y="91" w="1020" h="657" measuredW="757" measuredH="100" zOrder="1" locked="true" isInGroup="-1">
       <controlProperties>
         <text>Application%20Name%2C%20Media%20Name%2C%20Interface%20Name%2C%20Function%20Name%2C%20Some%20Detail%20View%2C%20Current%20Item%20%28x%29</text>
-        <selectedIndex>1</selectedIndex>
         <tabHPosition>center</tabHPosition>
+        <selectedIndex>1</selectedIndex>
       </controlProperties>
     </control>
     <control controlID="67" controlTypeID="com.balsamiq.mockups::Icon" x="1154" y="356" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="37" locked="false" isInGroup="-1">

@@ -8,8 +8,8 @@
     <control controlID="2" controlTypeID="com.balsamiq.mockups::TabBar" x="190" y="91" w="1020" h="657" measuredW="757" measuredH="100" zOrder="2" locked="true" isInGroup="-1">
       <controlProperties>
         <text>Application%20Name%2C%20Media%20Name%2C%20Interface%20Name%2C%20Function%20Name%2C%20Some%20Detail%20View%2C%20Current%20Item%20%28x%29</text>
-        <selectedIndex>-1</selectedIndex>
         <tabHPosition>center</tabHPosition>
+        <selectedIndex>-1</selectedIndex>
       </controlProperties>
     </control>
     <control controlID="4" controlTypeID="com.balsamiq.mockups::Icon" x="212" y="90" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="4" locked="true" isInGroup="-1">
@@ -33,19 +33,24 @@
       <controlProperties>
         <underline>false</underline>
         <size>14</size>
-        <color>15132390</color>
-        <text>%20%20%5BNew%20Place%5D%0A%20%20%5BImport%20File%5D</text>
-        <italic>false</italic>
         <backgroundAlpha>1</backgroundAlpha>
+        <text>%20%20%5BNew%20Place%5D%0A%20%20%5BImport%20File%5D</text>
+        <color>15132390</color>
+        <italic>false</italic>
       </controlProperties>
     </control>
-    <control controlID="15" controlTypeID="com.balsamiq.mockups::DataGrid" x="663" y="524" w="262" h="208" measuredW="117" measuredH="178" zOrder="7" locked="false" isInGroup="-1">
+    <control controlID="14" controlTypeID="com.balsamiq.mockups::SearchBox" x="966" y="163" w="198" h="-1" measuredW="135" measuredH="25" zOrder="54" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Filter/Jump_</text>
+      </controlProperties>
+    </control>
+    <control controlID="15" controlTypeID="com.balsamiq.mockups::DataGrid" x="663" y="524" w="262" h="208" measuredW="133" measuredH="178" zOrder="7" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Functions%20%28%5BNew%5D%29%0A%5BFunction%20Label%5D%0A%5BFunction%20Label%5D%0A%5BFunction%20Label%5D%0A%5BFunction%20Label%5D%0A%5BFunction%20Label%5D</text>
         <verticalScrollbar>true</verticalScrollbar>
       </controlProperties>
     </control>
-    <control controlID="16" controlTypeID="com.balsamiq.mockups::DataGrid" x="934" y="524" w="262" h="209" measuredW="131" measuredH="178" zOrder="8" locked="false" isInGroup="-1">
+    <control controlID="16" controlTypeID="com.balsamiq.mockups::DataGrid" x="934" y="524" w="262" h="209" measuredW="149" measuredH="178" zOrder="8" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Interfaces%20%28%5BNew%5D%29%0A%20%20%20%5BInterface%20Label%5D%0A%20%20%20%5BInterface%20Label%5D%0A%20%20%20%5BInterface%20Label%5D%0A%20%20%20%5BInterface%20Label%5D%0A%20%20%20%5BInterface%20Label%5D</text>
         <verticalScrollbar>true</verticalScrollbar>
@@ -140,11 +145,6 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="14" controlTypeID="com.balsamiq.mockups::SearchBox" x="966" y="163" w="198" h="-1" measuredW="135" measuredH="25" zOrder="54" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Filter/Jump_</text>
-      </controlProperties>
-    </control>
     <control controlID="36" controlTypeID="com.balsamiq.mockups::TextArea" x="368" y="288" w="202" h="150" measuredW="200" measuredH="140" zOrder="19" locked="false" isInGroup="-1">
       <controlProperties>
         <text>%20%20%20%5BPlace%20Label%5D%0A%20%20%20%5B/URL%5D</text>
@@ -207,19 +207,19 @@
       <controlProperties>
         <underline>false</underline>
         <size>14</size>
-        <align>left</align>
-        <color>15132390</color>
-        <italic>false</italic>
-        <text>%5BCommunity%5D%20%20%20%5BMy%20Movabls%5D%20%20%28%5BAccount%5D%29%20%20%20%20%20%20%20%20%20%20%5BHelp%21%5D</text>
         <backgroundAlpha>1</backgroundAlpha>
+        <color>15132390</color>
+        <text>%5BCommunity%5D%20%20%20%5BMy%20Movabls%5D%20%20%28%5BAccount%5D%29%20%20%20%20%20%20%20%20%20%20%5BHelp%21%5D</text>
+        <italic>false</italic>
+        <align>left</align>
       </controlProperties>
     </control>
     <control controlID="56" controlTypeID="com.balsamiq.mockups::TabBar" x="202" y="147" w="999" h="585" measuredW="521" measuredH="100" zOrder="1" locked="false" isInGroup="-1">
       <controlProperties>
         <text>All%20Apps%2C%20AppOne%2C%20AppTwo%20%5Bmeta%5D%2C%20AppThree%2C%20AppFour%2C%20%5BNew%20App%5D</text>
-        <selectedIndex>2</selectedIndex>
         <tabVPosition>top</tabVPosition>
         <verticalScrollbar>false</verticalScrollbar>
+        <selectedIndex>2</selectedIndex>
       </controlProperties>
     </control>
     <control controlID="59" controlTypeID="com.balsamiq.mockups::Button" x="442" y="406" w="-1" h="-1" measuredW="121" measuredH="28" zOrder="30" locked="false" isInGroup="-1">
@@ -356,10 +356,10 @@
       <controlProperties>
         <underline>false</underline>
         <italic>false</italic>
-        <color>16777215</color>
-        <size>14</size>
-        <text>%20%20%5BLibrary%20Search%5D%0A%20%20%5BAutocomplete...%5D</text>
         <backgroundAlpha>1</backgroundAlpha>
+        <size>14</size>
+        <color>16777215</color>
+        <text>%20%20%5BLibrary%20Search%5D%0A%20%20%5BAutocomplete...%5D</text>
       </controlProperties>
     </control>
   </controls>
