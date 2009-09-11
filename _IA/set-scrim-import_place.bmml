@@ -1,0 +1,96 @@
+<mockup version="1.0" skin="sketch" measuredW="1134" measuredH="784">
+  <controls>
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="100" y="10" w="-1" h="-1" measuredW="1024" measuredH="764" zOrder="0" locked="true" isInGroup="-1">
+      <controlProperties>
+        <src>../filet%20ia/interface_3.png</src>
+      </controlProperties>
+    </control>
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::ModalScreen" x="106" y="78" w="1014" h="670" measuredW="320" measuredH="240" zOrder="1" locked="true" isInGroup="-1"/>
+    <control controlID="3" controlTypeID="com.balsamiq.mockups::TitleWindow" x="243" y="138" w="748" h="561" measuredW="450" measuredH="400" zOrder="2" locked="true" isInGroup="-1">
+      <controlProperties>
+        <text>Set%20Content%20for%20Tag%20%22MyTag%22</text>
+        <topheight>26</topheight>
+        <bottomheight>0</bottomheight>
+      </controlProperties>
+    </control>
+    <control controlID="6" controlTypeID="com.balsamiq.mockups::Link" x="935" y="140" w="-1" h="-1" measuredW="45" measuredH="25" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>cancel</text>
+      </controlProperties>
+    </control>
+    <control controlID="43" controlTypeID="com.balsamiq.mockups::Button" x="441" y="339" w="60" h="-1" measuredW="58" measuredH="28" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Media</text>
+        <size>12</size>
+        <state>up</state>
+      </controlProperties>
+    </control>
+    <control controlID="44" controlTypeID="com.balsamiq.mockups::Button" x="506" y="339" w="82" h="-1" measuredW="73" measuredH="28" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Function</text>
+        <size>12</size>
+      </controlProperties>
+    </control>
+    <control controlID="45" controlTypeID="com.balsamiq.mockups::Button" x="593" y="339" w="67" h="-1" measuredW="54" measuredH="28" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Place</text>
+        <size>12</size>
+      </controlProperties>
+    </control>
+    <control controlID="46" controlTypeID="com.balsamiq.mockups::Button" x="665" y="339" w="-1" h="-1" measuredW="111" measuredH="29" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Place%20from%20File</text>
+        <size>12</size>
+        <state>selected</state>
+      </controlProperties>
+    </control>
+    <control controlID="47" controlTypeID="com.balsamiq.mockups::Label" x="441" y="278" w="-1" h="-1" measuredW="264" measuredH="34" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Create%20a%20Place%20From%20a%20File</text>
+        <size>20</size>
+      </controlProperties>
+    </control>
+    <control controlID="49" controlTypeID="com.balsamiq.mockups::Link" x="286" y="169" w="-1" h="-1" measuredW="163" measuredH="25" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%3C%20Use%20an%20existing%20Movabl</text>
+      </controlProperties>
+    </control>
+    <control controlID="50" controlTypeID="com.balsamiq.mockups::TextInput" x="451" y="400" w="309" h="-1" measuredW="55" measuredH="29" zOrder="10" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Name_</text>
+      </controlProperties>
+    </control>
+    <control controlID="52" controlTypeID="com.balsamiq.mockups::Button" x="664" y="504" w="92" h="-1" measuredW="92" measuredH="28" zOrder="11" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Select%20File</text>
+      </controlProperties>
+    </control>
+    <control controlID="53" controlTypeID="com.balsamiq.mockups::ProgressBar" x="558" y="508" w="95" h="20" measuredW="100" measuredH="20" zOrder="12" locked="false" isInGroup="-1">
+      <controlProperties>
+        <indeterminate>false</indeterminate>
+        <scrollBarValue>9</scrollBarValue>
+      </controlProperties>
+    </control>
+    <control controlID="54" controlTypeID="com.balsamiq.mockups::Label" x="449" y="375" w="-1" h="-1" measuredW="95" measuredH="25" zOrder="13" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Choose%20a%20name</text>
+      </controlProperties>
+    </control>
+    <control controlID="55" controlTypeID="com.balsamiq.mockups::TextInput" x="449" y="452" w="309" h="-1" measuredW="142" measuredH="29" zOrder="14" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>/Package/Public%20URL</text>
+      </controlProperties>
+    </control>
+    <control controlID="58" controlTypeID="com.balsamiq.mockups::Button" x="674" y="573" w="92" h="-1" measuredW="69" measuredH="28" zOrder="15" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Create%21</text>
+      </controlProperties>
+    </control>
+    <control controlID="59" controlTypeID="com.balsamiq.mockups::Image" x="454" y="481" w="64" h="63" measuredW="141" measuredH="144" zOrder="16" locked="false" isInGroup="-1"/>
+    <control controlID="60" controlTypeID="com.balsamiq.mockups::Label" x="449" y="429" w="-1" h="-1" measuredW="111" measuredH="25" zOrder="17" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Choose%20a%20location</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>
