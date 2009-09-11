@@ -44,9 +44,9 @@
         <state>up</state>
       </controlProperties>
     </control>
-    <control controlID="257" controlTypeID="com.balsamiq.mockups::ButtonBar" x="467" y="509" w="-1" h="-1" measuredW="278" measuredH="29" zOrder="55" locked="false" isInGroup="-1">
+    <control controlID="257" controlTypeID="com.balsamiq.mockups::ButtonBar" x="467" y="509" w="-1" h="-1" measuredW="181" measuredH="29" zOrder="55" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Movabl%2C%20PHP%20Expression%2C%20Re-Use%20Tag</text>
+        <text>Movabl%2C%20Value%2C%20Tag</text>
         <size>11</size>
       </controlProperties>
     </control>

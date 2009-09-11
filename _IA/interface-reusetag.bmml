@@ -112,9 +112,9 @@
         <text>cancel</text>
       </controlProperties>
     </control>
-    <control controlID="330" controlTypeID="com.balsamiq.mockups::ButtonBar" x="425" y="309" w="-1" h="-1" measuredW="278" measuredH="29" zOrder="57" locked="false" isInGroup="-1">
+    <control controlID="330" controlTypeID="com.balsamiq.mockups::ButtonBar" x="425" y="309" w="-1" h="-1" measuredW="181" measuredH="29" zOrder="57" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Movabl%2C%20PHP%20Expression%2C%20Re-Use%20Tag</text>
+        <text>Movabl%2C%20Value%2C%20Tag</text>
         <size>11</size>
         <selectedIndex>2</selectedIndex>
       </controlProperties>
@@ -136,7 +136,7 @@
         <text>%5BAdd%20A%20Tag%5D</text>
       </controlProperties>
     </control>
-    <control controlID="336" controlTypeID="com.balsamiq.mockups::Label" x="555" y="138" w="-1" h="-1" measuredW="379" measuredH="25" zOrder="61" locked="false" isInGroup="-1">
+    <control controlID="336" controlTypeID="com.balsamiq.mockups::Label" x="555" y="138" w="-1" h="-1" measuredW="379" measuredH="25" zOrder="60" locked="false" isInGroup="-1">
       <controlProperties>
         <text>This%20interface%20uses%203%20placeholders.%20%5BNeed%20help%20with%20those%3F%5D</text>
       </controlProperties>
@@ -158,9 +158,9 @@
         <text>edit</text>
       </controlProperties>
     </control>
-    <control controlID="335" controlTypeID="com.balsamiq.mockups::Paragraph" x="433" y="351" w="405" h="70" measuredW="200" measuredH="140" zOrder="60" locked="false" isInGroup="-1">
+    <control controlID="335" controlTypeID="com.balsamiq.mockups::Paragraph" x="433" y="351" w="405" h="70" measuredW="200" measuredH="140" zOrder="61" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Re-Use%20Tag%20allows%20you%20to%20re-use%20the%20content%20from%20a%20top-level%20tag%20in%20this%20interface.</text>
+        <text>You%20may%20re-use%20the%20content%20generated%20for%20a%20top-level%20tag%20in%20this%20interface.</text>
       </controlProperties>
     </control>
     <control controlID="216" controlTypeID="com.balsamiq.mockups::Image" x="433" y="227" w="27" h="27" measuredW="141" measuredH="144" zOrder="29" locked="false" isInGroup="-1"/>

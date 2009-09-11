@@ -2,7 +2,7 @@
   <controls>
     <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="100" y="10" w="-1" h="-1" measuredW="1024" measuredH="764" zOrder="0" locked="true" isInGroup="-1">
       <controlProperties>
-        <src>../filet%20ia/interface_3.png</src>
+        <src>./interface.png</src>
       </controlProperties>
     </control>
     <control controlID="2" controlTypeID="com.balsamiq.mockups::ModalScreen" x="106" y="78" w="1014" h="670" measuredW="320" measuredH="240" zOrder="1" locked="true" isInGroup="-1"/>
@@ -81,15 +81,20 @@
         <text>/Package/Public%20URL</text>
       </controlProperties>
     </control>
-    <control controlID="58" controlTypeID="com.balsamiq.mockups::Button" x="674" y="573" w="92" h="-1" measuredW="69" measuredH="28" zOrder="15" locked="false" isInGroup="-1">
-      <controlProperties>
-        <text>Create%21</text>
-      </controlProperties>
-    </control>
-    <control controlID="59" controlTypeID="com.balsamiq.mockups::Image" x="454" y="481" w="64" h="63" measuredW="141" measuredH="144" zOrder="16" locked="false" isInGroup="-1"/>
-    <control controlID="60" controlTypeID="com.balsamiq.mockups::Label" x="449" y="429" w="-1" h="-1" measuredW="111" measuredH="25" zOrder="17" locked="false" isInGroup="-1">
+    <control controlID="59" controlTypeID="com.balsamiq.mockups::Image" x="454" y="481" w="64" h="63" measuredW="141" measuredH="144" zOrder="15" locked="false" isInGroup="-1"/>
+    <control controlID="60" controlTypeID="com.balsamiq.mockups::Label" x="449" y="429" w="-1" h="-1" measuredW="111" measuredH="25" zOrder="16" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Choose%20a%20location</text>
+      </controlProperties>
+    </control>
+    <control controlID="61" controlTypeID="com.balsamiq.mockups::Button" x="556" y="578" w="-1" h="-1" measuredW="66" measuredH="28" zOrder="17" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Create</text>
+      </controlProperties>
+    </control>
+    <control controlID="62" controlTypeID="com.balsamiq.mockups::Button" x="636" y="578" w="-1" h="-1" measuredW="125" measuredH="28" zOrder="18" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Create%20and%20Edit</text>
       </controlProperties>
     </control>
   </controls>
