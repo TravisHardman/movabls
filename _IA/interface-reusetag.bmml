@@ -102,19 +102,19 @@
       </controlProperties>
     </control>
     <control controlID="326" controlTypeID="com.balsamiq.mockups::Canvas" x="425" y="337" w="434" h="134" measuredW="100" measuredH="70" zOrder="54" locked="false" isInGroup="-1"/>
-    <control controlID="327" controlTypeID="com.balsamiq.mockups::Button" x="800" y="461" w="51" h="-1" measuredW="51" measuredH="28" zOrder="55" locked="false" isInGroup="-1">
+    <control controlID="327" controlTypeID="com.balsamiq.mockups::Button" x="800" y="469" w="51" h="-1" measuredW="51" measuredH="28" zOrder="55" locked="false" isInGroup="-1">
       <controlProperties>
         <text>save</text>
       </controlProperties>
     </control>
-    <control controlID="328" controlTypeID="com.balsamiq.mockups::Link" x="748" y="467" w="-1" h="-1" measuredW="45" measuredH="25" zOrder="56" locked="false" isInGroup="-1">
+    <control controlID="328" controlTypeID="com.balsamiq.mockups::Link" x="748" y="471" w="-1" h="-1" measuredW="45" measuredH="25" zOrder="56" locked="false" isInGroup="-1">
       <controlProperties>
         <text>cancel</text>
       </controlProperties>
     </control>
-    <control controlID="330" controlTypeID="com.balsamiq.mockups::ButtonBar" x="425" y="309" w="-1" h="-1" measuredW="355" measuredH="28" zOrder="57" locked="false" isInGroup="-1">
+    <control controlID="330" controlTypeID="com.balsamiq.mockups::ButtonBar" x="425" y="309" w="-1" h="-1" measuredW="278" measuredH="29" zOrder="57" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Movabl%2C%20PHP%20Expression%2C%20Re-Use%20Tag%2C%20Placeholder</text>
+        <text>Movabl%2C%20PHP%20Expression%2C%20Re-Use%20Tag</text>
         <size>11</size>
         <selectedIndex>2</selectedIndex>
       </controlProperties>
@@ -126,7 +126,7 @@
         <color>8453888</color>
       </controlProperties>
     </control>
-    <control controlID="334" controlTypeID="com.balsamiq.mockups::ComboBox" x="465" y="429" w="348" h="-1" measuredW="86" measuredH="25" zOrder="59" locked="false" isInGroup="-1">
+    <control controlID="334" controlTypeID="com.balsamiq.mockups::ComboBox" x="465" y="405" w="348" h="-1" measuredW="86" measuredH="25" zOrder="59" locked="false" isInGroup="-1">
       <controlProperties>
         <text>FirstTag</text>
       </controlProperties>
@@ -136,10 +136,15 @@
         <text>%5BAdd%20A%20Tag%5D</text>
       </controlProperties>
     </control>
-    <control controlID="210" controlTypeID="com.balsamiq.mockups::DataGrid" x="202" y="195" w="730" h="538" measuredW="526" measuredH="468" zOrder="26" locked="false" isInGroup="-1">
+    <control controlID="336" controlTypeID="com.balsamiq.mockups::Label" x="555" y="138" w="-1" h="-1" measuredW="379" measuredH="25" zOrder="61" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>This%20interface%20uses%203%20placeholders.%20%5BNeed%20help%20with%20those%3F%5D</text>
+      </controlProperties>
+    </control>
+    <control controlID="210" controlTypeID="com.balsamiq.mockups::DataGrid" x="202" y="195" w="730" h="538" measuredW="524" measuredH="468" zOrder="26" locked="false" isInGroup="-1">
       <controlProperties>
         <verticalScrollbar>true</verticalScrollbar>
-        <text>%2CTag%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2C%20Content%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2C%0A%2CFirstTag%2C%20%20%20%20%20%20%20My%20Media%20Item%20%282%20inputs%29%0A%20%0A%20%0A%20%0A%20%0A%20%0A%20%0A%20%0A%20%0A%2CThirdTag%2C%20%5Bset%20ThirdTag%5D%0A%2CFourthTag%2C%20%20%20%20%20%20%20Foo%20Function%20%285%20inputs%29%20+%20Bar%20Interface</text>
+        <text>%2CTag%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2C%20Content%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2C%0A%2CFirstTag%2C%20%20%20%20%20%20%20%5BMy%20Media%20Item%5D%20%282%20inputs%29%0A%20%0A%20%0A%20%0A%20%0A%20%0A%20%0A%20%0A%20%0A%2CThirdTag%2C%20%5Bset%20ThirdTag%5D%0A%2CFourthTag%2C%20%20%20%20%20%20%20%5BFoo%20Function%5D%20%285%20inputs%29%20+%20%5BBar%20Interface%5D</text>
         <rowHeight>40</rowHeight>
       </controlProperties>
     </control>
@@ -155,7 +160,7 @@
     </control>
     <control controlID="335" controlTypeID="com.balsamiq.mockups::Paragraph" x="433" y="351" w="405" h="70" measuredW="200" measuredH="140" zOrder="60" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Re-Use%20Tag%20allows%20you%20to%20re-use%20the%20content%20from%20a%20top-level%20tag%20in%20this%20interface%2C%20as%20long%20as%20that%20tag%20comes%20before%20this%20one.%20%20Select%20a%20tag%20below%3A</text>
+        <text>Re-Use%20Tag%20allows%20you%20to%20re-use%20the%20content%20from%20a%20top-level%20tag%20in%20this%20interface.</text>
       </controlProperties>
     </control>
     <control controlID="216" controlTypeID="com.balsamiq.mockups::Image" x="433" y="227" w="27" h="27" measuredW="141" measuredH="144" zOrder="29" locked="false" isInGroup="-1"/>
@@ -190,7 +195,7 @@
     </control>
     <control controlID="222" controlTypeID="com.balsamiq.mockups::Label" x="467" y="270" w="-1" h="-1" measuredW="149" measuredH="25" zOrder="36" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>My%20Function%20%283%20inputs%29</text>
+        <text>%5BMy%20Function%5D%20%283%20inputs%29</text>
       </controlProperties>
     </control>
     <control controlID="223" controlTypeID="com.balsamiq.mockups::Canvas" x="206" y="263" w="708" h="322" measuredW="100" measuredH="70" zOrder="30" locked="false" isInGroup="-1">
@@ -282,7 +287,7 @@
     </control>
     <control controlID="238" controlTypeID="com.balsamiq.mockups::Label" x="467" y="510" w="-1" h="-1" measuredW="180" measuredH="25" zOrder="44" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Other%20Media%20Item%20%281%20input%29</text>
+        <text>%5BOther%20Media%20Item%5D%20%281%20input%29</text>
       </controlProperties>
     </control>
     <control controlID="85" controlTypeID="com.balsamiq.mockups::DataGrid" x="949" y="172" w="247" h="149" measuredW="231" measuredH="268" zOrder="8" locked="false" isInGroup="-1">

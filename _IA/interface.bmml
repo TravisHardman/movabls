@@ -44,9 +44,9 @@
         <state>up</state>
       </controlProperties>
     </control>
-    <control controlID="257" controlTypeID="com.balsamiq.mockups::ButtonBar" x="467" y="509" w="-1" h="-1" measuredW="355" measuredH="28" zOrder="55" locked="false" isInGroup="-1">
+    <control controlID="257" controlTypeID="com.balsamiq.mockups::ButtonBar" x="467" y="509" w="-1" h="-1" measuredW="278" measuredH="29" zOrder="55" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Movabl%2C%20PHP%20Expression%2C%20Re-Use%20Tag%2C%20Placeholder</text>
+        <text>Movabl%2C%20PHP%20Expression%2C%20Re-Use%20Tag</text>
         <size>11</size>
       </controlProperties>
     </control>
@@ -66,9 +66,9 @@
         <icon>GearIcon%7Csmall</icon>
       </controlProperties>
     </control>
-    <control controlID="274" controlTypeID="com.balsamiq.mockups::Label" x="641" y="580" w="-1" h="-1" measuredW="195" measuredH="25" zOrder="58" locked="false" isInGroup="-1">
+    <control controlID="274" controlTypeID="com.balsamiq.mockups::Label" x="641" y="580" w="-1" h="-1" measuredW="149" measuredH="25" zOrder="58" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>My%20Function%20%5B3%20inputs%5D%20%28%5Bdetails%5D%29</text>
+        <text>%5BMy%20Function%5D%20%283%20inputs%29</text>
       </controlProperties>
     </control>
     <control controlID="275" controlTypeID="com.balsamiq.mockups::Label" x="483" y="581" w="-1" h="-1" measuredW="115" measuredH="25" zOrder="59" locked="false" isInGroup="-1">
@@ -200,6 +200,11 @@
         <size>11</size>
       </controlProperties>
     </control>
+    <control controlID="319" controlTypeID="com.balsamiq.mockups::Label" x="555" y="138" w="-1" h="-1" measuredW="379" measuredH="25" zOrder="81" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>This%20interface%20uses%203%20placeholders.%20%5BNeed%20help%20with%20those%3F%5D</text>
+      </controlProperties>
+    </control>
     <control controlID="69" controlTypeID="com.balsamiq.mockups::DataGrid" x="949" y="321" w="247" h="191" measuredW="187" measuredH="28" zOrder="6" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Media%20In%20This%20Interface</text>
@@ -211,10 +216,10 @@
         <text>%5BAdd%20A%20Tag%5D</text>
       </controlProperties>
     </control>
-    <control controlID="210" controlTypeID="com.balsamiq.mockups::DataGrid" x="202" y="195" w="730" h="538" measuredW="526" measuredH="308" zOrder="24" locked="false" isInGroup="-1">
+    <control controlID="210" controlTypeID="com.balsamiq.mockups::DataGrid" x="202" y="195" w="730" h="538" measuredW="524" measuredH="308" zOrder="24" locked="false" isInGroup="-1">
       <controlProperties>
         <verticalScrollbar>true</verticalScrollbar>
-        <text>%2CTag%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2C%20Content%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2C%0A%2CFirstTag%2C%20%20%20%20%20%20%20My%20Media%20Item%20%282%20inputs%29%0A%20%0A%20%0A%20%0A%20%0A%2CThirdTag%2C%20%5Bset%20ThirdTag%5D%0A%2CFourthTag%2C%20%20%20%20%20%20%20Foo%20Function%20%285%20inputs%29%20+%20Bar%20Interface</text>
+        <text>%2CTag%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2C%20Content%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2C%0A%2CFirstTag%2C%20%20%20%20%20%20%20%20%5BMy%20Media%20Item%5D%20%282%20inputs%29%0A%20%0A%20%0A%20%0A%20%0A%2CThirdTag%2C%20%5Bset%20ThirdTag%5D%0A%2CFourthTag%2C%20%20%20%20%20%20%20%5BFoo%20Function%5D%20%285%20inputs%29%20+%20%5BBar%20Interface%5D</text>
         <rowHeight>40</rowHeight>
       </controlProperties>
     </control>
@@ -260,7 +265,7 @@
     </control>
     <control controlID="222" controlTypeID="com.balsamiq.mockups::Label" x="467" y="270" w="-1" h="-1" measuredW="149" measuredH="25" zOrder="34" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>My%20Function%20%283%20inputs%29</text>
+        <text>%5BMy%20Function%5D%20%283%20inputs%29</text>
       </controlProperties>
     </control>
     <control controlID="223" controlTypeID="com.balsamiq.mockups::Canvas" x="206" y="263" w="708" h="160" measuredW="100" measuredH="70" zOrder="28" locked="false" isInGroup="-1">
@@ -351,7 +356,7 @@
     </control>
     <control controlID="238" controlTypeID="com.balsamiq.mockups::Label" x="467" y="350" w="-1" h="-1" measuredW="180" measuredH="25" zOrder="45" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Other%20Media%20Item%20%281%20input%29</text>
+        <text>%5BOther%20Media%20Item%5D%20%281%20input%29</text>
       </controlProperties>
     </control>
     <control controlID="94" controlTypeID="com.balsamiq.mockups::Icon" x="1152" y="235" w="-1" h="-1" measuredW="16" measuredH="16" zOrder="14" locked="false" isInGroup="-1">

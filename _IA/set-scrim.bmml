@@ -1,8 +1,8 @@
 <mockup version="1.0" skin="sketch" measuredW="1134" measuredH="784">
   <controls>
-    <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="100" y="10" w="-1" h="-1" measuredW="1024" measuredH="764" zOrder="0" locked="true" isInGroup="-1">
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="100" y="10" w="-1" h="-1" measuredW="1024" measuredH="764" zOrder="0" locked="false" isInGroup="-1">
       <controlProperties>
-        <src>./interface_3.png</src>
+        <src>./interface.png</src>
       </controlProperties>
     </control>
     <control controlID="2" controlTypeID="com.balsamiq.mockups::ModalScreen" x="106" y="78" w="1014" h="670" measuredW="320" measuredH="240" zOrder="1" locked="true" isInGroup="-1"/>
@@ -203,7 +203,7 @@
         <icon>WriteIcon%7Clarge</icon>
       </controlProperties>
     </control>
-    <control controlID="37" controlTypeID="com.balsamiq.mockups::CheckBox" x="774" y="429" w="163" h="18" measuredW="62" measuredH="18" zOrder="36" locked="false" isInGroup="-1">
+    <control controlID="37" controlTypeID="com.balsamiq.mockups::CheckBox" x="774" y="429" w="163" h="18" measuredW="61" measuredH="18" zOrder="36" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Media</text>
         <state>selected</state>
