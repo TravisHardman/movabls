@@ -5,9 +5,9 @@
         <text>cancel</text>
       </controlProperties>
     </control>
-    <control controlID="353" controlTypeID="com.balsamiq.mockups::ButtonBar" x="493" y="386" w="-1" h="-1" measuredW="247" measuredH="29" zOrder="13" locked="false" isInGroup="-1">
+    <control controlID="353" controlTypeID="com.balsamiq.mockups::ButtonBar" x="493" y="386" w="-1" h="-1" measuredW="225" measuredH="29" zOrder="13" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Movabl%2C%20Value%2C%20Background%20Tag</text>
+        <text>Movabl%2C%20Value%2C%20Output%20Tag</text>
         <size>11</size>
         <selectedIndex>2</selectedIndex>
       </controlProperties>
@@ -24,7 +24,7 @@
     </control>
     <control controlID="356" controlTypeID="com.balsamiq.mockups::Paragraph" x="501" y="428" w="405" h="70" measuredW="200" measuredH="140" zOrder="16" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>You%20may%20re-use%20the%20content%20generated%20by%20any%20of%20the%20background%20tags%20in%20this%20interface.</text>
+        <text>You%20may%20re-use%20the%20content%20generated%20by%20any%20of%20the%20output%20tags%20in%20this%20interface.</text>
       </controlProperties>
     </control>
     <control controlID="340" controlTypeID="com.balsamiq.mockups::Canvas" x="274" y="158" w="708" h="203" measuredW="100" measuredH="70" zOrder="0" locked="false" isInGroup="-1">
@@ -40,9 +40,9 @@
         <text>save</text>
       </controlProperties>
     </control>
-    <control controlID="343" controlTypeID="com.balsamiq.mockups::ButtonBar" x="495" y="164" w="-1" h="-1" measuredW="247" measuredH="29" zOrder="3" locked="false" isInGroup="-1">
+    <control controlID="343" controlTypeID="com.balsamiq.mockups::ButtonBar" x="495" y="164" w="-1" h="-1" measuredW="225" measuredH="29" zOrder="3" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Movabl%2C%20Value%2C%20Background%20Tag</text>
+        <text>Movabl%2C%20Value%2C%20Output%20Tag</text>
         <size>11</size>
         <selectedIndex>1</selectedIndex>
       </controlProperties>

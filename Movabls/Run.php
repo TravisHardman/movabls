@@ -11,13 +11,11 @@ class Movabls_Run {
     private $places; //Place urls
     private $interfaces; //Interface objects
 
-    //TODO: PHP Functions in the tree?
-
     public function __construct() {
 
-	//TODO: Database Authentication and Permissions (and files for that matter)
+        //TODO: Database Authentication and Permissions (and files for that matter)
 
-        $this->mvsdb = new mysqli('localhost','root','','db_filet');
+        $this->mvsdb = new mysqli('localhost','root','h4ppyf4rmers','db_filet');
         $place = $this->get_place();
         if (!empty($place->interface_GUID))
             $this->get_interface($place->interface_GUID);
@@ -34,9 +32,9 @@ class Movabls_Run {
      */
     private function get_place() {
 
-	//Find correct place to use (static places [without %] take precedence over dynamic places [with %])
-	$url = $GLOBALS->_SERVER['REQUEST_URI'];
-	$result = $this->mvsdb->query("SELECT place_GUID,url,https,media_GUID,interface_GUID FROM `mvs_places`
+        //Find correct place to use (static places [without %] take precedence over dynamic places [with %])
+        $url = $GLOBALS->_SERVER['REQUEST_URI'];
+        $result = $this->mvsdb->query("SELECT place_GUID,url,https,media_GUID,interface_GUID FROM `mvs_places`
 					   WHERE ('$url' LIKE url OR '$url/' LIKE url)");
         //Logic: Look for the URL with the greatest length before a '%' sign
         $max = 0;
@@ -50,11 +48,11 @@ class Movabls_Run {
                 $max = $static;
                 $place = $row;
             }
-	}
+        }
         $result->free();
 
-	if (!isset($place))
-	    throw new Exception ('Place Not Found',404);
+        if (!isset($place))
+            throw new Exception ('Place Not Found',404);
 
         $this->places->{$place->place_GUID} = $place->url;
 
@@ -82,7 +80,7 @@ class Movabls_Run {
                 
             $interface = json_decode($interface->content);
             $this->interfaces->$interface_GUID = $interface;
-            $this->get_tags($this->interfaces->$interface_GUID);
+            $this->get_tags($interface);
         }
 
     }
@@ -256,28 +254,6 @@ class Movabls_Run {
     }
 
     /**
-     * Runs a specified php function with the interface or tags given, similar to
-     * running a movabls function
-     * @param <string> $function = php function name
-     * @param <string> $interface_GUID
-     * @param <StdClass> $tags
-     * @param <bool> $toplevel
-     * @return <mixed> return value
-     */
-    private function run_php($function,$interface_GUID,$tags = null,$toplevel = true) {
-
-        if (empty($tags) && !$toplevel)
-            $inputs = array();
-        elseif ($toplevel)
-            $inputs = $this->run_tags($interface_GUID,$this->interfaces->$interface_GUID,null,true);
-        else //Run tags within interface
-            $inputs = $this->run_tags($interface_GUID,$tags,null,false);
-
-        return call_user_func_array($function,$inputs);
-
-    }
-
-    /**
      * Runs tags specified at a level of an interface, be they movabls, toplevel tags, or expressions
      * Runs tags in order given by the interface (even the ones that don't apply to
      * an input), then applies them to the inputs given in the $inputs argument.
@@ -295,14 +271,6 @@ class Movabls_Run {
                 $tags->$name = $this->interfaces->$interface_GUID->{$tag->toplevel_tag};
             elseif (isset($tag->expression))
                 $tags->$name = $this->run_expression($tag->expression);
-            elseif (isset($tag->php)) {
-                if (isset($tag->interface_GUID))
-                    $tags->$name = $this->run_php($tag->php, $tag->interface_GUID);
-                elseif (isset($tag->tags))
-                    $tags->$name = $this->run_php($tag->php, $interface_GUID, $tag->tags, false);
-                else
-                    $tags->$name = $this->run_php($tag->php, $interface_GUID, null, false);
-            }
             elseif (isset($tag->movabl_GUID)) {
                 if (isset($tag->interface_GUID))
                     $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $tag->interface_GUID);
