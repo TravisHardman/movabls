@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 3.1.1
+-- version 2.11.6
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Sep 10, 2009 at 12:07 AM
--- Server version: 5.1.30
--- PHP Version: 5.2.8
+-- Generation Time: Sep 14, 2009 at 05:28 PM
+-- Server version: 5.0.51
+-- PHP Version: 5.2.6
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
@@ -25,12 +25,12 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 -- Table structure for table `mvs_functions`
 --
 
-CREATE TABLE IF NOT EXISTS `mvs_functions` (
-  `function_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `mvs_functions` (
+  `function_id` int(11) NOT NULL auto_increment,
   `function_GUID` varchar(512) NOT NULL,
   `inputs` text NOT NULL,
   `content` text NOT NULL,
-  PRIMARY KEY (`function_id`)
+  PRIMARY KEY  (`function_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
 
 --
@@ -49,11 +49,11 @@ INSERT INTO `mvs_functions` (`function_id`, `function_GUID`, `inputs`, `content`
 -- Table structure for table `mvs_interfaces`
 --
 
-CREATE TABLE IF NOT EXISTS `mvs_interfaces` (
-  `interface_id` int(11) NOT NULL AUTO_INCREMENT,
-  `interface_GUID` varchar(512) CHARACTER SET latin1 NOT NULL,
-  `content` text CHARACTER SET latin1 NOT NULL,
-  PRIMARY KEY (`interface_id`)
+CREATE TABLE `mvs_interfaces` (
+  `interface_id` int(11) NOT NULL auto_increment,
+  `interface_GUID` varchar(512) character set latin1 NOT NULL,
+  `content` text character set latin1 NOT NULL,
+  PRIMARY KEY  (`interface_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=7 ;
 
 --
@@ -72,13 +72,13 @@ INSERT INTO `mvs_interfaces` (`interface_id`, `interface_GUID`, `content`) VALUE
 -- Table structure for table `mvs_media`
 --
 
-CREATE TABLE IF NOT EXISTS `mvs_media` (
-  `media_id` int(11) NOT NULL AUTO_INCREMENT,
-  `media_GUID` varchar(512) CHARACTER SET latin1 NOT NULL,
-  `mimetype` varchar(512) CHARACTER SET latin1 NOT NULL,
-  `inputs` text CHARACTER SET latin1 NOT NULL,
+CREATE TABLE `mvs_media` (
+  `media_id` int(11) NOT NULL auto_increment,
+  `media_GUID` varchar(512) character set latin1 NOT NULL,
+  `mimetype` varchar(512) character set latin1 NOT NULL,
+  `inputs` text character set latin1 NOT NULL,
   `content` longblob NOT NULL,
-  PRIMARY KEY (`media_id`)
+  PRIMARY KEY  (`media_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=11 ;
 
 --
@@ -101,14 +101,14 @@ INSERT INTO `mvs_media` (`media_id`, `media_GUID`, `mimetype`, `inputs`, `conten
 -- Table structure for table `mvs_meta`
 --
 
-CREATE TABLE IF NOT EXISTS `mvs_meta` (
-  `meta_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `mvs_meta` (
+  `meta_id` int(11) NOT NULL auto_increment,
   `movabls_GUID` varchar(512) NOT NULL,
-  `movabls_type` enum('application','place','interface','function','media','function_input','media_input') NOT NULL,
-  `input_name` varchar(512) DEFAULT NULL,
+  `movabls_type` enum('package','place','interface','function','media','function_input','media_input','interface_output') NOT NULL,
+  `tag_name` varchar(512) default NULL,
   `key` varchar(512) NOT NULL,
   `value` text NOT NULL,
-  PRIMARY KEY (`meta_id`)
+  PRIMARY KEY  (`meta_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
@@ -122,14 +122,14 @@ CREATE TABLE IF NOT EXISTS `mvs_meta` (
 -- Table structure for table `mvs_places`
 --
 
-CREATE TABLE IF NOT EXISTS `mvs_places` (
-  `place_id` int(11) NOT NULL AUTO_INCREMENT,
-  `place_GUID` varchar(512) CHARACTER SET latin1 NOT NULL,
-  `url` varchar(512) CHARACTER SET latin1 NOT NULL,
+CREATE TABLE `mvs_places` (
+  `place_id` int(11) NOT NULL auto_increment,
+  `place_GUID` varchar(512) character set latin1 NOT NULL,
+  `url` varchar(512) character set latin1 NOT NULL,
   `https` tinyint(1) NOT NULL,
-  `media_GUID` varchar(512) CHARACTER SET latin1 NOT NULL,
-  `interface_GUID` varchar(512) CHARACTER SET latin1 DEFAULT NULL,
-  PRIMARY KEY (`place_id`)
+  `media_GUID` varchar(512) character set latin1 NOT NULL,
+  `interface_GUID` varchar(512) character set latin1 default NULL,
+  PRIMARY KEY  (`place_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=12 ;
 
 --

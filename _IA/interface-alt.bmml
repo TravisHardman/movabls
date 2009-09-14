@@ -5,16 +5,16 @@
         <text>cancel</text>
       </controlProperties>
     </control>
-    <control controlID="353" controlTypeID="com.balsamiq.mockups::ButtonBar" x="493" y="386" w="-1" h="-1" measuredW="225" measuredH="29" zOrder="13" locked="false" isInGroup="-1">
+    <control controlID="353" controlTypeID="com.balsamiq.mockups::ButtonBar" x="493" y="386" w="-1" h="-1" measuredW="200" measuredH="29" zOrder="13" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Movabl%2C%20Value%2C%20Output%20Tag</text>
+        <text>Movabl%2C%20Value%2C%20Output</text>
         <size>11</size>
         <selectedIndex>2</selectedIndex>
       </controlProperties>
     </control>
     <control controlID="354" controlTypeID="com.balsamiq.mockups::Paragraph" x="280" y="386" w="200" h="184" measuredW="200" measuredH="140" zOrder="14" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Tag%20Name%3A%20_FooTag_%0AParent%3A%20_My%20Function_%0AType%3A%20_string_%0ADescription%3A%20_This%20is%20the%20description%20for%20this%20tag%2C%20as%20specified%20in%20the%20inputs%20of%20its%20parent%20function_</text>
+        <text>Output%20Name%3A%20_FooTag_%0AParent%3A%20_My%20Function_%0AType%3A%20_string_%0ADescription%3A%20_This%20is%20the%20description%20for%20this%20tag%2C%20as%20specified%20in%20the%20inputs%20of%20its%20parent%20function_</text>
       </controlProperties>
     </control>
     <control controlID="355" controlTypeID="com.balsamiq.mockups::ComboBox" x="533" y="488" w="348" h="-1" measuredW="86" measuredH="25" zOrder="15" locked="false" isInGroup="-1">
@@ -24,7 +24,7 @@
     </control>
     <control controlID="356" controlTypeID="com.balsamiq.mockups::Paragraph" x="501" y="428" w="405" h="70" measuredW="200" measuredH="140" zOrder="16" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>You%20may%20re-use%20the%20content%20generated%20by%20any%20of%20the%20output%20tags%20in%20this%20interface.</text>
+        <text>You%20may%20re-use%20the%20content%20generated%20by%20any%20of%20the%20previous%20outputs%20in%20this%20interface.</text>
       </controlProperties>
     </control>
     <control controlID="340" controlTypeID="com.balsamiq.mockups::Canvas" x="274" y="158" w="708" h="203" measuredW="100" measuredH="70" zOrder="0" locked="false" isInGroup="-1">
@@ -40,9 +40,9 @@
         <text>save</text>
       </controlProperties>
     </control>
-    <control controlID="343" controlTypeID="com.balsamiq.mockups::ButtonBar" x="495" y="164" w="-1" h="-1" measuredW="225" measuredH="29" zOrder="3" locked="false" isInGroup="-1">
+    <control controlID="343" controlTypeID="com.balsamiq.mockups::ButtonBar" x="495" y="164" w="-1" h="-1" measuredW="200" measuredH="29" zOrder="3" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Movabl%2C%20Value%2C%20Output%20Tag</text>
+        <text>Movabl%2C%20Value%2C%20Output</text>
         <size>11</size>
         <selectedIndex>1</selectedIndex>
       </controlProperties>
@@ -54,7 +54,7 @@
     </control>
     <control controlID="345" controlTypeID="com.balsamiq.mockups::Paragraph" x="280" y="166" w="200" h="184" measuredW="200" measuredH="140" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
-        <text>Tag%20Name%3A%20_FooTag_%0AParent%3A%20_My%20Function_%0AType%3A%20_string_%0ADescription%3A%20_This%20is%20the%20description%20for%20this%20tag%2C%20as%20specified%20in%20the%20inputs%20of%20its%20parent%20function_</text>
+        <text>Output%20Name%3A%20_FooTag_%0AParent%3A%20_My%20Function_%0AType%3A%20_string_%0ADescription%3A%20_This%20is%20the%20description%20for%20this%20tag%2C%20as%20specified%20in%20the%20inputs%20of%20its%20parent%20function_</text>
       </controlProperties>
     </control>
     <control controlID="346" controlTypeID="com.balsamiq.mockups::Link" x="823" y="330" w="-1" h="-1" measuredW="45" measuredH="25" zOrder="6" locked="false" isInGroup="-1">

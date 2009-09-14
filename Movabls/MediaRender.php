@@ -17,12 +17,12 @@ class Movabls_MediaRender {
      * @param $available = available tags in interface
      */
     public function __construct($view,$available) {
-	 $this->intags = array();
-	 $view = str_replace ('%', '%%',$view);
-	 $view = str_replace ('<?', "<? echo '<?'; %1\$s",$view);
-	 $view = str_replace ('?>', "<? echo '?>'; ?>",$view);
-	 $view = sprintf($view,'?>');
-	 $view = str_replace ('%', '%%',$view);
+        $this->intags = array();
+        $view = str_replace ('%', '%%',$view);
+        $view = str_replace ('<?', "<? echo '<?'; %1\$s",$view);
+        $view = str_replace ('?>', "<? echo '?>'; ?>",$view);
+        $view = sprintf($view,'?>');
+        $view = str_replace ('%', '%%',$view);
         $this->extract_tags($view);
         $this->available = $available;
         foreach ($this->intags as $tag) {
@@ -37,8 +37,15 @@ class Movabls_MediaRender {
      * @param $view = view content
      */
     private function extract_tags($view) {
+        //If the first character is a tag (doesn't work with regex below because
+        //of escape character test
+        if (substr($view,0,2) == '{{') {
+            preg_match("/{{.*?}}/",$view,$tag); //matches first {{x}}
+            $this->intags[] = $tag[0];
+            $view = preg_replace("/{{.*?}}/",'%s',$view,1);
+        }
         //have to do these one at a time in order to test for "\" escape character and deal with that
-        while(preg_match("/[^\\\]{{.*?}}/",$view,$tag) > 0) { //matches .{x} but not \{x}
+        while(preg_match("/[^\\\]{{.*?}}/",$view,$tag) > 0) { //matches .{{x}} but not \{{x}}
             $this->intags[] = substr($tag[0],1);
             $fill = substr($tag[0],0,1);
             $view = preg_replace("/[^\\\]{{.*?}}/",$fill.'%s',$view,1);

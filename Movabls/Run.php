@@ -134,34 +134,29 @@ class Movabls_Run {
                                        WHERE media_GUID IN ($media)");
         if (empty($result))
             throw new Exception ("No Media Found",500);
+
         while ($row = $result->fetch_object()) {
 
             $content_mime_type=split("/",$row->mimetype);
 
-            if ($content_mime_type[0]=="text")
-              $row->content = json_decode($row->content);
-            else 
-               $row->content  = (binary)$row->content;
-
-
-           $row->inputs = json_decode($row->inputs);
-
+            if ($content_mime_type[0]!="text")
+                $row->content  = (binary)$row->content;
+                
+            $row->inputs = json_decode($row->inputs);
             if (empty($row->inputs)) {
                 $row->inputs = array();
                 $argstring = '';
             }
             else
                 $argstring = '$'.implode(',$',$row->inputs);
-
+                
             $renderer = new Movabls_MediaRender($row->content,$row->inputs);
 
-            if ($content_mime_type[0]=="text"){
-
-
-              $code = 'ob_start(); ?>'.$renderer->output.'<?php return ob_get_clean();';
-            }else{ 
-              $safe_binary_string = base64_encode($renderer->output);
-              $code = "return base64_decode(\"$safe_binary_string\");";
+            if ($content_mime_type[0]=="text")
+                $code = 'ob_start(); ?>'.$renderer->output.'<?php return ob_get_clean();';
+            else{ 
+                $safe_binary_string = base64_encode($renderer->output);
+                $code = "return base64_decode(\"$safe_binary_string\");";
             }
 
             $this->media->{$row->media_GUID} = new StdClass();
