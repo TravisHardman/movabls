@@ -139,7 +139,7 @@ class Movabls_Run {
 
             $content_mime_type=split("/",$row->mimetype);
 
-            if ($content_mime_type[0]!="text")
+            if ($content_mime_type[0] != "text")
                 $row->content  = (binary)$row->content;
                 
             $row->inputs = json_decode($row->inputs);
@@ -152,7 +152,7 @@ class Movabls_Run {
                 
             $renderer = new Movabls_MediaRender($row->content,$row->inputs);
 
-            if ($content_mime_type[0]=="text")
+            if ($content_mime_type[0] == "text")
                 $code = 'ob_start(); ?>'.$renderer->output.'<?php return ob_get_clean();';
             else{ 
                 $safe_binary_string = base64_encode($renderer->output);
