@@ -24,7 +24,12 @@
         <state>up</state>
       </controlProperties>
     </control>
-    <control controlID="17" controlTypeID="com.balsamiq.mockups::Label" x="202" y="128" w="187" h="34" measuredW="146" measuredH="34" zOrder="4" locked="false" isInGroup="-1">
+    <control controlID="63" controlTypeID="com.balsamiq.mockups::Icon" x="202" y="129" w="-1" h="-1" measuredW="32" measuredH="32" zOrder="45" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>GearIcon%7Cmedium</icon>
+      </controlProperties>
+    </control>
+    <control controlID="17" controlTypeID="com.balsamiq.mockups::Label" x="242" y="128" w="187" h="34" measuredW="146" measuredH="34" zOrder="4" locked="false" isInGroup="-1">
       <controlProperties>
         <size>20</size>
         <text>Function%20Name</text>
@@ -237,7 +242,7 @@
         <color>16777062</color>
       </controlProperties>
     </control>
-    <control controlID="59" controlTypeID="com.balsamiq.mockups::Label" x="330" y="254" w="-1" h="-1" measuredW="23" measuredH="25" zOrder="41" locked="false" isInGroup="-1">
+    <control controlID="59" controlTypeID="com.balsamiq.mockups::Label" x="330" y="254" w="-1" h="-1" measuredW="22" measuredH="25" zOrder="41" locked="false" isInGroup="-1">
       <controlProperties>
         <text>%28%5B%3F%5D%29</text>
       </controlProperties>
@@ -252,7 +257,7 @@
         <icon>CursorIcon%7Csmall</icon>
       </controlProperties>
     </control>
-    <control controlID="62" controlTypeID="com.balsamiq.mockups::Label" x="352" y="136" w="-1" h="-1" measuredW="118" measuredH="25" zOrder="44" locked="false" isInGroup="-1">
+    <control controlID="62" controlTypeID="com.balsamiq.mockups::Label" x="392" y="136" w="-1" h="-1" measuredW="117" measuredH="25" zOrder="44" locked="false" isInGroup="-1">
       <controlProperties>
         <text>%5Bmeta%5D%20%7C%20%5Bpermissions%5D</text>
       </controlProperties>
