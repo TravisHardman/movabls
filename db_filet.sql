@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Sep 14, 2009 at 05:28 PM
+-- Generation Time: Sep 18, 2009 at 05:49 PM
 -- Server version: 5.0.51
 -- PHP Version: 5.2.6
 
@@ -42,6 +42,23 @@ INSERT INTO `mvs_functions` (`function_id`, `function_GUID`, `inputs`, `content`
 (2, 'triplefunction', '', 'return "triplefunction";'),
 (3, 'placeList', '', '$link = mysqli_connect(''localhost'',''root'',''h4ppyf4rmers'',''db_ribeye'');\r\n\r\nif (mysqli_connect_errno()) {\r\n    printf("Connect failed: %s\\n", mysqli_connect_error());\r\n    exit();\r\n}\r\n\r\n$query = "SELECT * FROM `mvs_places`";\r\n$result = mysqli_query($link, $query);\r\n\r\n\r\n\r\nif ($result = mysqli_query($link, $query)) {\r\n\r\n    while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC) ) \r\n        $resultsAr[]=$row;\r\n    \r\n\r\n    mysqli_free_result($result);\r\n}\r\n\r\n\r\n\r\nreturn $resultsAr;\r\n'),
 (4, 'GLOBALS', '', 'return $GLOBALS->GLOBALS["HTTP_SERVER_VARS"];');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mvs_groups`
+--
+
+CREATE TABLE `mvs_groups` (
+  `group_id` int(11) NOT NULL auto_increment,
+  `group_GUID` varchar(512) NOT NULL,
+  PRIMARY KEY  (`group_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `mvs_groups`
+--
+
 
 -- --------------------------------------------------------
 
@@ -104,7 +121,7 @@ INSERT INTO `mvs_media` (`media_id`, `media_GUID`, `mimetype`, `inputs`, `conten
 CREATE TABLE `mvs_meta` (
   `meta_id` int(11) NOT NULL auto_increment,
   `movabls_GUID` varchar(512) NOT NULL,
-  `movabls_type` enum('package','place','interface','function','media','function_input','media_input','interface_output') NOT NULL,
+  `movabls_type` enum('package','place','interface','function','media','function_input','media_input','interface_output','group') NOT NULL,
   `tag_name` varchar(512) default NULL,
   `key` varchar(512) NOT NULL,
   `value` text NOT NULL,
@@ -113,6 +130,27 @@ CREATE TABLE `mvs_meta` (
 
 --
 -- Dumping data for table `mvs_meta`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mvs_permissions`
+--
+
+CREATE TABLE `mvs_permissions` (
+  `permission_id` int(11) NOT NULL auto_increment,
+  `group_GUID` varchar(512) NOT NULL,
+  `movabl_type` enum('package','place','interface','media','function') NOT NULL,
+  `movabl_GUID` varchar(512) NOT NULL,
+  `permission_type` enum('read','write','execute') NOT NULL,
+  `inheritance` text NOT NULL COMMENT 'permission_ids from which this one is derived',
+  PRIMARY KEY  (`permission_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `mvs_permissions`
 --
 
 
@@ -145,3 +183,23 @@ INSERT INTO `mvs_places` (`place_id`, `place_GUID`, `url`, `https`, `media_GUID`
 (8, 'bin', '/bin', 0, 'binmedia', NULL),
 (9, 'NESTED_PLACE', '/this/is/a/nested/url', 0, '12345', NULL),
 (10, 'abcdefg', '/testmedia', 0, 'TEST_MEDIA', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mvs_sessions`
+--
+
+CREATE TABLE `mvs_sessions` (
+  `session_id` int(11) NOT NULL auto_increment,
+  `hash` varchar(512) NOT NULL,
+  `user_GUID` varchar(512) NOT NULL,
+  `expiration` datetime default NULL,
+  `userdata` text NOT NULL,
+  PRIMARY KEY  (`session_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `mvs_sessions`
+--
+
