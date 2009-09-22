@@ -15,7 +15,7 @@ class Movabls_Run {
 
         //TODO: Database Authentication and Permissions (and files for that matter)
 
-        $this->mvsdb = new mysqli('localhost','root','h4ppyf4rmers','db_api');
+        $this->mvsdb = new mysqli('localhost','root','h4ppyf4rmers','db_filet');
         $place = $this->get_place();
         if (!empty($place->interface_GUID))
             $this->get_interface($place->interface_GUID);
