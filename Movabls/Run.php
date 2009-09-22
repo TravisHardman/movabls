@@ -33,7 +33,7 @@ class Movabls_Run {
     private function get_place() {
 
         //Find correct place to use (static places [without %] take precedence over dynamic places [with %])
-        $url = $GLOBALS->_SERVER['REQUEST_URI'];
+        $url = $this->mvsdb->real_escape_string($GLOBALS->_SERVER['REQUEST_URI']);
         $result = $this->mvsdb->query("SELECT place_GUID,url,https,media_GUID,interface_GUID FROM `mvs_places`
 					   WHERE ('$url' LIKE url OR '$url/' LIKE url)");
         //Logic: Look for the URL with the greatest length before a '%' sign
@@ -72,6 +72,7 @@ class Movabls_Run {
     private function get_interface($interface_GUID) {
 
         if (!isset($this->interfaces->$interface_GUID)) {
+            $interface_GUID = $this->mvsdb->real_escape_string($interface_GUID);
             $result = $this->mvsdb->query("SELECT content FROM mvs_interfaces WHERE interface_GUID = '$interface_GUID'");
             $interface = $result->fetch_object();
             $result->free();
@@ -125,10 +126,9 @@ class Movabls_Run {
         if (!isset($this->media->$primary_GUID))
             $this->media->$primary_GUID = null;
 
-        $media = '';
         foreach ($this->media as $key => $val)
-            $media .= '"'.$key.'",';
-        $media = substr($media,0,strlen($media)-1);
+            $media[] = $this->mvsdb->real_escape_string($key);
+        $media = '"'.implode('","',$media).'"';
 
         $result = $this->mvsdb->query("SELECT media_GUID,inputs,mimetype,content FROM mvs_media
                                        WHERE media_GUID IN ($media)");
@@ -169,10 +169,9 @@ class Movabls_Run {
 
         if (!empty($this->functions)) {
             
-            $functions = '';
             foreach ($this->functions as $key => $val)
-                $functions .= '"'.$key.'",';
-            $functions = substr($functions,0,strlen($functions)-1);
+                $functions[] = $this->mvsdb->real_escape_string($key);
+            $functions = '"'.implode('","',$functions).'"';
 
             $result = $this->mvsdb->query("SELECT function_GUID,inputs,content FROM mvs_functions
                                            WHERE function_GUID IN ($functions)");
@@ -196,10 +195,9 @@ class Movabls_Run {
 
         if (!empty($this->places)) {
 
-            $places = '';
             foreach ($this->places as $key => $val)
-                $places .= '"'.$key.'",';
-            $places = substr($places,0,strlen($places)-1);
+                $places[] = $this->mvsdb->real_escape_string($key);
+            $places = '"'.implode('","',$places).'"';
 
             $result = $this->mvsdb->query("SELECT place_GUID,url FROM mvs_places
                                            WHERE place_GUID IN ($places)");

@@ -26,7 +26,7 @@ class Movabls {
         $mvsdb = Movabls::db_link();
         $result = $mvsdb->query("SELECT * FROM `mvs_places` ORDER BY url ASC");
         if(empty($result))
-            return array();
+            return new StdClass();
 
         while ($row = $result->fetch_object()) {
             $ids[] = $row->place_GUID;
@@ -53,6 +53,8 @@ class Movabls {
     public static function get_movabl($movabl_type, $movabl_guid) {
 
         $mvsdb = Movabls::db_link();
+        $movabl_type = $mvsdb->real_escape_string($movabl_type);
+        $movabl_guid = $mvsdb->real_escape_string($movabl_guid);
 
         if($movabl_type == 'media')
             $table = 'media';
@@ -70,7 +72,7 @@ class Movabls {
         $result->free();
 
         $meta = Movabls::get_meta($movabl_type,$movabl_guid,$mvsdb);
-        $movabl->meta = $meta->$movabl_guid;
+        $movabl->meta = isset($meta->$movabl_guid) ? $meta->$movabl_guid : new StdClass();
 
         switch ($movabl_type) {
             case 'interface':
@@ -99,27 +101,34 @@ class Movabls {
         if (empty($mvsdb))
             $mvsdb = Movabls::db_link();
 
-        $meta = array();
+        $meta = new StdClass();
 
         $query = "SELECT * FROM `mvs_meta`";
+
         if (!empty($guids)) {
             if (!is_array($guids))
                 $guids = array($guids);
+            foreach($guids as $k => $guid)
+                $guids[$k] = $mvsdb->real_escape_string($guid);
             $in_string = "'".implode("','",$guids)."'";
             $where[] = "movabls_GUID IN ($in_string)";
         }
+
         if (!empty($types)) {
             if (!is_array($types))
                 $types = array($types);
+            foreach($types as $k => $type)
+                $types[$k] = $mvsdb->real_escape_string($type);
             $in_string = "'".implode("','",$types)."'";
             $where[] = "movabls_type IN ($in_string)";
         }
+
         if (!empty($where))
             $query .= " WHERE ".implode(' AND ',$where);
         $result = $mvsdb->query($query);
 
         if (empty($result))
-            return array();
+            return $meta;
 
         while($row = $result->fetch_object()) {
             $meta->{$row->movabls_GUID}->{$row->key} = $row->value;
@@ -162,11 +171,9 @@ class Movabls {
 	
     }
 
-    public static function set_media() {
+    public static function set_movabl($type,$movabl_guid,$data) {
 	
-        $media_id = substr($GLOBALS->_SERVER['REQUEST_URI'],15);
-        $content = utf8_encode($GLOBALS->_POST["content"]);
-        $content = addslashes($content);
+        $data['content'] = utf8_encode($data['content']);
 
         $mvsdb = Movabls::db_link();
         $query = "UPDATE `mvs_media` SET content = '$content' WHERE media_GUID = '$media_id'";
