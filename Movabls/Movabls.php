@@ -7,12 +7,7 @@ class Movabls {
 
     public static function Get_Apps() {
 
-        $link = mysqli_connect('localhost','root','h4ppyf4rmers','db_api');
-        if (mysqli_connect_errno()) {
-            printf("Connect failed: %s\n", mysqli_connect_error());
-            exit();
-        }
-
+        $link = Movabls::db_link();
         $query = "SELECT DISTINCT app_GUID FROM `mvs_places` WHERE NOT app_GUID = '' ";
         $result = mysqli_query($link, $query);
 
@@ -42,12 +37,7 @@ class Movabls {
 
     public static function Get_Places() {
 	
-        $link = mysqli_connect('localhost','root','h4ppyf4rmers','db_api');
-        if (mysqli_connect_errno()) {
-            printf("Connect failed: %sn", mysqli_connect_error());
-            exit();
-        }
-
+        $link = Movabls::db_link();
         $query = "SELECT * FROM `mvs_places` ORDER BY url ASC ";
         $appset = Array();
         $apps_string = "";
@@ -99,12 +89,7 @@ class Movabls {
 
     public static function Get_Movabls($filter) {
 	
-        $link = mysqli_connect('localhost','root','h4ppyf4rmers','db_api');
-        if (mysqli_connect_errno()) {
-            printf("Connect failed: %s\n", mysqli_connect_error());
-            exit();
-        }
-
+        $link = Movabls::db_link();
         $filter_query = Array();
         $filter_query[""] = "movabl_type = 'media' OR movabl_type = 'function' OR movabl_type = 'interface'";
         $filter_query["media"] = "movabl_type = 'media'";
@@ -133,17 +118,11 @@ class Movabls {
 
     public static function Get_Place() {
 
-        $place_id = substr($GLOBALS->GLOBALS["HTTP_SERVER_VARS"]["REQUEST_URI"],11);
+        $place_id = substr($GLOBALS->_SERVER['REQUEST_URI'],11);
         if ($place_id == "")
             $place_id = "api";
 
-        $link = mysqli_connect('localhost','root','h4ppyf4rmers','db_api');
-
-        if (mysqli_connect_errno()) {
-            printf("Connect failed: %sn", mysqli_connect_error());
-            exit();
-        }
-
+        $link = Movabls::db_link();
         $query = "SELECT * FROM `mvs_places` WHERE place_GUID = '$place_id' ORDER BY url ASC";
         $result = mysqli_query($link, $query);
 
@@ -168,16 +147,11 @@ class Movabls {
 
     public static function Get_Media() {
 	
-        $media_id = substr($GLOBALS->GLOBALS["HTTP_SERVER_VARS"]["REQUEST_URI"],11);
+        $media_id = substr($GLOBALS->_SERVER['REQUEST_URI'],11);
         if ($media_id == "")
             $media_id = "percentmedia";
 
-        $link = mysqli_connect('localhost','root','h4ppyf4rmers','db_api');
-        if (mysqli_connect_errno()) {
-            printf("Connect failed: %s\n", mysqli_connect_error());
-            exit();
-        }
-
+        $link = Movabls::db_link();
         $query = "SELECT * FROM `mvs_media` WHERE media_GUID = '$media_id'";
         $result = mysqli_query($link, $query);
 
@@ -206,16 +180,11 @@ class Movabls {
 
     public static function Get_Function() {
 	
-	$function_id = substr($GLOBALS->GLOBALS["HTTP_SERVER_VARS"]["REQUEST_URI"],14);
+	$function_id = substr($GLOBALS->_SERVER['REQUEST_URI'],14);
         if ($function_id == "")
             $function_id = "Get_Media";
 
-        $link = mysqli_connect('localhost','root','h4ppyf4rmers','db_api');
-        if (mysqli_connect_errno()) {
-            printf("Connect failed: %s\n", mysqli_connect_error());
-            exit();
-        }
-
+        $link = Movabls::db_link();
         $query = "SELECT * FROM `mvs_functions` WHERE function_GUID = '$function_id'";
         $result = mysqli_query($link, $query);
 
@@ -244,16 +213,11 @@ class Movabls {
 
     public static function Get_Interface() {
 	
-	$interface_id = substr($GLOBALS->GLOBALS["HTTP_SERVER_VARS"]["REQUEST_URI"],15);
+	$interface_id = substr($GLOBALS->_SERVER['REQUEST_URI'],15);
         if ($interface_id == "")
             $interface_id = "TEST_INT";
 
-        $link = mysqli_connect('localhost','root','h4ppyf4rmers','db_api');
-        if (mysqli_connect_errno()) {
-            printf("Connect failed: %s\n", mysqli_connect_error());
-            exit();
-        }
-
+        $link = Movabls::db_link();
         $query = "SELECT * FROM `mvs_interfaces` WHERE interface_GUID = '$interface_id'";
         $result = mysqli_query($link, $query);
 
@@ -283,16 +247,11 @@ class Movabls {
 	
     public static function Set_Place() {
 	
-        $place_id = substr($GLOBALS->GLOBALS["HTTP_SERVER_VARS"]["REQUEST_URI"],11);
+        $place_id = substr($GLOBALS->_SERVER['REQUEST_URI'],11);
         if ($place_id == "")
             $place_id = "api";
 
-        $link = mysqli_connect('localhost','root','h4ppyf4rmers','db_api');
-        if (mysqli_connect_errno()) {
-            printf("Connect failed: %s\n", mysqli_connect_error());
-            exit();
-        }
-
+        $link = Movabls::db_link();
         $query = "SELECT * FROM `mvs_places` WHERE place_GUID = '$place_id'";
         $result = mysqli_query($link, $query);
 
@@ -317,16 +276,11 @@ class Movabls {
 
     public static function Set_Media() {
 	
-        $media_id = substr($GLOBALS->GLOBALS["HTTP_SERVER_VARS"]["REQUEST_URI"],15);
-        $content = utf8_encode($GLOBALS->GLOBALS["HTTP_POST_VARS"]["content"]);
+        $media_id = substr($GLOBALS->_SERVER['REQUEST_URI'],15);
+        $content = utf8_encode($GLOBALS->_POST["content"]);
         $content = addslashes($content);
 
-        $link = mysqli_connect('localhost','root','h4ppyf4rmers','db_api');
-        if (mysqli_connect_errno()) {
-            printf("Connect failed: %s\n", mysqli_connect_error());
-            exit();
-        }
-
+        $link = Movabls::db_link();
         $query = "UPDATE `mvs_media` SET content = '$content' WHERE media_GUID = '$media_id'";
         $result = mysqli_query($link, $query);
         $timestamp = date("H:i:s");
@@ -336,16 +290,11 @@ class Movabls {
 
     public static function Set_Function() {
 	
-        $function_id = substr($GLOBALS->GLOBALS["HTTP_SERVER_VARS"]["REQUEST_URI"],18);
-        $content = utf8_encode ($GLOBALS->GLOBALS["HTTP_POST_VARS"]["content"]);
+        $function_id = substr($GLOBALS->_SERVER['REQUEST_URI'],18);
+        $content = utf8_encode ($GLOBALS->_POST["content"]);
         $content = addslashes($content);
 
-        $link = mysqli_connect('localhost','root','h4ppyf4rmers','db_api');
-        if (mysqli_connect_errno()) {
-            printf("Connect failed: %sn", mysqli_connect_error());
-            exit();
-        }
-
+        $link = Movabls::db_link();
         $query = "UPDATE `mvs_functions` SET content = '$content' WHERE function_GUID = '$function_id'";
         $result = mysqli_query($link, $query);
         $timestamp = date("H:i:s");
@@ -356,21 +305,25 @@ class Movabls {
 
 	public static function Set_Interface() {
 	
-	$interface_id = substr($GLOBALS->GLOBALS["HTTP_SERVER_VARS"]["REQUEST_URI"],19);
-        $content = utf8_encode ($GLOBALS->GLOBALS["HTTP_POST_VARS"]["content"]);
+	$interface_id = substr($GLOBALS->_SERVER['REQUEST_URI'],19);
+        $content = utf8_encode ($GLOBALS->_POST["content"]);
         $content = addslashes($content);
 
-        $link = mysqli_connect('localhost','root','h4ppyf4rmers','db_api');
-        if (mysqli_connect_errno()) {
-            printf("Connect failed: %s\n", mysqli_connect_error());
-            exit();
-        }
-
+        $link = Movabls::db_link();
         $query = "UPDATE `mvs_interfaces` SET content = '$content' WHERE interface_GUID = '$interface_id'";
         $result = mysqli_query($link, $query);
         $timestamp = date("H:i:s");
         return  "success! $timestamp";
 	
+    }
+
+    private function db_link() {
+        $link = mysqli_connect('localhost','root','h4ppyf4rmers','db_api');
+        if (mysqli_connect_errno()) {
+            printf("Connect failed: %s\n", mysqli_connect_error());
+            exit();
+        }
+        return $link;
     }
 
 }
