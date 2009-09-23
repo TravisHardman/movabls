@@ -4,28 +4,34 @@
  */
 
 function __autoload($name) {
+
     if ($name == "Movabls")
-	$name = "Movabls_Movabls";
+        $name = "Movabls_Movabls";
     $fname = str_replace('_','/',$name);
     if (file_exists($fname.'.php'))
-	require_once($fname.'.php');
+        require_once($fname.'.php');
     else
-	throw new Exception ("Class $name not found",500);
+        throw new Exception ("Class $name not found",500);
+    
 }
 
 try {
-//Override all superglobals with read-only variants
+
+    //Override all superglobals with read-only variants
     $GLOBALS = new Movabls_Globals();
     unset($_SERVER,$_GET,$_POST,$_FILES,$_COOKIE,$_SESSION,$_REQUEST,$_ENV);
     //Run it!
     new Movabls_Run;
+
 } catch (Exception $e) {
+
     //TODO: Set up the ability for people to create error places
     switch ($e->getCode()) {
         default: header("HTTP/1.1 404 ".$e->getMessage(),true,404);break;
     //default: header("HTTP/1.1 500 ".$e->getMessage(),true,500);break;
     }
     die($e->getMessage());
+    
 }
 
 /*

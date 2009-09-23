@@ -29,8 +29,6 @@ class Movabls {
             return new StdClass();
 
         while ($row = $result->fetch_object()) {
-            foreach($row as $k => $v)
-                $row->$k = stripslashes($v);
             $ids[] = $row->place_GUID;
             $places->{$row->place_GUID} = $row;
             $places->{$row->place_GUID}->meta = array();
@@ -66,8 +64,6 @@ class Movabls {
             throw new Exception ("Movabl ($movabl_type: $movabl_guid) not found");
 
         $movabl = $result->fetch_object();
-        foreach($movabl as $k => $v)
-            $movabl->$k = stripslashes($v);
             
         $result->free();
 
@@ -131,8 +127,6 @@ class Movabls {
             return $meta;
 
         while($row = $result->fetch_object()) {
-            foreach($row as $k => $v)
-                $row->$k = stripslashes($v);
             $meta->{$row->movabls_GUID}->{$row->key} = $row->value;
         }
 
@@ -171,7 +165,8 @@ class Movabls {
             $movabl_guid = $data["{$movabl_type}_guid"];
         }
 
-        Movabls::set_meta($meta,$movabl_type,$movabl_guid,$mvsdb);
+        if (!empty($meta))
+            Movabls::set_meta($meta,$movabl_type,$movabl_guid,$mvsdb);
 
         return true;
 	
@@ -194,12 +189,13 @@ class Movabls {
             $mvsdb = Movabls::db_link();
 
         $old_meta = Movabls::get_meta($movabl_type,$movabl_guid);
+        $old_meta = $old_meta->$movabl_guid;
 
         foreach ($new_meta as $new_k => $new_v) {
-            if (isset($old_meta[$new_k])) {
-                if ($old_meta[$new_k] != $new_v)
+            if (isset($old_meta->$new_k)) {
+                if ($old_meta->$new_k != $new_v)
                     $updates[$new_k] = $new_v;
-                unset($old_meta[$new_k]);
+                unset($old_meta->$new_k);
             }
             else
                 $inserts[$new_k] = $new_v;
@@ -210,13 +206,19 @@ class Movabls {
         $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
         $sanitized_type = $mvsdb->real_escape_string($movabl_type);
 
-        foreach ($inserts as $k => $v)
-            $mvsdb->query("INSERT INTO `mvs_meta` (`movabls_GUID`,`movabls_type`,`tag_name`,`key`,`value`) VALUES ('$sanitized_guid','$sanitized_type',NULL,'$k','$v')");
-        foreach ($updates as $k => $v)
-            $mvsdb->query("UPDATE `mvs_meta` SET value = '$v' WHERE movabls_type = '$sanitized_type' AND movabls_GUID = '$sanitized_guid' AND key = '$k'");
-        foreach ($old_meta as $k => $v)
-            $mvsdb->query("DELETE FROM `mvs_meta` WHERE movabls_type = '$sanitized_type' AND movabls_GUID = '$sanitized_guid' AND key = '$k'");
-
+        if (!empty($inserts)) {
+            foreach ($inserts as $k => $v)
+                $mvsdb->query("INSERT INTO `mvs_meta` (`movabls_GUID`,`movabls_type`,`tag_name`,`key`,`value`) VALUES ('$sanitized_guid','$sanitized_type',NULL,'$k','$v')");
+        }
+        if (!empty($updates)) {
+            foreach ($updates as $k => $v)
+                $mvsdb->query("UPDATE `mvs_meta` SET `value` = '$v' WHERE `movabls_type` = '$sanitized_type' AND `movabls_GUID` = '$sanitized_guid' AND `key` = '$k'");
+        }
+        if (!empty($old_meta)) {
+            foreach ($old_meta as $k => $v)
+                $mvsdb->query("DELETE FROM `mvs_meta` WHERE `movabls_type` = '$sanitized_type' AND `movabls_GUID` = '$sanitized_guid' AND `key` = '$k'");
+        }
+        
         return true;
         
     }
@@ -231,18 +233,21 @@ class Movabls {
      */
     private static function sanitize_data($movabl_type,$data,$mvsdb) {
 
+        if (empty($data))
+            return $data;
+            
         switch($movabl_type) {
             case 'media':
                 $data = array(
                     'mimetype'      => $mvsdb->real_escape_string($data['mimetype']),
                     'inputs'        => $mvsdb->real_escape_string(json_encode($data['inputs'])),
-                    'content'       => $mvsdb->real_escape_string(uft8_encode($data['content']))
+                    'content'       => $mvsdb->real_escape_string(utf8_encode($data['content']))
                 );
                 break;
             case 'function':
                 $data = array(
                     'inputs'        => $mvsdb->real_escape_string(json_encode($data['inputs'])),
-                    'content'       => $mvsdb->real_escape_string(uft8_encode($data['content']))
+                    'content'       => $mvsdb->real_escape_string(utf8_encode($data['content']))
                 );
                 break;
             case 'interface':
