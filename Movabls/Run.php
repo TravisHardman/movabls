@@ -137,10 +137,10 @@ class Movabls_Run {
 
         while ($row = $result->fetch_object()) {
 
-            $content_mime_type=split("/",$row->mimetype);
+            $content_mime_type = split("/",$row->mimetype);
 
             if ($content_mime_type[0] != "text")
-                $row->content  = (binary)$row->content;
+                $row->content = (binary)$row->content;
                 
             $row->inputs = json_decode($row->inputs);
             if (empty($row->inputs)) {

@@ -56,12 +56,7 @@ class Movabls {
         $movabl_type = $mvsdb->real_escape_string($movabl_type);
         $movabl_guid = $mvsdb->real_escape_string($movabl_guid);
 
-        if($movabl_type == 'media')
-            $table = 'media';
-        elseif (in_array($movabl_type,array('place','interface','function')))
-            $table = $movabl_type.'s';
-        else
-            throw new Exception ('Please specify a valid type of Movabl');
+        $table = Movabls::table_name($movabl_type);
             
         $result = $mvsdb->query("SELECT * FROM `mvs_$table` WHERE {$movabl_type}_GUID = '$movabl_guid'");
 
@@ -130,86 +125,145 @@ class Movabls {
         if (empty($result))
             return $meta;
 
-        while($row = $result->fetch_object()) {
+        while($row = $result->fetch_object())
             $meta->{$row->movabls_GUID}->{$row->key} = $row->value;
-        }
 
         $result->free();
 
         return $meta;
 
     }
-	
-    //TODO: The rest of this
 
-    public static function set_place() {
+    /**
+     * Runs an update or insert that sets the specified movabl with this data
+     * @param string $movabl_type
+     * @param array $data
+     * @param string $movabl_guid
+     * @return string = message
+     */
+    public static function set_movabl($movabl_type,$data,$movabl_guid = null) {
 	
-        $place_id = substr($GLOBALS->_SERVER['REQUEST_URI'],11);
-        if ($place_id == "")
-            $place_id = "api";
-
         $mvsdb = Movabls::db_link();
-        $query = "SELECT * FROM `mvs_places` WHERE place_GUID = '$place_id'";
-        $result = mysqli_query($mvsdb, $query);
+        $meta = $data['meta'];
+        $data = Movabls::sanitize_data($movabl_type,$data,$mvsdb);
+        $table = Movabls::table_name($movabl_type);
 
-        if ($result = mysqli_query($mvsdb, $query)) {
-            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC))
-                $movabl_array = $row;
+        if (!empty($movabl_guid)) {
+            $datastring = Movabls::generate_datastring('update',$data);
+            $result = $mvsdb->query("UPDATE `mvs_$table` SET $datastring WHERE {$movabl_type}_GUID = '$movabl_id'");
         }
-        mysqli_free_result($result);
-
-        $query = "SELECT * FROM `mvs_meta` WHERE (movabl_GUID = '$place_id' AND movabl_type = 'place')";
-        $result = mysqli_query($mvsdb, $query);
-
-        if ($result = mysqli_query($mvsdb, $query)) {
-            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC) )
-                $movabl_array[$row["name"]] = $row["content"];
-            mysqli_free_result($result);
+        else {
+            $data['movabl_guid'] = Movabls::generate_guid($movabl_type);
+            $datastring = Movabls::generate_datastring('insert',$data);
+            $result = $mvsdb->query("INSERT INTO `mvs_$table` $datastring");
+            $movabl_guid = $data['movabl_guid'];
         }
-        
-        return $movabl_array;
+
+        //TODO: Be more uniform with returns and throws from these functions
+        //All errors should be thrown, selects should return data, inserts should
+        //return true
+        Movabls::set_meta($meta,$movabl_guid);
+
+        return true;
 	
     }
 
-    public static function set_movabl($type,$movabl_guid,$data) {
-	
-        $data['content'] = utf8_encode($data['content']);
-
-        $mvsdb = Movabls::db_link();
-        $query = "UPDATE `mvs_media` SET content = '$content' WHERE media_GUID = '$media_id'";
-        $result = mysqli_query($mvsdb, $query);
-        $timestamp = date("H:i:s");
-        return  "success! $timestamp";
-	
+    public static function set_meta($data,$movabl_guid) {
+        //TODO
     }
 
-    public static function set_function() {
-	
-        $function_id = substr($GLOBALS->_SERVER['REQUEST_URI'],18);
-        $content = utf8_encode ($GLOBALS->_POST["content"]);
-        $content = addslashes($content);
+    /**
+     * Takes an array of data for a specified type of Movabl and sanitizes it to
+     * match the correct columns and be safe for the sql query
+     * @param string $movabl_type
+     * @param array $data
+     * @param mysqli handle $mvsdb
+     * @return array 
+     */
+    private static function sanitize_data($movabl_type,$data,$mvsdb) {
+        switch($movabl_type) {
+            case 'media':
+                $data = array(
+                    'mimetype'      => $mvsdb->real_escape_string($data['mimetype']),
+                    'inputs'        => $mvsdb->real_escape_string(json_encode($data['inputs'])),
+                    'content'       => $mvsdb->real_escape_string(uft8_encode($data['content']))
+                );
+                break;
+            case 'function':
+                $data = array(
+                    'inputs'        => $mvsdb->real_escape_string(json_encode($data['inputs'])),
+                    'content'       => $mvsdb->real_escape_string(uft8_encode($data['content']))
+                );
+                break;
+            case 'interface':
+                $data = array(
+                    'content'       => $mvsdb->real_escape_string(json_encode($data['content']))
+                );
+                break;
+            case 'place':
+                $data = array(
+                    'url'           => $mvsdb->real_escape_string(urlencode($data['url'])),
+                    'https'         => $data['https'] ? '1' : '0',
+                    'media_GUID'    => $mvsdb->real_escape_string($data['media_GUID']),
+                    'interface_GUID'=> $mvsdb->real_escape_string($data['interface_GUID'])
+                );
+                break;
+            case 'meta':
 
-        $mvsdb = Movabls::db_link();
-        $query = "UPDATE `mvs_functions` SET content = '$content' WHERE function_GUID = '$function_id'";
-        $result = mysqli_query($mvsdb, $query);
-        $timestamp = date("H:i:s");
-
-        return  "success! $timestamp";
-	
+                break;
+            default:
+                throw new Exception('Incorrect Movabl Type');
+                break;
+        }
+        return $data;
     }
 
-	public static function set_interface() {
-	
-        $interface_id = substr($GLOBALS->_SERVER['REQUEST_URI'],19);
-        $content = utf8_encode ($GLOBALS->_POST["content"]);
-        $content = addslashes($content);
+    private static function generate_guid($movabl_type) {
+        //TODO: this function.  remember that guid should reflect the site it was created on
+        //to ensure global uniqueness - what if a matching guid was created on this site
+        //and then deleted?  is there a better way to check uniqueness?
+    }
 
-        $mvsdb = Movabls::db_link();
-        $query = "UPDATE `mvs_interfaces` SET content = '$content' WHERE interface_GUID = '$interface_id'";
-        $result = mysqli_query($mvsdb, $query);
-        $timestamp = date("H:i:s");
-        return  "success! $timestamp";
-	
+    /**
+     * Takes an array of sanitized data and prepares it as a string sql update or insert
+     * @param string $query_type
+     * @param array $data
+     * @return string
+     */
+    private static function generate_datastring($query_type,$data) {
+        if (empty($data))
+            throw new Exception ('No Data Provided for '.uc_first($query_type));
+        if ($query_type == 'update') {
+            $datastring = '';
+            $i = 1;
+            foreach ($data as $k => $v) {
+                $datastring = $i==1 ? '' : ',';
+                $datastring = " `$k` = '$v'";
+                $i++;
+            }
+        }
+        elseif ($query_type == 'insert') {
+            $datastring = '(`'.implode("`,`",array_keys($data)).'`) VALUES ';
+            $datastring .= "('".implode("','",array_values($data))."')";
+        }
+        else
+            throw new Exception ('Datastring Generator Only Works for Updates and Inserts');
+        return $datastring;
+    }
+
+    /**
+     * Gets the name of the table associated with a type of movabl
+     * @param string $movabl_type
+     * @return string 
+     */
+    private static function table_name($movabl_type) {
+        if($movabl_type == 'media')
+            $table = 'media';
+        elseif (in_array($movabl_type,array('place','interface','function')))
+            $table = $movabl_type.'s';
+        else
+            throw new Exception ('Please specify a valid type of Movabl');
+        return $table;
     }
     
     /**
