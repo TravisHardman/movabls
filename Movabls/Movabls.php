@@ -29,6 +29,8 @@ class Movabls {
             return new StdClass();
 
         while ($row = $result->fetch_object()) {
+            foreach($row as $k => $v)
+                $row->$k = stripslashes($v);
             $ids[] = $row->place_GUID;
             $places->{$row->place_GUID} = $row;
             $places->{$row->place_GUID}->meta = array();
@@ -64,6 +66,9 @@ class Movabls {
             throw new Exception ("Movabl ($movabl_type: $movabl_guid) not found");
 
         $movabl = $result->fetch_object();
+        foreach($movabl as $k => $v)
+            $movabl->$k = stripslashes($v);
+            
         $result->free();
 
         $meta = Movabls::get_meta($movabl_type,$movabl_guid,$mvsdb);
@@ -125,8 +130,11 @@ class Movabls {
         if (empty($result))
             return $meta;
 
-        while($row = $result->fetch_object())
+        while($row = $result->fetch_object()) {
+            foreach($row as $k => $v)
+                $row->$k = stripslashes($v);
             $meta->{$row->movabls_GUID}->{$row->key} = $row->value;
+        }
 
         $result->free();
 
@@ -139,7 +147,7 @@ class Movabls {
      * @param string $movabl_type
      * @param array $data
      * @param string $movabl_guid
-     * @return string = message
+     * @return bool
      */
     public static function set_movabl($movabl_type,$data,$movabl_guid = null) {
 	
@@ -180,10 +188,12 @@ class Movabls {
      */
     public static function set_meta($new_meta,$movabl_type,$movabl_guid,$mvsdb = null) {
         
+        //TODO: set meta for media/func inputs and interface outputs
+
         if (empty($mvsdb))
             $mvsdb = Movabls::db_link();
 
-        $old_meta = Movabls::get_meta(null,$movabl_guid);
+        $old_meta = Movabls::get_meta($movabl_type,$movabl_guid);
 
         foreach ($new_meta as $new_k => $new_v) {
             if (isset($old_meta[$new_k])) {
