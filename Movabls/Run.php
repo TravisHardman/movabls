@@ -13,8 +13,6 @@ class Movabls_Run {
 
     public function __construct() {
 
-        //TODO: Database Authentication and Permissions (and files for that matter)
-
         //Limit file access to only allow uploads temp directory
         ini_set('include_path','c:\wamp\tmp');
 

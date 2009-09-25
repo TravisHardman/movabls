@@ -75,6 +75,9 @@ class Movabls {
                 $movabl->content = json_decode($movabl->content);
                 break;
             case 'media':
+                $movabl->content = base64_decode($movabl->content);
+                $movabl->inputs = json_decode($movabl->inputs);
+                break;
             case 'function':
                 $movabl->inputs = json_decode($movabl->inputs);
                 break;
@@ -146,13 +149,12 @@ class Movabls {
     public static function set_movabl($movabl_type,$data,$movabl_guid = null) {
 	
         $mvsdb = Movabls::db_link();
-        $meta = $data['meta'];
+        if (!empty($data['meta']))
+            $meta = $data['meta'];
         $data = Movabls::sanitize_data($movabl_type,$data,$mvsdb);
         $table = Movabls::table_name($movabl_type);
         $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
         $sanitized_type = $mvsdb->real_escape_string($movabl_type);
-        
-        //TODO: File uploads to media (how do we do this without using fopen (which will have to be disabled)?
 
         if (!empty($movabl_guid)) {
             $datastring = Movabls::generate_datastring('update',$data);
@@ -239,20 +241,20 @@ class Movabls {
         switch($movabl_type) {
             case 'media':
                 $data = array(
-                    'mimetype'      => $mvsdb->real_escape_string($data['mimetype']),
-                    'inputs'        => $mvsdb->real_escape_string(json_encode($data['inputs'])),
-                    'content'       => $mvsdb->real_escape_string($data['content'])
+                    'mimetype'      => !empty($data['mimetype']) ? $mvsdb->real_escape_string($data['mimetype']) : '',
+                    'inputs'        => !empty($data['inputs']) ? $mvsdb->real_escape_string(json_encode($data['inputs'])) : '',
+                    'content'       => !empty($data['content']) ? $mvsdb->real_escape_string(base64_encode($data['content'])) : ''
                 );
                 break;
             case 'function':
                 $data = array(
-                    'inputs'        => $mvsdb->real_escape_string(json_encode($data['inputs'])),
-                    'content'       => $mvsdb->real_escape_string(utf8_encode($data['content']))
+                    'inputs'        => !empty($data['inputs']) ? $mvsdb->real_escape_string(json_encode($data['inputs'])) : '',
+                    'content'       => !empty($data['content']) ? $mvsdb->real_escape_string(utf8_encode($data['content'])) : ''
                 );
                 break;
             case 'interface':
                 $data = array(
-                    'content'       => $mvsdb->real_escape_string(json_encode($data['content']))
+                    'content'       => !empty($data['inputs']) ? $mvsdb->real_escape_string(json_encode($data['content'])) : ''
                 );
                 break;
             case 'place':
@@ -260,7 +262,7 @@ class Movabls {
                     'url'           => $mvsdb->real_escape_string(urlencode($data['url'])),
                     'https'         => $data['https'] ? '1' : '0',
                     'media_GUID'    => $mvsdb->real_escape_string($data['media_GUID']),
-                    'interface_GUID'=> $mvsdb->real_escape_string($data['interface_GUID'])
+                    'interface_GUID'=> !empty($data['interface_GUID']) ? $mvsdb->real_escape_string($data['interface_GUID']) : null
                 );
                 break;
             case 'meta':

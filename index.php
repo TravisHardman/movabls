@@ -2,14 +2,7 @@
 /*
  * Movabls by LikeStripes LLC
  */
-?>
 
-<form action="/" method="post" enctype="multipart/form-data">
-    <input type="file" name="file" /><br />
-    <input type="submit" value="go" />
-</form>
-
-<?
 function __autoload($name) {
 
     if ($name == "Movabls")
@@ -39,14 +32,6 @@ try {
     }
     die($e->getMessage());
     
-}
-
-if (!empty($GLOBALS->_FILES)) {
-    $data = array(
-        'mimetype' => 'text/php',
-        'content' => file_get_contents($GLOBALS->_FILES['file']['tmp_name'])
-    );
-    Movabls::set_movabl('media', $data);
 }
 
 /*
