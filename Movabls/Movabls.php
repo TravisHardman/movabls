@@ -186,7 +186,7 @@ class Movabls {
                 $data = array(
                     'mimetype'      => $mvsdb->real_escape_string($data['mimetype']),
                     'inputs'        => $mvsdb->real_escape_string(json_encode($data['inputs'])),
-                    'content'       => $mvsdb->real_escape_string(uft8_encode($data['content']))
+                    'content'       => $mvsdb->real_escape_string($data['content'])
                 );
                 break;
             case 'function':

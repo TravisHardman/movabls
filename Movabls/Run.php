@@ -15,6 +15,9 @@ class Movabls_Run {
 
         //TODO: Database Authentication and Permissions (and files for that matter)
 
+        //Limit file access to only allow uploads temp directory
+        ini_set('include_path','c:\wamp\tmp');
+
         $this->mvsdb = new mysqli('localhost','root','h4ppyf4rmers','db_filet');
         $place = $this->get_place();
         if (!empty($place->interface_GUID))
