@@ -64,6 +64,7 @@ class Movabls {
             throw new Exception ("Movabl ($movabl_type: $movabl_guid) not found");
 
         $movabl = $result->fetch_object();
+            
         $result->free();
 
         $meta = Movabls::get_meta($movabl_type,$movabl_guid,$mvsdb);
@@ -125,8 +126,9 @@ class Movabls {
         if (empty($result))
             return $meta;
 
-        while($row = $result->fetch_object())
+        while($row = $result->fetch_object()) {
             $meta->{$row->movabls_GUID}->{$row->key} = $row->value;
+        }
 
         $result->free();
 
@@ -139,7 +141,7 @@ class Movabls {
      * @param string $movabl_type
      * @param array $data
      * @param string $movabl_guid
-     * @return string = message
+     * @return bool
      */
     public static function set_movabl($movabl_type,$data,$movabl_guid = null) {
 	
@@ -147,29 +149,78 @@ class Movabls {
         $meta = $data['meta'];
         $data = Movabls::sanitize_data($movabl_type,$data,$mvsdb);
         $table = Movabls::table_name($movabl_type);
+        $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
+        $sanitized_type = $mvsdb->real_escape_string($movabl_type);
+        
+        //TODO: File uploads to media (how do we do this without using fopen (which will have to be disabled)?
 
         if (!empty($movabl_guid)) {
             $datastring = Movabls::generate_datastring('update',$data);
-            $result = $mvsdb->query("UPDATE `mvs_$table` SET $datastring WHERE {$movabl_type}_GUID = '$movabl_id'");
+            $result = $mvsdb->query("UPDATE `mvs_$table` SET $datastring WHERE {$sanitized_type}_GUID = '$sanitized_guid'");
         }
         else {
-            $data['movabl_guid'] = Movabls::generate_guid($movabl_type);
+            $data["{$movabl_type}_guid"] = Movabls::generate_guid($movabl_type);
             $datastring = Movabls::generate_datastring('insert',$data);
             $result = $mvsdb->query("INSERT INTO `mvs_$table` $datastring");
-            $movabl_guid = $data['movabl_guid'];
+            $movabl_guid = $data["{$movabl_type}_guid"];
         }
 
-        //TODO: Be more uniform with returns and throws from these functions
-        //All errors should be thrown, selects should return data, inserts should
-        //return true
-        Movabls::set_meta($meta,$movabl_guid);
+        if (!empty($meta))
+            Movabls::set_meta($meta,$movabl_type,$movabl_guid,$mvsdb);
 
         return true;
 	
     }
 
-    public static function set_meta($data,$movabl_guid) {
-        //TODO
+    /**
+     * Takes an array of metadata for a particular movabl and updates the existing metadata
+     * entries to the entries specified
+     * @param array $new_meta
+     * @param string $movabl_type
+     * @param string $movabl_guid
+     * @param mysqli handle $mvsdb
+     * @return bool 
+     */
+    public static function set_meta($new_meta,$movabl_type,$movabl_guid,$mvsdb = null) {
+        
+        //TODO: set meta for media/func inputs and interface outputs
+
+        if (empty($mvsdb))
+            $mvsdb = Movabls::db_link();
+
+        $old_meta = Movabls::get_meta($movabl_type,$movabl_guid);
+        $old_meta = $old_meta->$movabl_guid;
+
+        foreach ($new_meta as $new_k => $new_v) {
+            if (isset($old_meta->$new_k)) {
+                if ($old_meta->$new_k != $new_v)
+                    $updates[$new_k] = $new_v;
+                unset($old_meta->$new_k);
+            }
+            else
+                $inserts[$new_k] = $new_v;
+        }
+
+        $inserts = Movabls::sanitize_data('meta',$inserts,$mvsdb);
+        $updates = Movabls::sanitize_data('meta',$updates,$mvsdb);
+        $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
+        $sanitized_type = $mvsdb->real_escape_string($movabl_type);
+
+        if (!empty($inserts)) {
+            foreach ($inserts as $k => $v)
+                $mvsdb->query("INSERT INTO `mvs_meta` (`movabls_GUID`,`movabls_type`,`tag_name`,`key`,`value`) VALUES ('$sanitized_guid','$sanitized_type',NULL,'$k','$v')");
+        }
+        if (!empty($updates)) {
+            foreach ($updates as $k => $v)
+                $mvsdb->query("UPDATE `mvs_meta` SET `value` = '$v' WHERE `movabls_type` = '$sanitized_type' AND `movabls_GUID` = '$sanitized_guid' AND `key` = '$k'");
+        }
+        if (!empty($old_meta)) {
+            foreach ($old_meta as $k => $v)
+                $mvsdb->query("DELETE FROM `mvs_meta` WHERE `movabls_type` = '$sanitized_type' AND `movabls_GUID` = '$sanitized_guid' AND `key` = '$k'");
+        }
+        
+        return true;
+        
     }
 
     /**
@@ -181,6 +232,10 @@ class Movabls {
      * @return array 
      */
     private static function sanitize_data($movabl_type,$data,$mvsdb) {
+
+        if (empty($data))
+            return $data;
+            
         switch($movabl_type) {
             case 'media':
                 $data = array(
@@ -192,7 +247,7 @@ class Movabls {
             case 'function':
                 $data = array(
                     'inputs'        => $mvsdb->real_escape_string(json_encode($data['inputs'])),
-                    'content'       => $mvsdb->real_escape_string(uft8_encode($data['content']))
+                    'content'       => $mvsdb->real_escape_string(utf8_encode($data['content']))
                 );
                 break;
             case 'interface':
@@ -209,19 +264,24 @@ class Movabls {
                 );
                 break;
             case 'meta':
-
+                $pre_data = $data;
+                $data = array();
+                foreach ($pre_data as $k => $v)
+                    $data[$mvsdb->real_escape_string($k)] = $mvsdb->real_escape_string($v);
                 break;
             default:
                 throw new Exception('Incorrect Movabl Type');
                 break;
         }
         return $data;
+
     }
 
     private static function generate_guid($movabl_type) {
-        //TODO: this function.  remember that guid should reflect the site it was created on
+        //TODO: guid generation.  remember that guid should reflect the site it was created on
         //to ensure global uniqueness - what if a matching guid was created on this site
         //and then deleted?  is there a better way to check uniqueness?
+        return rand(10000,99999);
     }
 
     /**
@@ -231,6 +291,7 @@ class Movabls {
      * @return string
      */
     private static function generate_datastring($query_type,$data) {
+
         if (empty($data))
             throw new Exception ('No Data Provided for '.uc_first($query_type));
         if ($query_type == 'update') {
@@ -249,6 +310,7 @@ class Movabls {
         else
             throw new Exception ('Datastring Generator Only Works for Updates and Inserts');
         return $datastring;
+
     }
 
     /**
@@ -257,6 +319,7 @@ class Movabls {
      * @return string 
      */
     private static function table_name($movabl_type) {
+
         if($movabl_type == 'media')
             $table = 'media';
         elseif (in_array($movabl_type,array('place','interface','function')))
@@ -264,6 +327,7 @@ class Movabls {
         else
             throw new Exception ('Please specify a valid type of Movabl');
         return $table;
+        
     }
     
     /**
