@@ -75,7 +75,7 @@ class Movabls {
                 $movabl->content = json_decode($movabl->content);
                 break;
             case 'media':
-                $movabl->content = base64_decode($movabl->content);
+                $movabl->content = $movabl->content;
                 $movabl->inputs = json_decode($movabl->inputs);
                 break;
             case 'function':
@@ -243,7 +243,7 @@ class Movabls {
                 $data = array(
                     'mimetype'      => !empty($data['mimetype']) ? $mvsdb->real_escape_string($data['mimetype']) : '',
                     'inputs'        => !empty($data['inputs']) ? $mvsdb->real_escape_string(json_encode($data['inputs'])) : '',
-                    'content'       => !empty($data['content']) ? $mvsdb->real_escape_string(base64_encode($data['content'])) : ''
+                    'content'       => !empty($data['content']) ? $mvsdb->real_escape_string($data['content']) : ''
                 );
                 break;
             case 'function':
