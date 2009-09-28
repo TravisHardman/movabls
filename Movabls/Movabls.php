@@ -11,9 +11,25 @@ class Movabls {
      */
     public static function get_packages() {
 
-        //This requires definition of the package structure in the db
-        //Packages can include any number of movabls - movabls can be in
-        //multiple packages
+        $mvsdb = Movabls::db_link();
+        $result = $mvsdb->query("SELECT id,package_GUID FROM `mvs_packages`");
+        if(empty($result))
+            return new StdClass();
+
+        while ($row = $result->fetch_object()) {
+            $ids[] = $row->package_GUID;
+            $packages->{$row->package_GUID} = $row;
+            $packages->{$row->package_GUID}->meta = array();
+        }
+
+        $result->free();
+
+        $allmeta = Movabls::get_meta('package',$ids,$mvsdb);
+
+        foreach ($allmeta as $guid => $meta)
+            $packages->$guid->meta = $meta;
+
+        return $packages;
 
     }
 
@@ -70,16 +86,20 @@ class Movabls {
         $meta = Movabls::get_meta($movabl_type,$movabl_guid,$mvsdb);
         $movabl->meta = isset($meta->$movabl_guid) ? $meta->$movabl_guid : new StdClass();
 
+        $tagmeta = Movabls::get_tags_meta($movabl_type,$movabl_guid,$mvsdb);
+
         switch ($movabl_type) {
             case 'interface':
                 $movabl->content = json_decode($movabl->content);
+                foreach ($movabl->content as $tag => $value)
+                    $movabl->content->$tag->meta = isset($tagmeta->$movabl_guid->$tag) ? $tagmeta->$movabl_guid->$tag : new StdClass();
                 break;
             case 'media':
-                $movabl->content = $movabl->content;
-                $movabl->inputs = json_decode($movabl->inputs);
-                break;
             case 'function':
-                $movabl->inputs = json_decode($movabl->inputs);
+                $inputs = json_decode($movabl->inputs);
+                $movabl->inputs = new StdClass();
+                foreach ($inputs as $input)
+                    $movabl->inputs->$input = isset($tagmeta->$movabl_guid->$input) ? $tagmeta->$movabl_guid->$input : new StdClass();
                 break;
         }
 
@@ -129,9 +149,59 @@ class Movabls {
         if (empty($result))
             return $meta;
 
-        while($row = $result->fetch_object()) {
+        while($row = $result->fetch_object())
             $meta->{$row->movabls_GUID}->{$row->key} = $row->value;
+
+        $result->free();
+
+        return $meta;
+
+    }
+
+    /**
+     * Gets the metadata for the inputs / outputs for an array of Movabls or types, 
+     * or an individual Movabl or type
+     * @param mixed $types (array or string)
+     * @param mixed $guids (array or string)
+     * @param mysqli handle $mvsdb
+     * @return object
+     */
+    public static function get_tags_meta($types = null,$guids = null,$mvsdb = null) {
+
+        if (empty($mvsdb))
+            $mvsdb = Movabls::db_link();
+
+        $meta = new StdClass();
+
+        $query = "SELECT * FROM `mvs_meta`";
+
+        if (!empty($guids)) {
+            if (!is_array($guids))
+                $guids = array($guids);
+            foreach($guids as $k => $guid)
+                $guids[$k] = $mvsdb->real_escape_string($guid);
+            $in_string = "'".implode("','",$guids)."'";
+            $where[] = "movabls_GUID IN ($in_string)";
         }
+
+        if (!empty($types)) {
+            if (!is_array($types))
+                $types = array($types);
+            foreach($types as $k => $type)
+                $types[$k] = $mvsdb->real_escape_string($type.'_tag');
+            $in_string = "'".implode("','",$types)."'";
+            $where[] = "movabls_type IN ($in_string)";
+        }
+
+        if (!empty($where))
+            $query .= " WHERE ".implode(' AND ',$where);
+        $result = $mvsdb->query($query);
+
+        if (empty($result))
+            return $meta;
+
+        while($row = $result->fetch_object())
+            $meta->{$row->movabls_GUID}->{$row->tag_name}->{$row->key} = $row->value;
 
         $result->free();
 
@@ -184,14 +254,15 @@ class Movabls {
      * @return bool 
      */
     public static function set_meta($new_meta,$movabl_type,$movabl_guid,$mvsdb = null) {
-        
-        //TODO: set meta for media/func inputs and interface outputs
 
         if (empty($mvsdb))
             $mvsdb = Movabls::db_link();
 
         $old_meta = Movabls::get_meta($movabl_type,$movabl_guid);
         $old_meta = $old_meta->$movabl_guid;
+
+        $inserts = array();
+        $updates = array();
 
         foreach ($new_meta as $new_k => $new_v) {
             if (isset($old_meta->$new_k)) {
@@ -214,15 +285,81 @@ class Movabls {
         }
         if (!empty($updates)) {
             foreach ($updates as $k => $v)
-                $mvsdb->query("UPDATE `mvs_meta` SET `value` = '$v' WHERE `movabls_type` = '$sanitized_type' AND `movabls_GUID` = '$sanitized_guid' AND `key` = '$k'");
+                $mvsdb->query("UPDATE `mvs_meta` SET `value` = '$v' WHERE `movabls_type` = '$sanitized_type' AND `movabls_GUID` = '$sanitized_guid' AND `key` = '$k' AND `tag_name` IS NULL");
         }
         if (!empty($old_meta)) {
             foreach ($old_meta as $k => $v)
-                $mvsdb->query("DELETE FROM `mvs_meta` WHERE `movabls_type` = '$sanitized_type' AND `movabls_GUID` = '$sanitized_guid' AND `key` = '$k'");
+                $mvsdb->query("DELETE FROM `mvs_meta` WHERE `movabls_type` = '$sanitized_type' AND `movabls_GUID` = '$sanitized_guid' AND `key` = '$k' AND `tag_name` IS NULL");
         }
         
         return true;
         
+    }
+
+    /**
+     * Takes an array of metadata for a particular movabl and updates the existing metadata
+     * entries for the tags of that movabl to the entries specified
+     * @param array $new_meta
+     * @param string $movabl_type
+     * @param string $movabl_guid
+     * @param mysqli handle $mvsdb
+     * @return bool
+     */
+    public static function set_tags_meta($new_tags_meta,$movabl_type,$movabl_guid,$mvsdb = null) {
+
+        if (empty($mvsdb))
+            $mvsdb = Movabls::db_link();
+
+        $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
+        $sanitized_type = $mvsdb->real_escape_string($movabl_type.'_tag');
+
+        $old_tags_meta = Movabls::get_tags_meta($movabl_type,$movabl_guid,$mvsdb);
+        $old_tags_meta = $old_tags_meta->$movabl_guid;
+
+        foreach ($new_tags_meta as $new_tag => $new_meta) {
+
+            $old_meta = isset($old_tags_meta->$new_tag) ? $old_tags_meta->$new_tag : new StdClass();
+            unset($old_tags_meta->$new_tag);
+            
+            $inserts = array();
+            $updates = array();
+
+            foreach ($new_meta as $new_k => $new_v) {
+                if (isset($old_meta->$new_k)) {
+                    if ($old_meta->$new_k != $new_v)
+                        $updates[$new_k] = $new_v;
+                    unset($old_meta->$new_k);
+                }
+                else
+                    $inserts[$new_k] = $new_v;
+            }
+
+            $inserts = Movabls::sanitize_data('meta',$inserts,$mvsdb);
+            $updates = Movabls::sanitize_data('meta',$updates,$mvsdb);
+            $sanitized_tag = $mvsdb->real_escape_string($new_tag);
+
+            if (!empty($inserts)) {
+                foreach ($inserts as $k => $v)
+                    $mvsdb->query("INSERT INTO `mvs_meta` (`movabls_GUID`,`movabls_type`,`tag_name`,`key`,`value`) VALUES ('$sanitized_guid','$sanitized_type','$sanitized_tag','$k','$v')");
+            }
+            if (!empty($updates)) {
+                foreach ($updates as $k => $v)
+                    $mvsdb->query("UPDATE `mvs_meta` SET `value` = '$v' WHERE `movabls_type` = '$sanitized_type' AND `movabls_GUID` = '$sanitized_guid' AND `key` = '$k' AND `tag_name` = '$sanitized_tag'");
+            }
+            if (!empty($old_meta)) {
+                foreach ($old_meta as $k => $v)
+                    $mvsdb->query("DELETE FROM `mvs_meta` WHERE `movabls_type` = '$sanitized_type' AND `movabls_GUID` = '$sanitized_guid' AND `key` = '$k' AND `tag_name` = '$sanitized_tag'");
+            }
+        }
+
+        //Remove old tags' meta for tags tied to the movabl but not in the new tags set
+        foreach ($old_tags_meta as $old_tag => $v) {
+            $sanitized_tag = $mvsdb->real_escape_string($old_tag);
+            $mvsdb->query("DELETE FROM `mvs_meta` WHERE `movabls_type` = '$sanitized_type' AND `movabls_GUID` = '$sanitized_guid' AND `tag_name` = '$sanitized_tag'");
+        }
+
+        return true;
+
     }
 
     /**
