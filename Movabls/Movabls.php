@@ -12,7 +12,7 @@ class Movabls {
     public static function get_packages() {
 
         $mvsdb = Movabls::db_link();
-        $result = $mvsdb->query("SELECT id,package_GUID FROM `mvs_packages`");
+        $result = $mvsdb->query("SELECT package_id,package_GUID FROM `mvs_packages`");
         if(empty($result))
             return new StdClass();
 
@@ -221,6 +221,21 @@ class Movabls {
         $mvsdb = Movabls::db_link();
         if (!empty($data['meta']))
             $meta = $data['meta'];
+
+        switch($movabl_type) {
+            case 'media':
+            case 'function':
+                $tagsmeta = $data['inputs'];
+                $data['inputs'] = array_keys($data['inputs']);
+                break;
+            case 'interface':
+                foreach ($data['content'] as $tagname => $tag) {
+                    $tagsmeta[$tagname] = $tag['meta'];
+                    unset($data['content'][$tagname]['meta']);
+                }
+                break;
+        }
+
         $data = Movabls::sanitize_data($movabl_type,$data,$mvsdb);
         $table = Movabls::table_name($movabl_type);
         $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
@@ -239,6 +254,8 @@ class Movabls {
 
         if (!empty($meta))
             Movabls::set_meta($meta,$movabl_type,$movabl_guid,$mvsdb);
+        if (!empty($tagsmeta))
+            Movabls::set_tags_meta($tagsmeta,$movabl_type,$movabl_guid,$mvsdb);
 
         return true;
 	
