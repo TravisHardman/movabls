@@ -14,12 +14,12 @@ class Movabls {
         $mvsdb = Movabls::db_link();
         $result = $mvsdb->query("SELECT package_id,package_GUID FROM `mvs_packages`");
         if(empty($result))
-            return new StdClass();
+            return array();
 
-        while ($row = $result->fetch_object()) {
-            $ids[] = $row->package_GUID;
-            $packages->{$row->package_GUID} = $row;
-            $packages->{$row->package_GUID}->meta = array();
+        while ($row = $result->fetch_assoc()) {
+            $ids[] = $row['package_GUID'];
+            $packages[$row['package_GUID']] = $row;
+            $packages[$row['package_GUID']]['meta'] = array();
         }
 
         $result->free();
@@ -27,7 +27,7 @@ class Movabls {
         $allmeta = Movabls::get_meta('package',$ids,$mvsdb);
 
         foreach ($allmeta as $guid => $meta)
-            $packages->$guid->meta = $meta;
+            $packages[$guid]['meta'] = $meta;
 
         return $packages;
 
@@ -35,19 +35,19 @@ class Movabls {
 
     /**
      * Gets a list of all places on the site
-     * @return object
+     * @return array
      */
     public static function get_places() {
         
         $mvsdb = Movabls::db_link();
         $result = $mvsdb->query("SELECT * FROM `mvs_places` ORDER BY url ASC");
         if(empty($result))
-            return new StdClass();
+            return array();
 
-        while ($row = $result->fetch_object()) {
-            $ids[] = $row->place_GUID;
-            $places->{$row->place_GUID} = $row;
-            $places->{$row->place_GUID}->meta = array();
+        while ($row = $result->fetch_assoc()) {
+            $ids[] = $row['place_GUID'];
+            $places[$row['place_GUID']] = $row;
+            $places[$row['place_GUID']]['meta'] = array();
         }
             
         $result->free();
@@ -55,7 +55,7 @@ class Movabls {
         $allmeta = Movabls::get_meta('place',$ids,$mvsdb);
 
         foreach ($allmeta as $guid => $meta)
-            $places->$guid->meta = $meta;
+            $places[$guid]['meta'] = $meta;
 
         return $places;
 	
@@ -64,7 +64,7 @@ class Movabls {
     /**
      * Gets a single movabl by type and GUID
      * @param string $movabl_type
-     * @param object
+     * @param array
      */
     public static function get_movabl($movabl_type, $movabl_guid) {
 
@@ -79,30 +79,30 @@ class Movabls {
         if (empty($result))
             throw new Exception ("Movabl ($movabl_type: $movabl_guid) not found");
 
-        $movabl = $result->fetch_object();
+        $movabl = $result->fetch_assoc();
             
         $result->free();
 
         $meta = Movabls::get_meta($movabl_type,$movabl_guid,$mvsdb);
-        $movabl->meta = isset($meta->$movabl_guid) ? $meta->$movabl_guid : new StdClass();
+        $movabl['meta'] = isset($meta[$movabl_guid]) ? $meta[$movabl_guid] : array();
 
         $tagmeta = Movabls::get_tags_meta($movabl_type,$movabl_guid,$mvsdb);
 
         switch ($movabl_type) {
             case 'interface':
-                $movabl->content = json_decode($movabl->content);
-                foreach ($movabl->content as $tag => $value)
-                    $movabl->content->$tag->meta = isset($tagmeta->$movabl_guid->$tag) ? $tagmeta->$movabl_guid->$tag : new StdClass();
+                $movabl['content'] = json_decode($movabl['content'],true);
+                foreach ($movabl['content'] as $tag => $value)
+                    $movabl['content'][$tag]['meta'] = isset($tagmeta[$movabl_guid][$tag]) ? $tagmeta[$movabl_guid][$tag] : array();
                 break;
             case 'package':
-                $movabl->contents = json_decode($movabl->contents);
+                $movabl['contents'] = json_decode($movabl['contents'],true);
                 break;
             case 'media':
             case 'function':
-                $inputs = json_decode($movabl->inputs);
-                $movabl->inputs = new StdClass();
+                $inputs = json_decode($movabl['inputs'],true);
+                $movabl['inputs'] = array();
                 foreach ($inputs as $input)
-                    $movabl->inputs->$input = isset($tagmeta->$movabl_guid->$input) ? $tagmeta->$movabl_guid->$input : new StdClass();
+                    $movabl['inputs'][$input] = isset($tagmeta[$movabl_guid][$input]) ? $tagmeta[$movabl_guid][$input] : array();
                 break;
         }
 
@@ -116,14 +116,14 @@ class Movabls {
      * @param mixed $types (array or string)
      * @param mixed $guids (array or string)
      * @param mysqli handle $mvsdb
-     * @return object
+     * @return array
      */
     public static function get_meta($types,$guids = null,$mvsdb = null) {
 
         if (empty($mvsdb))
             $mvsdb = Movabls::db_link();
 
-        $meta = new StdClass();
+        $meta = array();
 
         $query = "SELECT * FROM `mvs_meta`";
 
@@ -152,8 +152,8 @@ class Movabls {
         if (empty($result))
             return $meta;
 
-        while($row = $result->fetch_object())
-            $meta->{$row->movabls_GUID}->{$row->key} = $row->value;
+        while($row = $result->fetch_assoc())
+            $meta[$row['movabls_GUID']][$row['key']] = $row['value'];
 
         $result->free();
 
@@ -167,14 +167,14 @@ class Movabls {
      * @param mixed $types (array or string)
      * @param mixed $guids (array or string)
      * @param mysqli handle $mvsdb
-     * @return object
+     * @return array
      */
     public static function get_tags_meta($types = null,$guids = null,$mvsdb = null) {
 
         if (empty($mvsdb))
             $mvsdb = Movabls::db_link();
 
-        $meta = new StdClass();
+        $meta = array();
 
         $query = "SELECT * FROM `mvs_meta`";
 
@@ -203,8 +203,8 @@ class Movabls {
         if (empty($result))
             return $meta;
 
-        while($row = $result->fetch_object())
-            $meta->{$row->movabls_GUID}->{$row->tag_name}->{$row->key} = $row->value;
+        while($row = $result->fetch_assoc())
+            $meta[$row['movabls_GUID']][$row['tag_name']][$row['key']] = $row['value'];
 
         $result->free();
 
@@ -279,16 +279,16 @@ class Movabls {
             $mvsdb = Movabls::db_link();
 
         $old_meta = Movabls::get_meta($movabl_type,$movabl_guid);
-        $old_meta = $old_meta->$movabl_guid;
+        $old_meta = $old_meta[$movabl_guid];
 
         $inserts = array();
         $updates = array();
 
         foreach ($new_meta as $new_k => $new_v) {
-            if (isset($old_meta->$new_k)) {
-                if ($old_meta->$new_k != $new_v)
+            if (isset($old_meta[$new_k])) {
+                if ($old_meta[$new_k] != $new_v)
                     $updates[$new_k] = $new_v;
-                unset($old_meta->$new_k);
+                unset($old_meta[$new_k]);
             }
             else
                 $inserts[$new_k] = $new_v;
@@ -334,21 +334,21 @@ class Movabls {
         $sanitized_type = $mvsdb->real_escape_string($movabl_type.'_tag');
 
         $old_tags_meta = Movabls::get_tags_meta($movabl_type,$movabl_guid,$mvsdb);
-        $old_tags_meta = $old_tags_meta->$movabl_guid;
+        $old_tags_meta = $old_tags_meta[$movabl_guid];
 
         foreach ($new_tags_meta as $new_tag => $new_meta) {
 
-            $old_meta = isset($old_tags_meta->$new_tag) ? $old_tags_meta->$new_tag : new StdClass();
-            unset($old_tags_meta->$new_tag);
+            $old_meta = isset($old_tags_meta[$new_tag]) ? $old_tags_meta[$new_tag] : array();
+            unset($old_tags_meta[$new_tag]);
             
             $inserts = array();
             $updates = array();
 
             foreach ($new_meta as $new_k => $new_v) {
-                if (isset($old_meta->$new_k)) {
-                    if ($old_meta->$new_k != $new_v)
+                if (isset($old_meta[$new_k])) {
+                    if ($old_meta[$new_k] != $new_v)
                         $updates[$new_k] = $new_v;
-                    unset($old_meta->$new_k);
+                    unset($old_meta[$new_k]);
                 }
                 else
                     $inserts[$new_k] = $new_v;
