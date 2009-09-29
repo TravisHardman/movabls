@@ -370,10 +370,35 @@ class Movabls {
         }
 
         //Remove old tags' meta for tags tied to the movabl but not in the new tags set
-        foreach ($old_tags_meta as $old_tag => $v) {
-            $sanitized_tag = $mvsdb->real_escape_string($old_tag);
-            $mvsdb->query("DELETE FROM `mvs_meta` WHERE `movabls_type` = '$sanitized_type' AND `movabls_GUID` = '$sanitized_guid' AND `tag_name` = '$sanitized_tag'");
+        if (!empty($old_tags_meta)) {
+            foreach ($old_tags_meta as $old_tag => $v) {
+                $sanitized_tag = $mvsdb->real_escape_string($old_tag);
+                $mvsdb->query("DELETE FROM `mvs_meta` WHERE `movabls_type` = '$sanitized_type' AND `movabls_GUID` = '$sanitized_guid' AND `tag_name` = '$sanitized_tag'");
+            }
         }
+
+        return true;
+
+    }
+
+    /**
+     * Delete a movabl from the system
+     * @param mixed $movabl_type
+     * @param mixed $movabl_guid
+     * @return true
+     */
+    public static function delete_movabl($movabl_type,$movabl_guid) {
+
+        $mvsdb = Movabls::db_link();
+
+        $table = Movabls::table_name($movabl_type);
+        $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
+        $sanitized_type = $mvsdb->real_escape_string($movabl_type);
+
+        $result = $mvsdb->query("DELETE FROM `mvs_$table` WHERE {$sanitized_type}_GUID = '$sanitized_guid'");
+
+        Movabls::set_meta(array(),$movabl_type,$movabl_guid,$mvsdb);
+        Movabls::set_tags_meta(array(),$movabl_type,$movabl_guid,$mvsdb);
 
         return true;
 
