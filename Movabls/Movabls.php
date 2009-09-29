@@ -115,7 +115,7 @@ class Movabls {
      * @param mysqli handle $mvsdb
      * @return object
      */
-    public static function get_meta($types = null,$guids = null,$mvsdb = null) {
+    public static function get_meta($types,$guids = null,$mvsdb = null) {
 
         if (empty($mvsdb))
             $mvsdb = Movabls::db_link();
@@ -450,6 +450,11 @@ class Movabls {
                 foreach ($pre_data as $k => $v)
                     $data[$mvsdb->real_escape_string($k)] = $mvsdb->real_escape_string($v);
                 break;
+            case 'package':
+                $data = array(
+                    'contents' => $mvsdb->real_escape_string(json_encode($data['contents']))
+                );
+                break;
             default:
                 throw new Exception('Incorrect Movabl Type');
                 break;
@@ -503,7 +508,7 @@ class Movabls {
 
         if($movabl_type == 'media')
             $table = 'media';
-        elseif (in_array($movabl_type,array('place','interface','function')))
+        elseif (in_array($movabl_type,array('place','interface','function','package')))
             $table = $movabl_type.'s';
         else
             throw new Exception ('Please specify a valid type of Movabl');
