@@ -94,6 +94,9 @@ class Movabls {
                 foreach ($movabl->content as $tag => $value)
                     $movabl->content->$tag->meta = isset($tagmeta->$movabl_guid->$tag) ? $tagmeta->$movabl_guid->$tag : new StdClass();
                 break;
+            case 'package':
+                $movabl->contents = json_decode($movabl->contents);
+                break;
             case 'media':
             case 'function':
                 $inputs = json_decode($movabl->inputs);
