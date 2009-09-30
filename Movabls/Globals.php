@@ -18,6 +18,13 @@ class Movabls_Globals {
             $this->data['_SESSION'] = $_SESSION;
         $this->data['_REQUEST'] = $_REQUEST;
         $this->data['_ENV'] = $_ENV;
+        $this->data['_USER'] = array(
+            'user_GUID' => '12345',
+            'username' => 'travis',
+            'email' => 'travis@likestripes.com',
+            'is_owner' => true,
+            'groups' => array('mysiteusers','mysiteadmins')
+        );
     }
 
     function __get($var) {

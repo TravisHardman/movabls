@@ -13,9 +13,6 @@ class Movabls_Run {
 
     public function __construct() {
 
-        //Limit file access to only allow uploads temp directory
-        ini_set('include_path','c:\wamp\tmp');
-
         $this->mvsdb = new mysqli('localhost','root','h4ppyf4rmers','db_filet');
         $place = $this->get_place();
         if (!empty($place->interface_GUID))
@@ -34,7 +31,10 @@ class Movabls_Run {
     private function get_place() {
 
         //Find correct place to use (static places [without %] take precedence over dynamic places [with %])
-        $url = $this->mvsdb->real_escape_string($GLOBALS->_SERVER['REQUEST_URI']);
+        $url = urldecode(substr($GLOBALS->_SERVER['REQUEST_URI'],0,strpos($GLOBALS->_SERVER['REQUEST_URI'],'?')));
+        $url = $this->mvsdb->real_escape_string($url);
+        if ($url == '')
+            $url = '/';
         $result = $this->mvsdb->query("SELECT place_GUID,url,https,media_GUID,interface_GUID FROM `mvs_places`
 					   WHERE ('$url' LIKE url OR '$url/' LIKE url)");
         //Logic: Look for the URL with the greatest length before a '%' sign
