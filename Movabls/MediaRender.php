@@ -270,6 +270,8 @@ class Movabls_MediaRender {
                     if ($open === 0) {
                         $expr = substr($var,1,$i-1);
                         $numstrings = preg_match_all('/[^%]%s/',$expr,$matches);
+                        if (substr($expr,0,2) == '%s')
+                            $numstrings++;
                         $var = trim(substr($var,$i+1));
                         break;
                     }
