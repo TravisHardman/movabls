@@ -91,7 +91,7 @@ class Movabls {
         switch ($movabl_type) {
             case 'interface':
                 $movabl['content'] = json_decode($movabl['content'],true);
-                foreach ($movabl['content'] as $tag => $value)
+                 if(is_array($inputs)) foreach ($movabl['content'] as $tag => $value)
                     $movabl['content'][$tag]['meta'] = isset($tagmeta[$movabl_guid][$tag]) ? $tagmeta[$movabl_guid][$tag] : array();
                 break;
             case 'package':
@@ -101,7 +101,7 @@ class Movabls {
             case 'function':
                 $inputs = json_decode($movabl['inputs'],true);
                 $movabl['inputs'] = array();
-                foreach ($inputs as $input)
+                if(is_array($inputs)) foreach ($inputs as $input)
                     $movabl['inputs'][$input] = isset($tagmeta[$movabl_guid][$input]) ? $tagmeta[$movabl_guid][$input] : array();
                 break;
         }
