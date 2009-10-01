@@ -32,13 +32,11 @@ class Movabls_Run {
 
         //Find correct place to use (static places [without %] take precedence over dynamic places [with %])
         if (strpos($GLOBALS->_SERVER['REQUEST_URI'],'?') !=0) 
-		$url = substr($GLOBALS->_SERVER['REQUEST_URI'],0,strpos($GLOBALS->_SERVER['REQUEST_URI'],'?'));
-	 else 
-		$url =$GLOBALS->_SERVER['REQUEST_URI'];
+            $url = substr($GLOBALS->_SERVER['REQUEST_URI'],0,strpos($GLOBALS->_SERVER['REQUEST_URI'],'?'));
+        else 
+            $url =$GLOBALS->_SERVER['REQUEST_URI'];
         $url = $this->mvsdb->real_escape_string($url);
 
-        if ($url === '')
-            $url = '/';
         $result = $this->mvsdb->query("SELECT place_GUID,url,https,media_GUID,interface_GUID FROM `mvs_places`
 					   WHERE ('$url' LIKE url OR '$url/' LIKE url)");
         //Logic: Look for the URL with the greatest length before a '%' sign
