@@ -31,9 +31,13 @@ class Movabls_Run {
     private function get_place() {
 
         //Find correct place to use (static places [without %] take precedence over dynamic places [with %])
-        $url = urldecode(substr($GLOBALS->_SERVER['REQUEST_URI'],0,strpos($GLOBALS->_SERVER['REQUEST_URI'],'?')));
+        if (strpos($GLOBALS->_SERVER['REQUEST_URI'],'?') !=0) 
+		$url = substr($GLOBALS->_SERVER['REQUEST_URI'],0,strpos($GLOBALS->_SERVER['REQUEST_URI'],'?'));
+	 else 
+		$url =$GLOBALS->_SERVER['REQUEST_URI'];
         $url = $this->mvsdb->real_escape_string($url);
-        if ($url == '')
+
+        if ($url === '')
             $url = '/';
         $result = $this->mvsdb->query("SELECT place_GUID,url,https,media_GUID,interface_GUID FROM `mvs_places`
 					   WHERE ('$url' LIKE url OR '$url/' LIKE url)");
