@@ -44,10 +44,11 @@ class Movabls_Permissions {
      * @param string $movabl_type
      * @param string $movabl_guid
      * @param array $groups = array('guid'=>'fooguid','r'=>bool,'w'=>bool,'x'=>bool)
+     * @param int $inheritance = permission_id to be used as inheritance
      * @param mysqli handle $mvsdb
      * @return true
      */
-    public static function set_permission($movabl_type,$movabl_guid,$groups,$mvsdb = null) {
+    public static function set_permission($movabl_type,$movabl_guid,$groups,$inheritance = null,$mvsdb = null) {
 
         if (empty($mvsdb))
             $mvsdb = Movabls_Permissions::db_link();
@@ -78,28 +79,44 @@ class Movabls_Permissions {
                 'movabl_GUID' => $row['movabl_GUID'],
                 'permission_type' => $row['permission_type']
             );
+            $row['permission_id'] = (int)$row['permission_id'];
             $row['inheritance'] = json_decode($row['inheritance']);
             $old_data[] = $row;
         }
 
         foreach ($new_data as $data) {
             $key = array_search($data,$old_data_index);
-            //If there's not an entry for it
+            //If there's not an entry for this permission yet
             if ($key === false) {
+                if (empty($inheritance))
+                    $inheritance_string = '';
+                else
+                    $inheritance_string = json_encode(array($inheritance));
                 $mvsdb->query("INSERT INTO mvs_permissions
                                (group_GUID,movabl_type,movabl_GUID,permission_type,inheritance)
-                               VALUES ('{$data['group_GUID']}','{$data['movabl_type']}','{$data['movabl_GUID']}','{$data['permission_type']}','')");
-                $mvsdb->query("UPDATE mvs_permissions SET inheritance = '[\"$mvsdb->insert_id\"]' WHERE permission_id = $mvsdb->insert_id");                
+                               VALUES ('{$data['group_GUID']}','{$data['movabl_type']}','{$data['movabl_GUID']}','{$data['permission_type']}','$inheritance_string')");
+                if (empty($inheritance))
+                    $mvsdb->query("UPDATE mvs_permissions SET inheritance = '[$mvsdb->insert_id]' WHERE permission_id = $mvsdb->insert_id");
+
+
             }
             else {
-                //If the inheritance is not set yet
-                if (!in_array($old_data[$key]['permission_id'],$old_data[$key]['inheritance'])) {
-                    $old_data[$key]['inheritance'][] = $old_data[$key]['permission_id'];
-                    $inheritance = json_encode($old_data[$key]['inheritance']);
-                    $mvsdb->query("UPDATE mvs_permissions SET inheritance = '$inheritance' WHERE permission_id = {$old_data[$key]['permission_id']}");
+                //If the entry exists but the correct inheritance is not set
+                if (empty($inheritance)) {
+                    $set = in_array($old_data[$key]['permission_id'],$old_data[$key]['inheritance']);
+                    $new = $old_data[$key]['permission_id'];
+                }
+                else {
+                    $set = in_array($inheritance,$old_data[$key]['inheritance']);
+                    $new = $inheritance;
+                }
+                if (!$set) {
+                    $old_data[$key]['inheritance'][] = $new;
+                    $old_data[$key]['inheritance'] = json_encode($old_data[$key]['inheritance']);
+                    $mvsdb->query("UPDATE mvs_permissions SET inheritance = '{$old_data[$key]['inheritance']}' WHERE permission_id = {$old_data[$key]['permission_id']}");
                 }
                 unset($old_data[$key],$old_data_index[$key]);
-            }                
+            }             
         }
 
         if (!empty($old_data)) {
@@ -113,8 +130,8 @@ class Movabls_Permissions {
                             break;
                         }
                     }
-                    $inheritance = json_encode(array_values($data['inheritance']));
-                    $mvsdb->query("UPDATE mvs_permissions SET inheritance = '$inheritance' WHERE permission_id = {$data['permission_id']}");
+                    $data['inheritance'] = json_encode(array_values($data['inheritance']));
+                    $mvsdb->query("UPDATE mvs_permissions SET inheritance = '{$data['inheritance']}' WHERE permission_id = {$data['permission_id']}");
                 }
             }
         }
