@@ -40,7 +40,9 @@ class Movabls_Permissions {
     }
 
     /**
-     * Replaces existing non-inherited permissions for a media item with new permissions
+     * Takes information on new permissions, constructs an array of new permissions,
+     * diffs that array with the existing permissions in the database, and makes the
+     * necessary changes to the db
      * @param string $movabl_type
      * @param string $movabl_guid
      * @param array $groups = array('guid'=>'fooguid','r'=>bool,'w'=>bool,'x'=>bool)
@@ -66,6 +68,8 @@ class Movabls_Permissions {
             $groupstring[] = $group['guid'];
         }
         $groupstring = "'".implode("','",$groupstring)."'";
+
+        //Get the relevant existing permissions and put them into an array and index for reference
         $results = $mvsdb->query("SELECT * FROM mvs_permissions
                                 WHERE movabl_type = '{$data['movabl_type']}'
                                 AND movabl_GUID = '{$data['movabl_guid']}'
@@ -86,7 +90,7 @@ class Movabls_Permissions {
 
         foreach ($new_data as $data) {
             $key = array_search($data,$old_data_index);
-            //If there's not an entry for this permission yet
+            //If there's not a row for this permission yet
             if ($key === false) {
                 if (empty($inheritance))
                     $inheritance_string = '';
@@ -97,20 +101,15 @@ class Movabls_Permissions {
                                VALUES ('{$data['group_GUID']}','{$data['movabl_type']}','{$data['movabl_GUID']}','{$data['permission_type']}','$inheritance_string')");
                 if (empty($inheritance))
                     $mvsdb->query("UPDATE mvs_permissions SET inheritance = '[$mvsdb->insert_id]' WHERE permission_id = $mvsdb->insert_id");
-
-
             }
-            else {
-                //If the entry exists but the correct inheritance is not set
-                if (empty($inheritance)) {
-                    $set = in_array($old_data[$key]['permission_id'],$old_data[$key]['inheritance']);
+            else { //the row exists
+                //determine what permission_id to use as the new inheritance
+                if (empty($inheritance))
                     $new = $old_data[$key]['permission_id'];
-                }
-                else {
-                    $set = in_array($inheritance,$old_data[$key]['inheritance']);
+                else
                     $new = $inheritance;
-                }
-                if (!$set) {
+                //If the new inheritance is not already set
+                if (!in_array($new,$old_data[$key]['inheritance'])) {
                     $old_data[$key]['inheritance'][] = $new;
                     $old_data[$key]['inheritance'] = json_encode($old_data[$key]['inheritance']);
                     $mvsdb->query("UPDATE mvs_permissions SET inheritance = '{$old_data[$key]['inheritance']}' WHERE permission_id = {$old_data[$key]['permission_id']}");
@@ -119,10 +118,13 @@ class Movabls_Permissions {
             }             
         }
 
+        //old_data that were not included in new_data should be removed
         if (!empty($old_data)) {
             foreach ($old_data as $data) {
+                //If this was the only inheritance, delete the row
                 if ($data['inheritance'] == array($data['permission_id']))
                     $mvsdb->query("DELETE FROM mvs_permissions WHERE permission_id = {$data['permission_id']}");
+                //Otherwise just remove the inheritance
                 else {
                     foreach ($data['inheritance'] as $k => $id) {
                         if ($id == $data['permission_id']) {
@@ -142,6 +144,7 @@ class Movabls_Permissions {
      * @param string $movabl_type
      * @param string $movabl_guid
      * @param array $groups
+     * @param mysqli handle $mvsdb
      * @return array 
      */
     private static function escape_data($movabl_type,$movabl_guid,$groups,$mvsdb = null) {
