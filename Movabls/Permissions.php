@@ -41,40 +41,40 @@ class Movabls_Permissions {
 
     /**
      * Replaces existing non-inherited permissions for a media item with new permissions
+     * @param string $movabl_type
      * @param string $movabl_guid
-     * @param array $groups
-     * @param bool $r
-     * @param bool $w
-     * @param bool $x
+     * @param array $groups = array('guid'=>'fooguid','r'=>bool,'w'=>bool,'x'=>bool)
      * @param mysqli handle $mvsdb
      * @return true
      */
-    public static function set_media_permission($movabl_guid,$groups,$r,$w,$x,$mvsdb = null) {
+    public static function set_permission($movabl_type,$movabl_guid,$groups,$mvsdb = null) {
 
         if (empty($mvsdb))
             $mvsdb = Movabls_Permissions::db_link();
         if (!Movabls_Permissions::permissions_editor($GLOBALS->_USER['groups'],$mvsdb))
             throw new Exception('You do not have permission to edit permissions.');
 
-        $data = Movabls_Permissions::escape_data($movabl_guid,$groups,$mvsdb);
+        $data = Movabls_Permissions::escape_data($movabl_type,$movabl_guid,$groups,$mvsdb);
         foreach ($data['groups'] as $group) {
-            if ($r)
-                $new_data[] = array('group_GUID'=>$group,'movabl_type'=>'media','movabl_GUID'=>$data['movabl_guid'],'permission_type'=>'read');
-            if ($w)
-                $new_data[] = array('group_GUID'=>$group,'movabl_type'=>'media','movabl_GUID'=>$data['movabl_guid'],'permission_type'=>'write');
-            if ($x)
-                $new_data[] = array('group_GUID'=>$group,'movabl_type'=>'media','movabl_GUID'=>$data['movabl_guid'],'permission_type'=>'execute');
+            if ($group['r'])
+                $new_data[] = array('group_GUID'=>$group['guid'],'movabl_type'=>$data['movabl_type'],'movabl_GUID'=>$data['movabl_guid'],'permission_type'=>'read');
+            if ($group['w'])
+                $new_data[] = array('group_GUID'=>$group['guid'],'movabl_type'=>$data['movabl_type'],'movabl_GUID'=>$data['movabl_guid'],'permission_type'=>'write');
+            if ($group['x'])
+                $new_data[] = array('group_GUID'=>$group['guid'],'movabl_type'=>$data['movabl_type'],'movabl_GUID'=>$data['movabl_guid'],'permission_type'=>'execute');
+            $groupstring[] = $group['guid'];
         }
-        $groupstring = "'".implode("','",$data['groups'])."'";
+        $groupstring = "'".implode("','",$groupstring)."'";
         $results = $mvsdb->query("SELECT * FROM mvs_permissions
-                                WHERE movabl_type = 'media'
+                                WHERE movabl_type = '{$data['movabl_type']}'
                                 AND movabl_GUID = '{$data['movabl_guid']}'
                                 AND group_GUID IN ($groupstring)");
 
+        $old_data_index = array();
         while ($row = $results->fetch_assoc()) {
             $old_data_index[] = array(
                 'group_GUID' => $row['group_GUID'],
-                'movabl_type' => 'media',
+                'movabl_type' => $data['movabl_type'],
                 'movabl_GUID' => $row['movabl_GUID'],
                 'permission_type' => $row['permission_type']
             );
@@ -88,7 +88,7 @@ class Movabls_Permissions {
             if ($key === false) {
                 $mvsdb->query("INSERT INTO mvs_permissions
                                (group_GUID,movabl_type,movabl_GUID,permission_type,inheritance)
-                               VALUES ('{$data['group_GUID']}','media','{$data['movabl_GUID']}','{$data['permission_type']}','')");
+                               VALUES ('{$data['group_GUID']}','{$data['movabl_type']}','{$data['movabl_GUID']}','{$data['permission_type']}','')");
                 $mvsdb->query("UPDATE mvs_permissions SET inheritance = '[\"$mvsdb->insert_id\"]' WHERE permission_id = $mvsdb->insert_id");                
             }
             else {
@@ -122,18 +122,24 @@ class Movabls_Permissions {
 
     /**
      * Escapes data passed to a set function for use in a SQL query
+     * @param string $movabl_type
      * @param string $movabl_guid
      * @param array $groups
      * @return array 
      */
-    private static function escape_data($movabl_guid,$groups,$mvsdb = null) {
+    private static function escape_data($movabl_type,$movabl_guid,$groups,$mvsdb = null) {
 
         if (empty($mvsdb))
             $mvsdb = Movabls_Permissions::db_link();
 
+        $data['movabl_type'] = $mvsdb->real_escape_string($movabl_type);
         $data['movabl_guid'] = $mvsdb->real_escape_string($movabl_guid);
-        foreach ($groups as $group)
-            $data['groups'][] = $mvsdb->real_escape_string($group);
+        foreach ($groups as $k => $group) {
+            $data['groups'][$k]['guid'] = $mvsdb->real_escape_string($group['guid']);
+            $data['groups'][$k]['r'] = $group['r'] ? true : false;
+            $data['groups'][$k]['w'] = $group['w'] ? true : false;
+            $data['groups'][$k]['x'] = $group['x'] ? true : false;
+        }
 
         return $data;
 
