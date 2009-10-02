@@ -57,22 +57,37 @@ class Movabls_Permissions {
             throw new Exception('You do not have permission to edit permissions.');
 
         $data = Movabls_Permissions::escape_data($movabl_guid,$groups,$mvsdb);
-        foreach ($groups as $group) {
+        foreach ($data['groups'] as $group) {
             if ($r)
-                $new_data[] = array('group_guid'=>$group,'movabl_type'=>'media','movabl_GUID'=>$data['movabl_guid'],'permission_type'=>'read');
+                $new_data[] = array('group_GUID'=>$group,'movabl_type'=>'media','movabl_GUID'=>$data['movabl_guid'],'permission_type'=>'read');
             if ($w)
-                $new_data[] = array('group_guid'=>$group,'movabl_type'=>'media','movabl_GUID'=>$data['movabl_guid'],'permission_type'=>'write');
+                $new_data[] = array('group_GUID'=>$group,'movabl_type'=>'media','movabl_GUID'=>$data['movabl_guid'],'permission_type'=>'write');
             if ($x)
-                $new_data[] = array('group_guid'=>$group,'movabl_type'=>'media','movabl_GUID'=>$data['movabl_guid'],'permission_type'=>'execute');
+                $new_data[] = array('group_GUID'=>$group,'movabl_type'=>'media','movabl_GUID'=>$data['movabl_guid'],'permission_type'=>'execute');
+        }
+        $groupstring = "'".implode("','",$data['groups'])."'";
+        $results = $mvsdb->query("SELECT * FROM mvs_permissions
+                                WHERE movabl_type = 'media'
+                                AND movabl_GUID = '{$data['movabl_guid']}'
+                                AND group_GUID IN ($groupstring)
+                                HAVING inheritance LIKE CONCAT('%\"',permission_id,'\"%')");
+
+        while ($row = $results->fetch_assoc())
+            $old_data[$row['group_GUID']][$row['movabl_GUID']][$row['permission_type']] = $row;
+
+        foreach ($new_data as $data) {
+            if (!isset($old_data[$data['group_GUID']][$data['movabl_GUID']][$data['permission_type']]))
+                die();//insert
+            else
+                unset($old_data[$data['group_GUID']][$data['movabl_GUID']][$data['permission_type']]);     
         }
 
-        $old_data = $mvsdb->query("SELECT * FROM mvs_permissions
-                                WHERE movabl_type = 'media'
-                                AND movabl_GUID = {$new_data['movabl_guid']}
-                                AND inheritance IS NULL");
-
-        print_r($new_data);die();
-
+        foreach ($old_data as $data) {
+            if ($data['inheritance'] == '["'.$data['permission_id'].'"]')
+                die();//delete
+            else
+                die();//update inheritance
+        }
     }
 
     /**

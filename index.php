@@ -21,6 +21,7 @@ try {
     $GLOBALS = new Movabls_Globals();
     unset($_SERVER,$_GET,$_POST,$_FILES,$_COOKIE,$_SESSION,$_REQUEST,$_ENV);
     //Run it!
+    //Movabls_Permissions::set_media_permission('test_media', array('mysiteadmins'), true, false, true);
     new Movabls_Run;
 
 } catch (Exception $e) {
