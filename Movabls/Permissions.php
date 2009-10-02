@@ -69,24 +69,54 @@ class Movabls_Permissions {
         $results = $mvsdb->query("SELECT * FROM mvs_permissions
                                 WHERE movabl_type = 'media'
                                 AND movabl_GUID = '{$data['movabl_guid']}'
-                                AND group_GUID IN ($groupstring)
-                                HAVING inheritance LIKE CONCAT('%\"',permission_id,'\"%')");
+                                AND group_GUID IN ($groupstring)");
 
-        while ($row = $results->fetch_assoc())
-            $old_data[$row['group_GUID']][$row['movabl_GUID']][$row['permission_type']] = $row;
-
-        foreach ($new_data as $data) {
-            if (!isset($old_data[$data['group_GUID']][$data['movabl_GUID']][$data['permission_type']]))
-                die();//insert
-            else
-                unset($old_data[$data['group_GUID']][$data['movabl_GUID']][$data['permission_type']]);     
+        while ($row = $results->fetch_assoc()) {
+            $old_data_index[] = array(
+                'group_GUID' => $row['group_GUID'],
+                'movabl_type' => 'media',
+                'movabl_GUID' => $row['movabl_GUID'],
+                'permission_type' => $row['permission_type']
+            );
+            $row['inheritance'] = json_decode($row['inheritance']);
+            $old_data[] = $row;
         }
 
-        foreach ($old_data as $data) {
-            if ($data['inheritance'] == '["'.$data['permission_id'].'"]')
-                die();//delete
-            else
-                die();//update inheritance
+        foreach ($new_data as $data) {
+            $key = array_search($data,$old_data_index);
+            //If there's not an entry for it
+            if ($key === false) {
+                $mvsdb->query("INSERT INTO mvs_permissions
+                               (group_GUID,movabl_type,movabl_GUID,permission_type,inheritance)
+                               VALUES ('{$data['group_GUID']}','media','{$data['movabl_GUID']}','{$data['permission_type']}','')");
+                $mvsdb->query("UPDATE mvs_permissions SET inheritance = '[\"$mvsdb->insert_id\"]' WHERE permission_id = $mvsdb->insert_id");                
+            }
+            else {
+                //If the inheritance is not set yet
+                if (!in_array($old_data[$key]['permission_id'],$old_data[$key]['inheritance'])) {
+                    $old_data[$key]['inheritance'][] = $old_data[$key]['permission_id'];
+                    $inheritance = json_encode($old_data[$key]['inheritance']);
+                    $mvsdb->query("UPDATE mvs_permissions SET inheritance = '$inheritance' WHERE permission_id = {$old_data[$key]['permission_id']}");
+                }
+                unset($old_data[$key],$old_data_index[$key]);
+            }                
+        }
+
+        if (!empty($old_data)) {
+            foreach ($old_data as $data) {
+                if ($data['inheritance'] == array($data['permission_id']))
+                    $mvsdb->query("DELETE FROM mvs_permissions WHERE permission_id = {$data['permission_id']}");
+                else {
+                    foreach ($data['inheritance'] as $k => $id) {
+                        if ($id == $data['permission_id']) {
+                            unset($data['inheritance'][$k]);
+                            break;
+                        }
+                    }
+                    $inheritance = json_encode(array_values($data['inheritance']));
+                    $mvsdb->query("UPDATE mvs_permissions SET inheritance = '$inheritance' WHERE permission_id = {$data['permission_id']}");
+                }
+            }
         }
     }
 
