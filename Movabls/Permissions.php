@@ -6,22 +6,24 @@
 class Movabls_Permissions {
 
     /**
-     * Checks whether a user with the given group memberships has permission to access
-     * the given movabl with the given permission type
+     * Checks whether the current user has permission to access the given movabl with the given permission type
      * @param string $movabl_type
      * @param string $movabl_guid
-     * @param array $groups
+     * @param array $user
      * @param string $permission_type
      * @param mysqli handle $mvsdb
      */
-    public static function check_permission($movabl_type,$movabl_guid,$groups,$permission_type,$mvsdb = null) {
+    public static function check_permission($movabl_type,$movabl_guid,$permission_type,$mvsdb = null) {
+
+        if ($GLOBALS->_USER['is_owner'])
+            return true;
 
         if (empty($mvsdb))
             $mvsdb = Movabls_Permissions::db_link();
 
         $movabl_type = $mvsdb->real_escape_string($movabl_type);
         $movabl_guid = $mvsdb->real_escape_string($movabl_guid);
-        foreach ($groups as $k => $group)
+        foreach ($GLOBALS->_USER['groups'] as $k => $group)
             $groups[$k] = $mvsdb->real_escape_string($group);
         $groups = "'".implode("','",$groups)."'";
         $permission_type = $mvsdb->real_escape_string($permission_type);
@@ -46,114 +48,195 @@ class Movabls_Permissions {
      * @param string $movabl_type
      * @param string $movabl_guid
      * @param array $groups = array('guid'=>'fooguid','r'=>bool,'w'=>bool,'x'=>bool)
-     * @param int $inheritance = permission_id to be used as inheritance
+     * @param string $inheritance_type
+     * @param string $inheritance_GUID
      * @param mysqli handle $mvsdb
      * @return true
      */
-    public static function set_permission($movabl_type,$movabl_guid,$groups,$inheritance = null,$mvsdb = null) {
+    public static function set_permission($movabl_type,$movabl_guid,$groups,$inheritance_type = null,$inheritance_GUID = null,$mvsdb = null) {
 
         if (empty($mvsdb))
             $mvsdb = Movabls_Permissions::db_link();
-        if (!Movabls_Permissions::permissions_editor($GLOBALS->_USER['groups'],$mvsdb))
+        if (!Movabls_Permissions::permissions_editor($GLOBALS->_USER,$mvsdb))
             throw new Exception('You do not have permission to edit permissions.');
 
-        $data = Movabls_Permissions::escape_data($movabl_type,$movabl_guid,$groups,$mvsdb);
-        foreach ($data['groups'] as $group) {
-            if ($group['r'])
-                $new_data[] = array('group_GUID'=>$group['guid'],'movabl_type'=>$data['movabl_type'],'movabl_GUID'=>$data['movabl_guid'],'permission_type'=>'read');
-            if ($group['w'])
-                $new_data[] = array('group_GUID'=>$group['guid'],'movabl_type'=>$data['movabl_type'],'movabl_GUID'=>$data['movabl_guid'],'permission_type'=>'write');
-            if ($group['x'])
-                $new_data[] = array('group_GUID'=>$group['guid'],'movabl_type'=>$data['movabl_type'],'movabl_GUID'=>$data['movabl_guid'],'permission_type'=>'execute');
+        $escaped_data = Movabls_Permissions::escape_data($movabl_type,$movabl_guid,$groups,$inheritance_type,$inheritance_GUID,$mvsdb);
+
+        //Set the permissions of all the children of this movabl
+        Movabls_Permissions::set_children($escaped_data,$mvsdb);
+        
+        //Prepare the new data array to set this movabl
+        foreach ($escaped_data['groups'] as $group) {
+            $template = array(
+                'group_GUID' => $group['guid'],
+                'movabl_type' => $escaped_data['movabl_type'],
+                'movabl_GUID' => $escaped_data['movabl_GUID'],
+                'permission_type' => null,
+                'inheritance_type' => $escaped_data['inheritance_type'],
+                'inheritance_GUID' => $escaped_data['inheritance_GUID']
+            );
+            if ($group['r']) {
+                $template['permission_type'] = 'read';
+                $new_data[] = $template;
+            }
+            if ($group['w']) {
+                $template['permission_type'] = 'write';
+                $new_data[] = $template;
+            }
+            if ($group['x']) {
+                $template['permission_type'] = 'execute';
+                $new_data[] = $template;
+            }
             $groupstring[] = $group['guid'];
         }
         $groupstring = "'".implode("','",$groupstring)."'";
 
-        //Get the relevant existing permissions and put them into an array and index for reference
+        //Get the relevant existing permissions and put them into the old data array
         $results = $mvsdb->query("SELECT * FROM mvs_permissions
-                                WHERE movabl_type = '{$data['movabl_type']}'
-                                AND movabl_GUID = '{$data['movabl_guid']}'
-                                AND group_GUID IN ($groupstring)");
+                                WHERE movabl_type = '{$escaped_data['movabl_type']}'
+                                AND movabl_GUID = '{$escaped_data['movabl_GUID']}'
+                                AND group_GUID IN ($groupstring)
+                                AND inheritance_type ".(empty($escaped_data['inheritance_type']) ? 'IS NULL' : "= '{$escaped_data['inheritance_type']}'")."
+                                AND inheritance_GUID ".(empty($escaped_data['inheritance_GUID']) ? 'IS NULL' : "= '{$escaped_data['inheritance_GUID']}'"));
 
         $old_data_index = array();
         while ($row = $results->fetch_assoc()) {
+            $row['permission_id'] = (int)$row['permission_id'];
+            $row['inheritance_type'] = empty($row['inheritance_type']) ? null : $row['inheritance_type'];
+            $row['inheritance_GUID'] = empty($row['inheritance_GUID']) ? null : $row['inheritance_GUID'];
+            $old_data[] = $row;
             $old_data_index[] = array(
                 'group_GUID' => $row['group_GUID'],
-                'movabl_type' => $data['movabl_type'],
+                'movabl_type' => $escaped_data['movabl_type'],
                 'movabl_GUID' => $row['movabl_GUID'],
-                'permission_type' => $row['permission_type']
+                'permission_type' => $row['permission_type'],
+                'inheritance_type' => $row['inheritance_type'],
+                'inheritance_GUID' => $row['inheritance_GUID']
             );
-            $row['permission_id'] = (int)$row['permission_id'];
-            $row['inheritance'] = json_decode($row['inheritance']);
-            $old_data[] = $row;
         }
+        $results->free();
 
+        //Add new data if the rows don't already exist
         foreach ($new_data as $data) {
             $key = array_search($data,$old_data_index);
-            //If there's not a row for this permission yet
             if ($key === false) {
-                if (empty($inheritance))
-                    $inheritance_string = '';
-                else
-                    $inheritance_string = json_encode(array($inheritance));
-                $mvsdb->query("INSERT INTO mvs_permissions
-                               (group_GUID,movabl_type,movabl_GUID,permission_type,inheritance)
-                               VALUES ('{$data['group_GUID']}','{$data['movabl_type']}','{$data['movabl_GUID']}','{$data['permission_type']}','$inheritance_string')");
-                if (empty($inheritance))
-                    $mvsdb->query("UPDATE mvs_permissions SET inheritance = '[$mvsdb->insert_id]' WHERE permission_id = $mvsdb->insert_id");
-            }
-            else { //the row exists
-                //determine what permission_id to use as the new inheritance
-                if (empty($inheritance))
-                    $new = $old_data[$key]['permission_id'];
-                else
-                    $new = $inheritance;
-                //If the new inheritance is not already set
-                if (!in_array($new,$old_data[$key]['inheritance'])) {
-                    $old_data[$key]['inheritance'][] = $new;
-                    $old_data[$key]['inheritance'] = json_encode($old_data[$key]['inheritance']);
-                    $mvsdb->query("UPDATE mvs_permissions SET inheritance = '{$old_data[$key]['inheritance']}' WHERE permission_id = {$old_data[$key]['permission_id']}");
+                if ($data['inheritance_type'] !== null) {
+                    $data['inheritance_type'] = "'".$data['inheritance_type']."'";
+                    $data['inheritance_GUID'] = "'".$data['inheritance_GUID']."'";
                 }
-                unset($old_data[$key],$old_data_index[$key]);
-            }             
+                else {
+                    $data['inheritance_type'] = "NULL";
+                    $data['inheritance_GUID'] = "NULL";
+                }
+                $mvsdb->query("INSERT INTO mvs_permissions
+                               (group_GUID,movabl_type,movabl_GUID,permission_type,inheritance_type,inheritance_GUID)
+                               VALUES ('{$data['group_GUID']}','{$data['movabl_type']}','{$data['movabl_GUID']}','{$data['permission_type']}',{$data['inheritance_type']},{$data['inheritance_GUID']})");
+            }
+            else
+                unset($old_data[$key],$old_data_index[$key]);            
         }
 
         //old_data that were not included in new_data should be removed
         if (!empty($old_data)) {
-            foreach ($old_data as $data) {
-                //If this was the only inheritance, delete the row
-                if ($data['inheritance'] == array($data['permission_id']))
-                    $mvsdb->query("DELETE FROM mvs_permissions WHERE permission_id = {$data['permission_id']}");
-                //Otherwise just remove the inheritance
-                else {
-                    foreach ($data['inheritance'] as $k => $id) {
-                        if ($id == $data['permission_id']) {
-                            unset($data['inheritance'][$k]);
-                            break;
-                        }
-                    }
-                    $data['inheritance'] = json_encode(array_values($data['inheritance']));
-                    $mvsdb->query("UPDATE mvs_permissions SET inheritance = '{$data['inheritance']}' WHERE permission_id = {$data['permission_id']}");
-                }
-            }
+            foreach ($old_data as $data)
+                $mvsdb->query("DELETE FROM mvs_permissions WHERE permission_id = {$data['permission_id']}");
         }
     }
+
+    /**
+     * Gets all the children of the movabl being set and sets them
+     * @param array $escaped_data
+     * @param mysqli handle $mvsdb
+     */
+    private static function set_children($escaped_data,$mvsdb = null) {
+
+        if (empty($mvsdb))
+            $mvsdb = Movabls_Permissions::db_link();
+
+        switch ($escaped_data['movabl_type']) {
+            case 'place':
+                $results = $mvsdb->query("SELECT media_GUID,interface_GUID FROM mvs_places WHERE place_GUID = '{$escaped_data['movabl_GUID']}'");
+                $row = $results->fetch_assoc();
+                $extras = array(
+                    array('movabl_type'=>'media','movabl_GUID'=>$row['media_GUID']),
+                    array('movabl_type'=>'interface','movabl_GUID'=>$row['interface_GUID'])
+                );
+                $results->free();
+                break;
+            case 'interface':
+                $results = $mvsdb->query("SELECT content FROM mvs_interfaces WHERE interface_GUID = '{$escaped_data['movabl_GUID']}'");
+                $row = $results->fetch_assoc();
+                $tags = json_decode($row['content'],true);
+                $extras = Movabls_Permissions::get_tags($tags);
+                $results->free();
+                break;
+            case 'package':
+                $results = $mvsdb->query("SELECT contents FROM mvs_packages WHERE package_GUID = '{$escaped_data['movabl_GUID']}'");
+                $row = $results->fetch_assoc();
+                $extras = json_decode($row['contents'],true);
+                $results->free();
+                break;
+        }
+        if (!empty($extras)) {
+            foreach ($extras as $extra)
+                Movabls_Permissions::set_permission($extra['movabl_type'], $extra['movabl_GUID'], $escaped_data['groups'], $escaped_data['movabl_type'], $escaped_data['movabl_GUID'], $mvsdb);
+        }
+        
+    }
+
+    /**
+     * Extracts sub-movabls from an interface
+     * @param tags $tags
+     * @param extras array so far $extras
+     * @return extras array after this round
+     */
+    private static function get_tags($tags,$extras = array()) {
+
+        if (!empty($tags)) {
+            foreach ($tags as $value) {
+                if (isset($value['movabl_type']))
+                    $extras[] = array('movabl_type'=>$value['movabl_type'],'movabl_GUID'=>$value['movabl_GUID']);
+                if (isset($value['tags']))
+                    $extras = Movabls_Permissions::get_tags($value['tags'],$extras);
+                elseif (isset($value['interface_GUID']))
+                    $extras[] = array('movabl_type'=>'interface','movabl_GUID'=>$value['interface_GUID']);
+            }
+        }
+        return $extras;
+
+    }
+
+    //TODO: If you create a movabl, any site permission has to be added for that movabl
+    //If you add a movabl to a package, place or interface, the permissions have to be added with the
+    //correct inheritances.  Also, if you remove an item from a package, place, or int, the permission
+    //inheritance has to be removed, and any inheritances that passed through that parent also have to
+    //be removed.
 
     /**
      * Escapes data passed to a set function for use in a SQL query
      * @param string $movabl_type
      * @param string $movabl_guid
      * @param array $groups
+     * @param string $inheritance_type
+     * @param string $inheritance_GUID
      * @param mysqli handle $mvsdb
      * @return array 
      */
-    private static function escape_data($movabl_type,$movabl_guid,$groups,$mvsdb = null) {
+    private static function escape_data($movabl_type,$movabl_guid,$groups,$inheritance_type,$inheritance_GUID,$mvsdb = null) {
 
         if (empty($mvsdb))
             $mvsdb = Movabls_Permissions::db_link();
 
         $data['movabl_type'] = $mvsdb->real_escape_string($movabl_type);
-        $data['movabl_guid'] = $mvsdb->real_escape_string($movabl_guid);
+        $data['movabl_GUID'] = $mvsdb->real_escape_string($movabl_guid);
+        if (empty($inheritance_type)) {
+            $data['inheritance_type'] = null;
+            $data['inheritance_GUID'] = null;
+        }
+        else {
+            $data['inheritance_type'] = $mvsdb->real_escape_string($inheritance_type);
+            $data['inheritance_GUID'] = $mvsdb->real_escape_string($inheritance_GUID);
+        }
         foreach ($groups as $k => $group) {
             $data['groups'][$k]['guid'] = $mvsdb->real_escape_string($group['guid']);
             $data['groups'][$k]['r'] = $group['r'] ? true : false;
@@ -167,16 +250,19 @@ class Movabls_Permissions {
 
     /**
      * Determines whether the current user has permission to edit permissions
-     * @param array $groups
+     * @param array $user
      * @param mysqli handle $mvsdb
      * @return bool
      */
-    public static function permissions_editor($groups,$mvsdb = null) {
+    public static function permissions_editor($mvsdb = null) {
+
+        if ($GLOBALS->_USER['is_owner'])
+            return true;
 
         if (empty($mvsdb))
             $mvsdb = Movabls_Permissions::db_link();
         
-        $groups = "'".implode("','",$groups)."'";
+        $groups = "'".implode("','",$GLOBALS->_USER['groups'])."'";
         $results = $mvsdb->query("SELECT group_id FROM mvs_groups
                                     WHERE group_GUID IN ($groups)
                                     AND permissions_editor = 1");

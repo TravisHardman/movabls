@@ -98,6 +98,7 @@ class Movabls_Run {
         if (empty($tags))
             return false;
 
+        //TODO: Put toplevel tags as variables in expressions?
         foreach($tags as $value) {
             if (isset($value->movabl_GUID) && $value->movabl_type == 'media') {
                 if (!isset($this->media->{$value->movabl_GUID}))
