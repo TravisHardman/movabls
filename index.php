@@ -21,7 +21,7 @@ try {
     $GLOBALS = new Movabls_Globals();
     unset($_SERVER,$_GET,$_POST,$_FILES,$_COOKIE,$_SESSION,$_REQUEST,$_ENV);
     //Run it!
-    //Movabls_Permissions::set_permission('interface','TEST_INT',array(array('guid'=>'mysiteusers','r'=>true,'w'=>true,'x'=>true)));
+    //Movabls_Permissions::set_permission('site',null,array(array('guid'=>'mysiteusers','r'=>false,'w'=>true,'x'=>true)));
     new Movabls_Run;
 
 } catch (Exception $e) {

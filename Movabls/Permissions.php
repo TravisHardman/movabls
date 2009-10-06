@@ -45,7 +45,7 @@ class Movabls_Permissions {
      * Takes information on new permissions, constructs an array of new permissions,
      * diffs that array with the existing permissions in the database, and makes the
      * necessary changes to the db
-     * @param string $movabl_type
+     * @param string $movabl_type (or 'site')
      * @param string $movabl_guid
      * @param array $groups = array('guid'=>'fooguid','r'=>bool,'w'=>bool,'x'=>bool)
      * @param string $inheritance_type
@@ -63,7 +63,10 @@ class Movabls_Permissions {
         $escaped_data = Movabls_Permissions::escape_data($movabl_type,$movabl_guid,$groups,$inheritance_type,$inheritance_GUID,$mvsdb);
 
         //Set the permissions of all the children of this movabl
-        Movabls_Permissions::set_children($escaped_data,$mvsdb);
+        if (empty($inheritance_type))
+            Movabls_Permissions::set_children($escaped_data,true,$mvsdb);
+        else
+            Movabls_Permissions::set_children($escaped_data,false,$mvsdb);
         
         //Prepare the new data array to set this movabl
         foreach ($escaped_data['groups'] as $group) {
@@ -146,14 +149,37 @@ class Movabls_Permissions {
     /**
      * Gets all the children of the movabl being set and sets them
      * @param array $escaped_data
+     * @param bool $toplevel
      * @param mysqli handle $mvsdb
      */
-    private static function set_children($escaped_data,$mvsdb = null) {
-
+    private static function set_children($escaped_data,$toplevel,$mvsdb = null) {
+        
         if (empty($mvsdb))
             $mvsdb = Movabls_Permissions::db_link();
 
         switch ($escaped_data['movabl_type']) {
+            case 'site':
+                $results = $mvsdb->query("SELECT media_GUID FROM mvs_media");
+                while ($row = $results->fetch_assoc())
+                    $extras[] = array('movabl_type'=>'media','movabl_GUID'=>$row['media_GUID']);
+                $results->free();
+                $results = $mvsdb->query("SELECT function_GUID FROM mvs_functions");
+                while ($row = $results->fetch_assoc())
+                    $extras[] = array('movabl_type'=>'function','movabl_GUID'=>$row['function_GUID']);
+                $results->free();
+                $results = $mvsdb->query("SELECT interface_GUID FROM mvs_interfaces");
+                while ($row = $results->fetch_assoc())
+                    $extras[] = array('movabl_type'=>'interface','movabl_GUID'=>$row['interface_GUID']);
+                $results->free();
+                $results = $mvsdb->query("SELECT place_GUID FROM mvs_places");
+                while ($row = $results->fetch_assoc())
+                    $extras[] = array('movabl_type'=>'place','movabl_GUID'=>$row['place_GUID']);
+                $results->free();
+                $results = $mvsdb->query("SELECT package_GUID FROM mvs_packages");
+                while ($row = $results->fetch_assoc())
+                    $extras[] = array('movabl_type'=>'packages','movabl_GUID'=>$row['package_GUID']);
+                $results->free();
+                break;
             case 'place':
                 $results = $mvsdb->query("SELECT media_GUID,interface_GUID FROM mvs_places WHERE place_GUID = '{$escaped_data['movabl_GUID']}'");
                 $row = $results->fetch_assoc();
@@ -178,8 +204,14 @@ class Movabls_Permissions {
                 break;
         }
         if (!empty($extras)) {
-            foreach ($extras as $extra)
-                Movabls_Permissions::set_permission($extra['movabl_type'], $extra['movabl_GUID'], $escaped_data['groups'], $escaped_data['movabl_type'], $escaped_data['movabl_GUID'], $mvsdb);
+            if ($toplevel) {
+                foreach ($extras as $extra)
+                    Movabls_Permissions::set_permission($extra['movabl_type'], $extra['movabl_GUID'], $escaped_data['groups'], $escaped_data['movabl_type'], $escaped_data['movabl_GUID'], $mvsdb);
+            }
+            else {
+                foreach ($extras as $extra)
+                    Movabls_Permissions::set_permission($extra['movabl_type'], $extra['movabl_GUID'], $escaped_data['groups'], $escaped_data['inheritance_type'], $escaped_data['inheritance_GUID'], $mvsdb);
+            }
         }
         
     }
@@ -202,6 +234,7 @@ class Movabls_Permissions {
                     $extras[] = array('movabl_type'=>'interface','movabl_GUID'=>$value['interface_GUID']);
             }
         }
+
         return $extras;
 
     }
