@@ -257,6 +257,7 @@ class Movabls {
             $datastring = Movabls::generate_datastring('insert',$data);
             $result = $mvsdb->query("INSERT INTO `mvs_$table` $datastring");
             $movabl_guid = $data["{$movabl_type}_guid"];
+            Movabls_Permissions::add_site_permissions($movabl_type,$movabl_guid,$mvsdb);
         }
 
         if (!empty($meta))

@@ -47,13 +47,16 @@ class Movabls_Permissions {
      * necessary changes to the db
      * @param string $movabl_type (or 'site')
      * @param string $movabl_guid
-     * @param array $groups = array('guid'=>'fooguid','r'=>bool,'w'=>bool,'x'=>bool)
+     * @param array $groups = array('guid'=>'fooguid','read'=>bool,'write'=>bool,'execute'=>bool)
      * @param string $inheritance_type
      * @param string $inheritance_GUID
      * @param mysqli handle $mvsdb
      * @return true
      */
     public static function set_permission($movabl_type,$movabl_guid,$groups,$inheritance_type = null,$inheritance_GUID = null,$mvsdb = null) {
+
+        //TODO: There's a bug in here somewhere that is creating some empty movabl_type and movabl_GUIDs
+        //in the database when setting site permissions.  Seems kind of random...
 
         if (empty($mvsdb))
             $mvsdb = Movabls_Permissions::db_link();
@@ -78,15 +81,15 @@ class Movabls_Permissions {
                 'inheritance_type' => $escaped_data['inheritance_type'],
                 'inheritance_GUID' => $escaped_data['inheritance_GUID']
             );
-            if ($group['r']) {
+            if ($group['read']) {
                 $template['permission_type'] = 'read';
                 $new_data[] = $template;
             }
-            if ($group['w']) {
+            if ($group['write']) {
                 $template['permission_type'] = 'write';
                 $new_data[] = $template;
             }
-            if ($group['x']) {
+            if ($group['execute']) {
                 $template['permission_type'] = 'execute';
                 $new_data[] = $template;
             }
@@ -239,11 +242,99 @@ class Movabls_Permissions {
 
     }
 
-    //TODO: If you create a movabl, any site permission has to be added for that movabl
-    //If you add a movabl to a package, place or interface, the permissions have to be added with the
-    //correct inheritances.  Also, if you remove an item from a package, place, or int, the permission
-    //inheritance has to be removed, and any inheritances that passed through that parent also have to
-    //be removed.
+    /**
+     * Adds existing site-level permissions to a new movabl
+     * @param string $movabl_type
+     * @param string $movabl_guid
+     */
+    public static function add_site_permissions($movabl_type,$movabl_guid,$mvsdb = null) {
+
+        if (empty($mvsdb))
+            $mvsdb = Movabls_Permissions::db_link();
+
+        $movabl_type = $mvsdb->real_escape_string($movabl_type);
+        $movabl_guid = $mvsdb->real_escape_string($movabl_guid);
+
+        $current = Movabls_Permissions::get_permissions('site',null,null,$mvsdb);
+
+        foreach ($current as $group_GUID => $permissions) {
+            $groups[] = array(
+                'guid' => $group_GUID,
+                'read' => $permissions['read'] !== false,
+                'write' => $permissions['write'] !== false,
+                'execute' => $permissions['execute'] !== false
+            );
+        }
+        Movabls_Permissions::set_permission($movabl_type, $movabl_guid, $groups, 'site', null, $mvsdb);
+
+    }
+
+    /**
+     * Gets permissions for all groups for a single movabl
+     * @param string $movabl_type
+     * @param string $movabl_guid
+     * @param array $groups
+     * @param mysqli handle $mvsdb
+     * @return permissions array
+     */
+    public static function get_permissions($movabl_type,$movabl_guid,$groups = null,$mvsdb = null) {
+
+        if (empty($mvsdb))
+            $mvsdb = Movabls_Permissions::db_link();
+
+        if (empty($groups)) {
+            $allgroups = Movabls_Permissions::get_groups();
+            $groups = array();
+            foreach ($allgroups as $group)
+                $groups[] = $group['group_GUID'];
+        }
+
+        foreach ($groups as $k => $v) {
+            $groups[$k] = $mvsdb->real_escape_string($v);
+            $return[$v] = array('read'=>false,'write'=>false,'execute'=>false);
+        }
+        $movabl_type = $mvsdb->real_escape_string($movabl_type);
+        if (empty($movabl_guid))
+            $guid = 'IS NULL';
+        else
+            $guid = "= '".$mvsdb->real_escape_string($movabl_guid)."'";
+
+        $results = $mvsdb->query("SELECT * FROM mvs_permissions
+                                  WHERE movabl_type = '$movabl_type'
+                                  AND movabl_GUID $guid
+                                  AND group_GUID IN ('".implode("','",$groups)."')");
+        
+        while ($row = $results->fetch_assoc()) {
+            $array = array(
+                'inheritance_type' => $row['inheritance_type'],
+                'inheritance_GUID' => $row['inheritance_GUID']
+            );
+            $return[$row['group_GUID']][$row['permission_type']][] = $array;
+        }
+        $results->free();
+
+        return $return;
+
+    }
+
+    /**
+     * Gets all groups present on this site
+     * @param mysqli handle $mvsdb
+     * @return groups array
+     */
+    public static function get_groups($mvsdb = null) {
+
+        if (empty($mvsdb))
+            $mvsdb = Movabls_Permissions::db_link();
+
+        $results = $mvsdb->query("SELECT * FROM mvs_groups");
+        while($row = $results->fetch_assoc())
+            $return[] = $row;
+        $results->free();
+
+        return $return;
+
+    }
 
     /**
      * Escapes data passed to a set function for use in a SQL query
@@ -272,9 +363,9 @@ class Movabls_Permissions {
         }
         foreach ($groups as $k => $group) {
             $data['groups'][$k]['guid'] = $mvsdb->real_escape_string($group['guid']);
-            $data['groups'][$k]['r'] = $group['r'] ? true : false;
-            $data['groups'][$k]['w'] = $group['w'] ? true : false;
-            $data['groups'][$k]['x'] = $group['x'] ? true : false;
+            $data['groups'][$k]['read'] = $group['read'] ? true : false;
+            $data['groups'][$k]['write'] = $group['write'] ? true : false;
+            $data['groups'][$k]['execute'] = $group['execute'] ? true : false;
         }
 
         return $data;
