@@ -12,7 +12,16 @@ class Movabls {
     public static function get_packages() {
 
         $mvsdb = Movabls::db_link();
-        $result = $mvsdb->query("SELECT package_id,package_GUID FROM `mvs_packages`");
+
+        $join = $where = '';
+
+        //If the user is not the owner, just get entries for which they have read permission
+        if (!$GLOBALS->_USER['is_owner']) {
+            $join = " INNER JOIN mvs_permissions AS p ON p.movabl_GUID = x.package_GUID";
+            $where = " WHERE p.permission_type = 'read' AND p.movabl_type = 'package'";
+        }
+
+        $result = $mvsdb->query("SELECT x.package_id,x.package_GUID FROM `mvs_packages` AS x $join $where");
         if(empty($result))
             return array();
 
@@ -40,7 +49,16 @@ class Movabls {
     public static function get_places() {
         
         $mvsdb = Movabls::db_link();
-        $result = $mvsdb->query("SELECT * FROM `mvs_places` ORDER BY url ASC");
+
+        $join = $where = '';
+
+        //If the user is not the owner, just get entries for which they have read permission
+        if (!$GLOBALS->_USER['is_owner']) {
+            $join = " INNER JOIN mvs_permissions AS p ON p.movabl_GUID = x.place_GUID";
+            $where = " WHERE p.permission_type = 'read' AND p.movabl_type = 'place'";
+        }
+
+        $result = $mvsdb->query("SELECT x.* FROM `mvs_places` AS x $join $where ORDER BY x.url ASC");
         if(empty($result))
             return array();
 
@@ -69,12 +87,16 @@ class Movabls {
     public static function get_movabl($movabl_type, $movabl_guid) {
 
         $mvsdb = Movabls::db_link();
+
+        if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'read', $mvsdb))
+            throw new Exception("You do not have permission to view this Movabl");
+
         $movabl_type = $mvsdb->real_escape_string($movabl_type);
         $movabl_guid = $mvsdb->real_escape_string($movabl_guid);
 
         $table = Movabls::table_name($movabl_type);
             
-        $result = $mvsdb->query("SELECT * FROM `mvs_$table` WHERE {$movabl_type}_GUID = '$movabl_guid'");
+        $result = $mvsdb->query("SELECT x.* FROM `mvs_$table` AS x WHERE x.{$movabl_type}_GUID = '$movabl_guid'");
 
         if (empty($result))
             throw new Exception ("Movabl ($movabl_type: $movabl_guid) not found");
@@ -129,7 +151,18 @@ class Movabls {
 
         $meta = array();
 
-        $query = "SELECT * FROM `mvs_meta`";
+        $query = "SELECT m.* FROM `mvs_meta` AS m";
+
+        //If it's a single item, check whether they have permission to view it
+        if (!empty($types) && !is_array($types) && !empty($guids) && !is_array($guids)) {
+            if (!Movabls_Permissions::check_permission($types, $guids, 'read', $mvsdb))
+                throw new Exception("You do not have permission to view this Movabl");
+        }
+        //Otherwise, if the user is not the owner, just get entries for which they have read permission
+        elseif (!$GLOBALS->_USER['is_owner']) {
+            $query .= " INNER JOIN mvs_permissions AS p ON p.movabl_GUID = m.movabls_GUID AND p.movabl_type = m.movabls_type";
+            $where[] = "p.permission_type = 'read'";
+        }
 
         if (!empty($guids)) {
             if (!is_array($guids))
@@ -137,7 +170,7 @@ class Movabls {
             foreach($guids as $k => $guid)
                 $guids[$k] = $mvsdb->real_escape_string($guid);
             $in_string = "'".implode("','",$guids)."'";
-            $where[] = "movabls_GUID IN ($in_string)";
+            $where[] = "m.movabls_GUID IN ($in_string)";
         }
 
         if (!empty($types)) {
@@ -146,11 +179,12 @@ class Movabls {
             foreach($types as $k => $type)
                 $types[$k] = $mvsdb->real_escape_string($type);
             $in_string = "'".implode("','",$types)."'";
-            $where[] = "movabls_type IN ($in_string)";
+            $where[] = "m.movabls_type IN ($in_string)";
         }
 
         if (!empty($where))
             $query .= " WHERE ".implode(' AND ',$where);
+
         $result = $mvsdb->query($query);
 
         if (empty($result))
@@ -180,7 +214,18 @@ class Movabls {
 
         $meta = array();
 
-        $query = "SELECT * FROM `mvs_meta`";
+        $query = "SELECT m.* FROM `mvs_meta` AS m";
+
+        //If it's a single item, check whether they have permission to view it
+        if (!empty($types) && !is_array($types) && !empty($guids) && !is_array($guids)) {
+            if (!Movabls_Permissions::check_permission($types, $guids, 'read', $mvsdb))
+                throw new Exception("You do not have permission to view this Movabl");
+        }
+        //Otherwise, if the user is not the owner, just get entries for which they have read permission
+        elseif (!$GLOBALS->_USER['is_owner']) {
+            $query .= " INNER JOIN mvs_permissions AS p ON p.movabl_GUID = m.movabls_GUID AND p.movabl_type = m.movabls_type";
+            $where[] = "p.permission_type = 'read'";
+        }
 
         if (!empty($guids)) {
             if (!is_array($guids))
@@ -188,7 +233,7 @@ class Movabls {
             foreach($guids as $k => $guid)
                 $guids[$k] = $mvsdb->real_escape_string($guid);
             $in_string = "'".implode("','",$guids)."'";
-            $where[] = "movabls_GUID IN ($in_string)";
+            $where[] = "m.movabls_GUID IN ($in_string)";
         }
 
         if (!empty($types)) {
@@ -197,7 +242,7 @@ class Movabls {
             foreach($types as $k => $type)
                 $types[$k] = $mvsdb->real_escape_string($type.'_tag');
             $in_string = "'".implode("','",$types)."'";
-            $where[] = "movabls_type IN ($in_string)";
+            $where[] = "m.movabls_type IN ($in_string)";
         }
 
         if (!empty($where))
@@ -226,6 +271,10 @@ class Movabls {
     public static function set_movabl($movabl_type,$data,$movabl_guid = null) {
 	
         $mvsdb = Movabls::db_link();
+
+        if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write', $mvsdb))
+            throw new Exception("You do not have permission to edit this Movabl");
+
         if (!empty($data['meta']))
             $meta = $data['meta'];
 
@@ -257,8 +306,14 @@ class Movabls {
             $datastring = Movabls::generate_datastring('insert',$data);
             $result = $mvsdb->query("INSERT INTO `mvs_$table` $datastring");
             $movabl_guid = $data["{$movabl_type}_guid"];
+            //If it's new, we need to give it permissions that pertain to the site
             Movabls_Permissions::add_site_permissions($movabl_type,$movabl_guid,$mvsdb);
         }
+
+        //If it has children, we need to clean up any permissions old children may have
+        //inherited from this function or its parents
+        if (in_array($movabl_type,array('place','interface','package')))
+            Movabls_Permissions::reinforce_permissions($movabl_type,$movabl_guid,$mvsdb);
 
         if (!empty($meta))
             Movabls::set_meta($meta,$movabl_type,$movabl_guid,$mvsdb);
@@ -282,6 +337,9 @@ class Movabls {
 
         if (empty($mvsdb))
             $mvsdb = Movabls::db_link();
+
+        if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write', $mvsdb))
+            throw new Exception("You do not have permission to edit this Movabl");
 
         $old_meta = Movabls::get_meta($movabl_type,$movabl_guid);
         $old_meta = $old_meta[$movabl_guid];
@@ -334,6 +392,9 @@ class Movabls {
 
         if (empty($mvsdb))
             $mvsdb = Movabls::db_link();
+
+        if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write', $mvsdb))
+            throw new Exception("You do not have permission to edit this Movabl");
 
         $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
         $sanitized_type = $mvsdb->real_escape_string($movabl_type.'_tag');
@@ -399,6 +460,9 @@ class Movabls {
 
         $mvsdb = Movabls::db_link();
 
+        if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write', $mvsdb))
+            throw new Exception("You do not have permission to delete this Movabl");
+
         $table = Movabls::table_name($movabl_type);
         $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
         $sanitized_type = $mvsdb->real_escape_string($movabl_type);
@@ -407,6 +471,7 @@ class Movabls {
 
         Movabls::set_meta(array(),$movabl_type,$movabl_guid,$mvsdb);
         Movabls::set_tags_meta(array(),$movabl_type,$movabl_guid,$mvsdb);
+        Movabls_Permissions::delete_permissions($movabl_type,$movabl_guid,$mvsdb);
 
         return true;
 
