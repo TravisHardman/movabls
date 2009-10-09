@@ -13,15 +13,16 @@ class Movabls {
 
         $mvsdb = Movabls::db_link();
 
-        $join = $where = '';
+        $join = $where = $group = '';
 
         //If the user is not the owner, just get entries for which they have read permission
         if (!$GLOBALS->_USER['is_owner']) {
             $join = " INNER JOIN mvs_permissions AS p ON p.movabl_GUID = x.package_GUID";
             $where = " WHERE p.permission_type = 'read' AND p.movabl_type = 'package'";
+            $group = " GROUP BY p.movabl_type,p.movabl_GUID";
         }
 
-        $result = $mvsdb->query("SELECT x.package_id,x.package_GUID FROM `mvs_packages` AS x $join $where");
+        $result = $mvsdb->query("SELECT x.package_id,x.package_GUID FROM `mvs_packages` AS x $join $where $group");
         if(empty($result))
             return array();
 
@@ -50,15 +51,16 @@ class Movabls {
         
         $mvsdb = Movabls::db_link();
 
-        $join = $where = '';
+        $join = $where = $group = '';
 
         //If the user is not the owner, just get entries for which they have read permission
         if (!$GLOBALS->_USER['is_owner']) {
             $join = " INNER JOIN mvs_permissions AS p ON p.movabl_GUID = x.place_GUID";
             $where = " WHERE p.permission_type = 'read' AND p.movabl_type = 'place'";
+            $group = " GROUP BY p.movabl_type,p.movabl_GUID";
         }
 
-        $result = $mvsdb->query("SELECT x.* FROM `mvs_places` AS x $join $where ORDER BY x.url ASC");
+        $result = $mvsdb->query("SELECT x.* FROM `mvs_places` AS x $join $where $group ORDER BY x.url ASC");
         if(empty($result))
             return array();
 
@@ -162,6 +164,7 @@ class Movabls {
         elseif (!$GLOBALS->_USER['is_owner']) {
             $query .= " INNER JOIN mvs_permissions AS p ON p.movabl_GUID = m.movabls_GUID AND p.movabl_type = m.movabls_type";
             $where[] = "p.permission_type = 'read'";
+            $group = " GROUP BY p.movabl_type,p.movabl_GUID";
         }
 
         if (!empty($guids)) {
@@ -185,12 +188,16 @@ class Movabls {
         if (!empty($where))
             $query .= " WHERE ".implode(' AND ',$where);
 
+        if (!empty($group))
+            $query .= " $group";
+
         $result = $mvsdb->query($query);
 
         if (empty($result))
             return $meta;
 
         while($row = $result->fetch_assoc())
+            print_r($row);die();
             $meta[$row['movabls_GUID']][$row['key']] = $row['value'];
 
         $result->free();
@@ -225,6 +232,7 @@ class Movabls {
         elseif (!$GLOBALS->_USER['is_owner']) {
             $query .= " INNER JOIN mvs_permissions AS p ON p.movabl_GUID = m.movabls_GUID AND p.movabl_type = m.movabls_type";
             $where[] = "p.permission_type = 'read'";
+            $group = " GROUP BY p.movabl_type,p.movabl_GUID";
         }
 
         if (!empty($guids)) {
@@ -247,6 +255,10 @@ class Movabls {
 
         if (!empty($where))
             $query .= " WHERE ".implode(' AND ',$where);
+
+        if (!empty($group))
+            $query .= " $group";
+
         $result = $mvsdb->query($query);
 
         if (empty($result))
