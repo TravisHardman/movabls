@@ -55,9 +55,6 @@ class Movabls_Permissions {
      */
     public static function set_permission($movabl_type,$movabl_guid,$groups,$inheritance_type = null,$inheritance_GUID = null,$mvsdb = null) {
 
-        //TODO: There's a bug in here somewhere that is creating some empty movabl_type and movabl_GUIDs
-        //in the database when setting site permissions.  Seems kind of random...
-
         if (empty($mvsdb))
             $mvsdb = Movabls_Permissions::db_link();
         if (!Movabls_Permissions::permissions_editor($GLOBALS->_USER,$mvsdb))
@@ -97,10 +94,15 @@ class Movabls_Permissions {
         }
         $groupstring = "'".implode("','",$groupstring)."'";
 
+        if ($escaped_data['movabl_type'] !== 'site')
+            $guidstring = "= '".$escaped_data['movabl_GUID']."'";
+        else
+            $guidstring = "IS NULL";
+
         //Get the relevant existing permissions and put them into the old data array
         $results = $mvsdb->query("SELECT * FROM mvs_permissions
                                 WHERE movabl_type = '{$escaped_data['movabl_type']}'
-                                AND movabl_GUID = '{$escaped_data['movabl_GUID']}'
+                                AND movabl_GUID $guidstring
                                 AND group_GUID IN ($groupstring)
                                 AND inheritance_type ".(empty($escaped_data['inheritance_type']) ? 'IS NULL' : "= '{$escaped_data['inheritance_type']}'")."
                                 AND inheritance_GUID ".(empty($escaped_data['inheritance_GUID']) ? 'IS NULL' : "= '{$escaped_data['inheritance_GUID']}'"));
@@ -126,17 +128,12 @@ class Movabls_Permissions {
         foreach ($new_data as $data) {
             $key = array_search($data,$old_data_index);
             if ($key === false) {
-                if ($data['inheritance_type'] !== null) {
-                    $data['inheritance_type'] = "'".$data['inheritance_type']."'";
-                    $data['inheritance_GUID'] = "'".$data['inheritance_GUID']."'";
-                }
-                else {
-                    $data['inheritance_type'] = "NULL";
-                    $data['inheritance_GUID'] = "NULL";
-                }
+                $data['inheritance_type'] = $data['inheritance_type'] !== null ? "'".$data['inheritance_type']."'" : "NULL";
+                $data['inheritance_GUID'] = $data['inheritance_GUID'] !== null ? "'".$data['inheritance_GUID']."'" : "NULL";
+                $data['movabl_GUID'] = $data['movabl_GUID'] !== null ? "'".$data['movabl_GUID']."'" : "NULL";
                 $mvsdb->query("INSERT INTO mvs_permissions
                                (group_GUID,movabl_type,movabl_GUID,permission_type,inheritance_type,inheritance_GUID)
-                               VALUES ('{$data['group_GUID']}','{$data['movabl_type']}','{$data['movabl_GUID']}','{$data['permission_type']}',{$data['inheritance_type']},{$data['inheritance_GUID']})");
+                               VALUES ('{$data['group_GUID']}','{$data['movabl_type']}',{$data['movabl_GUID']},'{$data['permission_type']}',{$data['inheritance_type']},{$data['inheritance_GUID']})");
             }
             else
                 unset($old_data[$key],$old_data_index[$key]);            
@@ -180,16 +177,15 @@ class Movabls_Permissions {
                 $results->free();
                 $results = $mvsdb->query("SELECT package_GUID FROM mvs_packages");
                 while ($row = $results->fetch_assoc())
-                    $extras[] = array('movabl_type'=>'packages','movabl_GUID'=>$row['package_GUID']);
+                    $extras[] = array('movabl_type'=>'package','movabl_GUID'=>$row['package_GUID']);
                 $results->free();
                 break;
             case 'place':
                 $results = $mvsdb->query("SELECT media_GUID,interface_GUID FROM mvs_places WHERE place_GUID = '{$escaped_data['movabl_GUID']}'");
                 $row = $results->fetch_assoc();
-                $extras = array(
-                    array('movabl_type'=>'media','movabl_GUID'=>$row['media_GUID']),
-                    array('movabl_type'=>'interface','movabl_GUID'=>$row['interface_GUID'])
-                );
+                $extras[] = array('movabl_type'=>'media','movabl_GUID'=>$row['media_GUID']);
+                if (!empty($row['interface_GUID']))
+                    $extras[] = array('movabl_type'=>'interface','movabl_GUID'=>$row['interface_GUID']);
                 $results->free();
                 break;
             case 'interface':
@@ -352,15 +348,10 @@ class Movabls_Permissions {
             $mvsdb = Movabls_Permissions::db_link();
 
         $data['movabl_type'] = $mvsdb->real_escape_string($movabl_type);
-        $data['movabl_GUID'] = $mvsdb->real_escape_string($movabl_guid);
-        if (empty($inheritance_type)) {
-            $data['inheritance_type'] = null;
-            $data['inheritance_GUID'] = null;
-        }
-        else {
-            $data['inheritance_type'] = $mvsdb->real_escape_string($inheritance_type);
-            $data['inheritance_GUID'] = $mvsdb->real_escape_string($inheritance_GUID);
-        }
+        $data['movabl_GUID'] = !empty($movabl_guid) ? $mvsdb->real_escape_string($movabl_guid) : null;
+        $data['inheritance_type'] = !empty($inheritance_type) ? $mvsdb->real_escape_string($inheritance_type) : null;
+        $data['inheritance_GUID'] = !empty($inheritance_GUID) ? $mvsdb->real_escape_string($inheritance_GUID) : null;
+
         foreach ($groups as $k => $group) {
             $data['groups'][$k]['guid'] = $mvsdb->real_escape_string($group['guid']);
             $data['groups'][$k]['read'] = $group['read'] ? true : false;
