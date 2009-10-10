@@ -197,7 +197,6 @@ class Movabls {
             return $meta;
 
         while($row = $result->fetch_assoc())
-            print_r($row);die();
             $meta[$row['movabls_GUID']][$row['key']] = $row['value'];
 
         $result->free();
@@ -278,11 +277,13 @@ class Movabls {
      * @param string $movabl_type
      * @param array $data
      * @param string $movabl_guid
+     * @param mysqli handle $mvsdb
      * @return bool
      */
-    public static function set_movabl($movabl_type,$data,$movabl_guid = null) {
-	
-        $mvsdb = Movabls::db_link();
+    public static function set_movabl($movabl_type,$data,$movabl_guid = null, $mvsdb = null) {
+
+        if (empty($mvsdb))
+            $mvsdb = Movabls::db_link();
 
         if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write', $mvsdb))
             throw new Exception("You do not have permission to edit this Movabl");
@@ -297,10 +298,14 @@ class Movabls {
                 $data['inputs'] = array_keys($data['inputs']);
                 break;
             case 'interface':
-                foreach ($data['content'] as $tagname => $tag) {
-                    $tagsmeta[$tagname] = $tag['meta'];
-                    unset($data['content'][$tagname]['meta']);
+                if (!empty($data['content'])) {
+                    foreach ($data['content'] as $tagname => $tag) {
+                        $tagsmeta[$tagname] = !empty($tag['meta']) ? $tag['meta'] : array();
+                        unset($data['content'][$tagname]['meta']);
+                    }
                 }
+                else
+                    $tagsmeta = array();
                 break;
         }
 
@@ -354,7 +359,10 @@ class Movabls {
             throw new Exception("You do not have permission to edit this Movabl");
 
         $old_meta = Movabls::get_meta($movabl_type,$movabl_guid);
-        $old_meta = $old_meta[$movabl_guid];
+        if (!empty($old_meta[$movabl_guid]))
+            $old_meta = $old_meta[$movabl_guid];
+        else
+            $old_meta = array();
 
         $inserts = array();
         $updates = array();
@@ -412,7 +420,10 @@ class Movabls {
         $sanitized_type = $mvsdb->real_escape_string($movabl_type.'_tag');
 
         $old_tags_meta = Movabls::get_tags_meta($movabl_type,$movabl_guid,$mvsdb);
-        $old_tags_meta = $old_tags_meta[$movabl_guid];
+        if (!empty($old_tags_meta))
+            $old_tags_meta = $old_tags_meta[$movabl_guid];
+        else
+            $old_tags_meta = array();
 
         foreach ($new_tags_meta as $new_tag => $new_meta) {
 
@@ -483,9 +494,83 @@ class Movabls {
 
         Movabls::set_meta(array(),$movabl_type,$movabl_guid,$mvsdb);
         Movabls::set_tags_meta(array(),$movabl_type,$movabl_guid,$mvsdb);
-        Movabls_Permissions::delete_permissions($movabl_type,$movabl_guid,$mvsdb);
+        Movabls::delete_references($sanitized_type,$sanitized_guid,$mvsdb);
+        Movabls_Permissions::delete_permissions($sanitized_type,$sanitized_guid,$mvsdb);
 
         return true;
+
+    }
+
+    /**
+     * Deletes all references to this movabl in places, interfaces and packages
+     * @param string $movabl_type
+     * @param string $movabl_guid
+     * @param mysqli handle $mvsdb
+     */
+    private static function delete_references($movabl_type,$movabl_guid,$mvsdb) {
+
+        //Packages
+        $results = $mvsdb->query("SELECT * FROM mvs_packages
+                                  WHERE contents LIKE '%\"movabl_type\":\"$movabl_type\",\"movabl_GUID\":\"$movabl_guid\"%'
+                                  OR contents LIKE '%\"movabl_GUID\":\"$movabl_guid\",\"movabl_type\":\"$movabl_type\"%'");
+        while ($row = $results->fetch_assoc()) {
+            unset($row['package_id']);
+            $row['contents'] = json_decode($row['contents'],true);
+            foreach ($row['contents'] as $k => $content) {
+                if ($content == array('movabl_type'=>$movabl_type,'movabl_GUID'=>$movabl_guid))
+                    unset($row['contents'][$k]);
+            }
+            Movabls::set_movabl('package', $row, $row['package_GUID'], $mvsdb);
+        }
+        $results->free();
+
+        //Places
+        $results = $mvsdb->query("SELECT * FROM mvs_places
+                                  WHERE {$movabl_type}_GUID LIKE '%$movabl_guid%'");
+        while ($row = $results->fetch_assoc()) {
+            unset($row['place_id'],$row[$movabl_type.'_GUID']);
+            Movabls::set_movabl('place', $row, $row['place_GUID'], $mvsdb);
+        }
+        $results->free();
+
+        //Interface
+        $results = $mvsdb->query("SELECT * FROM mvs_interfaces
+                                  WHERE content LIKE '%$movabl_guid%'");
+        while ($row = $results->fetch_assoc()) {
+            unset($row['interface_id']);
+            $row['content'] = json_decode($row['content'],true);
+            $row['content'] = Movabls::delete_from_interface($row['content'],$movabl_type,$movabl_guid,$mvsdb);
+            Movabls::set_movabl('interface', $row, $row['interface_GUID'], $mvsdb);
+        }
+        $results->free();
+
+    }
+
+    /**
+     * Runs through the interface tree and removes the given movabl
+     * @param array $tree
+     * @param string $movabl_type
+     * @param string $movabl_guid
+     * @param mysqli handle $mvsdb
+     * @return array revised tree
+     */
+    private static function delete_from_interface($tree, $movabl_type, $movabl_guid, $mvsdb) {
+
+        if (!empty($tree)) {
+            foreach ($tree as $tagname => $tagvalue) {
+                if (!empty($tagvalue['movabl_type']) && $tagvalue['movabl_type'] == $movabl_type && $tagvalue['movabl_GUID'] == $movabl_guid) {
+                    $tree[$tagname]['movabl_type'] = null;
+                    $tree[$tagname]['movabl_GUID'] = null;
+                }
+                elseif (!empty($tagvalue['interface_GUID']) && $movabl_type == 'interface' && $tagvalue['interface_GUID'] == $movabl_guid)
+                    $tree[$tagname]['interface_GUID'] = null;
+                elseif (!empty($tagvalue['tags']))
+                    $tree[$tagname]['tags'] = Movabls::delete_from_interface($tree[$tagname]['tags'],$movabl_type,$movabl_guid,$mvsdb);
+            }
+            return $tree;
+        }
+        else
+            return array();
 
     }
 
@@ -518,7 +603,7 @@ class Movabls {
                 break;
             case 'interface':
                 $data = array(
-                    'content'       => !empty($data['inputs']) ? $mvsdb->real_escape_string(json_encode($data['content'])) : ''
+                    'content'       => !empty($data['content']) ? $mvsdb->real_escape_string(json_encode($data['content'])) : ''
                 );
                 break;
             case 'place':
@@ -526,8 +611,9 @@ class Movabls {
                     'url'           => $mvsdb->real_escape_string(urlencode($data['url'])),
                     'https'         => $data['https'] ? '1' : '0',
                     'media_GUID'    => $mvsdb->real_escape_string($data['media_GUID']),
-                    'interface_GUID'=> !empty($data['interface_GUID']) ? $mvsdb->real_escape_string($data['interface_GUID']) : null
                 );
+                if (!empty($data['interface_GUID']))
+                    $data['interface_GUID'] = $mvsdb->real_escape_string($data['interface_GUID']);
                 break;
             case 'meta':
                 $pre_data = $data;

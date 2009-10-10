@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 09, 2009 at 12:13 AM
+-- Generation Time: Oct 09, 2009 at 09:04 PM
 -- Server version: 5.1.30
 -- PHP Version: 5.2.8
 
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `mvs_interfaces` (
 --
 
 INSERT INTO `mvs_interfaces` (`interface_id`, `interface_GUID`, `content`) VALUES
-(1, 'TEST_INT', '{"mytag":{"movabl_GUID":"NESTED_MEDIA","movabl_type":"media","tags":{"footag":{"movabl_GUID":"FOO_MEDIA","movabl_type":"media"}}},"othertag":{"toplevel_tag":"mytag"},"functiontag":{"movabl_GUID":"NESTED_FUNCTION","movabl_type":"function","tags":{"tentimes":{"movabl_GUID":"FOO_MEDIA","movabl_type":"media"}}},"placetag":{"movabl_GUID":"NESTED_PLACE","movabl_type":"place"},"expressiontag":{"expression":"$GLOBALS->_SERVER[\\"REQUEST_URI\\"]"},"otherexpressiontag":{"expression":"(rand(0,10) > 5 ? \\"HIGH NUMBER!!!\\" : \\"LOW NUMBER!!!\\")"},"finalexpressiontag":{"expression":"Movabls::get_movabl(''place'',''test'')"},"phptag":{"php":"date","interface_GUID":"MY_SUPER_INTERFACE"}}'),
+(1, 'TEST_INT', '{"mytag":{"movabl_GUID":"NESTED_MEDIA","movabl_type":"media","tags":{"footag":{"movabl_GUID":"FOO_MEDIA","movabl_type":"media"}}},"othertag":{"expression":"strtoupper($mytag)"},"functiontag":{"movabl_GUID":"NESTED_FUNCTION","movabl_type":"function","tags":{"tentimes":{"movabl_GUID":"FOO_MEDIA","movabl_type":"media"}}},"placetag":{"movabl_GUID":"NESTED_PLACE","movabl_type":"place"},"expressiontag":{"expression":"$GLOBALS->_SERVER[\\"REQUEST_URI\\"]"},"otherexpressiontag":{"expression":"(rand(0,10) > 5 ? \\"HIGH NUMBER!!!\\" : \\"LOW NUMBER!!!\\")"},"finalexpressiontag":{"expression":"Movabls::get_movabl(''place'',''test'')"},"phptag":{"php":"date","interface_GUID":"MY_SUPER_INTERFACE"}}'),
 (2, 'tripleslashintguid', '{"tripletag":{"movabl_GUID":"FOO_MEDIA","movabl_type":"media"},"tripletag2":{"movabl_GUID":"triplefunction","movabl_type":"function"}}'),
 (3, 'excite_interface', '{"placeList":{"movabl_GUID":"placeList","movabl_type":"function"},"GLOBALS":{"movabl_GUID":"GLOBALS","movabl_type":"function"}}'),
 (6, 'MY_SUPER_INTERFACE', '{"format":{"expression":"\\"m\\/d\\/Y\\""},"time":{"expression":"time()-86400"},"media":{"movabl_type":"media","movabl_GUID":"binmedia"}}');
@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS `mvs_meta` (
   `key` varchar(512) NOT NULL,
   `value` text NOT NULL,
   PRIMARY KEY (`meta_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=15 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=16 ;
 
 --
 -- Dumping data for table `mvs_meta`
@@ -140,7 +140,8 @@ INSERT INTO `mvs_meta` (`meta_id`, `movabls_GUID`, `movabls_type`, `tag_name`, `
 (3, 'TEST_INT', 'interface_tag', 'mytag', 'description', 'interface tag description'),
 (13, 'TEST_MEDIA', 'media_tag', 'othertag', 'description', 'add some other description but no label'),
 (10, 'TEST_MEDIA', 'media_tag', 'mytag', 'label', 'awesome tag label'),
-(14, 'TEST_MEDIA', 'media', NULL, 'test', 'test');
+(14, 'TEST_MEDIA', 'media', NULL, 'test', 'test'),
+(15, 'NESTED_MEDIA', 'media', NULL, 'test2', 'test2');
 
 -- --------------------------------------------------------
 
@@ -160,7 +161,7 @@ CREATE TABLE IF NOT EXISTS `mvs_packages` (
 --
 
 INSERT INTO `mvs_packages` (`id`, `package_GUID`, `contents`) VALUES
-(1, 'TEST_PACKAGE', '[{"movabl_type":"media","movabl_GUID":"TEST_MEDIA"},{"movabl_type":"media","movabl_GUID":"NESTED_MEDIA"}]');
+(1, 'TEST_PACKAGE', '[{"movabl_type":"media","movabl_GUID":"TEST_MEDIA"},{"movabl_type":"media","movabl_GUID":"NESTED_MEDIA"},\r\n{"movabl_type":"interface","movabl_GUID":"MY_SUPER_INTERFACE"}]');
 
 -- --------------------------------------------------------
 
@@ -177,66 +178,66 @@ CREATE TABLE IF NOT EXISTS `mvs_permissions` (
   `inheritance_type` varchar(512) DEFAULT NULL,
   `inheritance_GUID` varchar(512) DEFAULT NULL,
   PRIMARY KEY (`permission_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=230 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=266 ;
 
 --
 -- Dumping data for table `mvs_permissions`
 --
 
 INSERT INTO `mvs_permissions` (`permission_id`, `group_GUID`, `movabl_type`, `movabl_GUID`, `permission_type`, `inheritance_type`, `inheritance_GUID`) VALUES
-(206, 'mysiteusers', 'place', 'bin', 'execute', 'site', NULL),
+(253, 'mysiteusers', 'place', 'abcdefg', 'read', 'site', NULL),
 (207, 'mysiteusers', 'place', 'abcdefg', 'write', 'site', NULL),
 (205, 'mysiteusers', 'place', 'bin', 'write', 'site', NULL),
-(204, 'mysiteusers', 'place', 'excitetabs', 'execute', 'site', NULL),
+(252, 'mysiteusers', 'place', 'bin', 'read', 'site', NULL),
 (203, 'mysiteusers', 'place', 'excitetabs', 'write', 'site', NULL),
-(202, 'mysiteusers', 'place', 'excite', 'execute', 'site', NULL),
+(251, 'mysiteusers', 'place', 'excitetabs', 'read', 'site', NULL),
 (201, 'mysiteusers', 'place', 'excite', 'write', 'site', NULL),
-(200, 'mysiteusers', 'place', 'myplaceguid', 'execute', 'site', NULL),
-(198, 'mysiteusers', 'place', 'test', 'execute', 'site', NULL),
+(250, 'mysiteusers', 'place', 'excite', 'read', 'site', NULL),
+(249, 'mysiteusers', 'place', 'myplaceguid', 'read', 'site', NULL),
 (199, 'mysiteusers', 'place', 'myplaceguid', 'write', 'site', NULL),
 (197, 'mysiteusers', 'place', 'test', 'write', 'site', NULL),
-(196, 'mysiteusers', 'place', 'othertest', 'execute', 'site', NULL),
+(248, 'mysiteusers', 'place', 'test', 'read', 'site', NULL),
 (195, 'mysiteusers', 'place', 'othertest', 'write', 'site', NULL),
-(194, 'mysiteusers', 'interface', 'excite_interface', 'execute', 'site', NULL),
+(247, 'mysiteusers', 'place', 'othertest', 'read', 'site', NULL),
 (193, 'mysiteusers', 'interface', 'excite_interface', 'write', 'site', NULL),
-(192, 'mysiteusers', 'interface', 'tripleslashintguid', 'execute', 'site', NULL),
+(246, 'mysiteusers', 'interface', 'excite_interface', 'read', 'site', NULL),
 (191, 'mysiteusers', 'interface', 'tripleslashintguid', 'write', 'site', NULL),
-(190, 'mysiteusers', 'interface', 'TEST_INT', 'execute', 'site', NULL),
+(245, 'mysiteusers', 'interface', 'tripleslashintguid', 'read', 'site', NULL),
 (189, 'mysiteusers', 'interface', 'TEST_INT', 'write', 'site', NULL),
-(188, 'mysiteusers', 'interface', 'MY_SUPER_INTERFACE', 'execute', 'site', NULL),
-(186, 'mysiteusers', 'place', 'NESTED_PLACE', 'execute', 'site', NULL),
+(244, 'mysiteusers', 'interface', 'TEST_INT', 'read', 'site', NULL),
+(243, 'mysiteusers', 'interface', 'MY_SUPER_INTERFACE', 'read', 'site', NULL),
 (187, 'mysiteusers', 'interface', 'MY_SUPER_INTERFACE', 'write', 'site', NULL),
 (185, 'mysiteusers', 'place', 'NESTED_PLACE', 'write', 'site', NULL),
-(184, 'mysiteusers', 'media', '12345', 'execute', 'site', NULL),
+(242, 'mysiteusers', 'place', 'NESTED_PLACE', 'read', 'site', NULL),
 (183, 'mysiteusers', 'media', '12345', 'write', 'site', NULL),
-(182, 'mysiteusers', 'function', 'GLOBALS', 'execute', 'site', NULL),
+(241, 'mysiteusers', 'media', '12345', 'read', 'site', NULL),
 (181, 'mysiteusers', 'function', 'GLOBALS', 'write', 'site', NULL),
-(180, 'mysiteusers', 'function', 'placeList', 'execute', 'site', NULL),
+(240, 'mysiteusers', 'function', 'GLOBALS', 'read', 'site', NULL),
 (179, 'mysiteusers', 'function', 'placeList', 'write', 'site', NULL),
-(178, 'mysiteusers', 'function', 'triplefunction', 'execute', 'site', NULL),
+(239, 'mysiteusers', 'function', 'placeList', 'read', 'site', NULL),
 (177, 'mysiteusers', 'function', 'triplefunction', 'write', 'site', NULL),
-(176, 'mysiteusers', 'function', 'NESTED_FUNCTION', 'execute', 'site', NULL),
+(238, 'mysiteusers', 'function', 'triplefunction', 'read', 'site', NULL),
 (175, 'mysiteusers', 'function', 'NESTED_FUNCTION', 'write', 'site', NULL),
-(174, 'mysiteusers', 'media', 'binmedia', 'execute', 'site', NULL),
+(237, 'mysiteusers', 'function', 'NESTED_FUNCTION', 'read', 'site', NULL),
 (173, 'mysiteusers', 'media', 'binmedia', 'write', 'site', NULL),
-(172, 'mysiteusers', 'media', 'excitetabsmedia', 'execute', 'site', NULL),
+(236, 'mysiteusers', 'media', 'binmedia', 'read', 'site', NULL),
 (53, 'mysiteusers', 'site', NULL, 'write', NULL, NULL),
-(54, 'mysiteusers', 'site', NULL, 'execute', NULL, NULL),
+(258, 'mysiteusers', 'media', 'TEST_MEDIA', 'read', 'place', 'testdelete_place'),
 (171, 'mysiteusers', 'media', 'excitetabsmedia', 'write', 'site', NULL),
 (211, 'mysiteusers', 'media', 'NESTED_MEDIA', 'read', 'interface', 'TEST_INT'),
-(168, 'mysiteusers', 'media', 'placeslist', 'execute', 'site', NULL),
+(235, 'mysiteusers', 'media', 'excitetabsmedia', 'read', 'site', NULL),
 (167, 'mysiteusers', 'media', 'placeslist', 'write', 'site', NULL),
-(166, 'mysiteusers', 'media', 'tripleslashmediaguid', 'execute', 'site', NULL),
+(234, 'mysiteusers', 'media', 'placeslist', 'read', 'site', NULL),
 (165, 'mysiteusers', 'media', 'tripleslashmediaguid', 'write', 'site', NULL),
-(164, 'mysiteusers', 'media', 'FOO_MEDIA', 'execute', 'site', NULL),
+(233, 'mysiteusers', 'media', 'tripleslashmediaguid', 'read', 'site', NULL),
 (163, 'mysiteusers', 'media', 'FOO_MEDIA', 'write', 'site', NULL),
-(162, 'mysiteusers', 'media', 'NESTED_MEDIA', 'execute', 'site', NULL),
+(232, 'mysiteusers', 'media', 'FOO_MEDIA', 'read', 'site', NULL),
 (161, 'mysiteusers', 'media', 'NESTED_MEDIA', 'write', 'site', NULL),
-(160, 'mysiteusers', 'media', 'TEST_MEDIA', 'execute', 'site', NULL),
+(160, 'mysiteusers', 'media', 'TEST_MEDIA', 'read', 'site', NULL),
 (159, 'mysiteusers', 'media', 'TEST_MEDIA', 'write', 'site', NULL),
-(208, 'mysiteusers', 'place', 'abcdefg', 'execute', 'site', NULL),
+(254, 'mysiteusers', 'place', 'testdelete_place', 'read', 'site', NULL),
 (209, 'mysiteusers', 'package', 'TEST_PACKAGE', 'write', 'site', NULL),
-(210, 'mysiteusers', 'package', 'TEST_PACKAGE', 'execute', 'site', NULL),
+(257, 'mysiteusers', 'site', NULL, 'read', NULL, NULL),
 (212, 'mysiteusers', 'media', 'NESTED_MEDIA', 'write', 'interface', 'TEST_INT'),
 (213, 'mysiteusers', 'media', 'FOO_MEDIA', 'read', 'interface', 'TEST_INT'),
 (214, 'mysiteusers', 'media', 'FOO_MEDIA', 'write', 'interface', 'TEST_INT'),
@@ -251,7 +252,18 @@ INSERT INTO `mvs_permissions` (`permission_id`, `group_GUID`, `movabl_type`, `mo
 (223, 'mysiteusers', 'interface', 'MY_SUPER_INTERFACE', 'read', 'interface', 'TEST_INT'),
 (224, 'mysiteusers', 'interface', 'MY_SUPER_INTERFACE', 'write', 'interface', 'TEST_INT'),
 (225, 'mysiteusers', 'interface', 'TEST_INT', 'read', NULL, NULL),
-(226, 'mysiteusers', 'interface', 'TEST_INT', 'write', NULL, NULL);
+(226, 'mysiteusers', 'interface', 'TEST_INT', 'write', NULL, NULL),
+(230, 'mysiteusers', 'media', 'TEST_MEDIA', 'read', 'interface', 'TEST_INT'),
+(231, 'mysiteusers', 'media', 'NESTED_MEDIA', 'read', 'site', NULL),
+(255, 'mysiteusers', 'place', 'testdelete_place', 'write', 'site', NULL),
+(256, 'mysiteusers', 'package', 'TEST_PACKAGE', 'read', 'site', NULL),
+(259, 'mysiteusers', 'media', 'TEST_MEDIA', 'write', 'place', 'testdelete_place'),
+(260, 'mysiteusers', 'media', 'binmedia', 'read', 'place', 'testdelete_place'),
+(261, 'mysiteusers', 'media', 'binmedia', 'write', 'place', 'testdelete_place'),
+(262, 'mysiteusers', 'interface', 'MY_SUPER_INTERFACE', 'read', 'place', 'testdelete_place'),
+(263, 'mysiteusers', 'interface', 'MY_SUPER_INTERFACE', 'write', 'place', 'testdelete_place'),
+(264, 'mysiteusers', 'place', 'testdelete_place', 'read', NULL, NULL),
+(265, 'mysiteusers', 'place', 'testdelete_place', 'write', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -267,7 +279,7 @@ CREATE TABLE IF NOT EXISTS `mvs_places` (
   `media_GUID` varchar(512) CHARACTER SET latin1 NOT NULL,
   `interface_GUID` varchar(512) CHARACTER SET latin1 DEFAULT NULL,
   PRIMARY KEY (`place_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=12 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=13 ;
 
 --
 -- Dumping data for table `mvs_places`
@@ -281,7 +293,8 @@ INSERT INTO `mvs_places` (`place_id`, `place_GUID`, `url`, `https`, `media_GUID`
 (5, 'excitetabs', '/!', 0, 'excitetabsmedia', NULL),
 (8, 'bin', '/bin', 0, 'binmedia', NULL),
 (9, 'NESTED_PLACE', '/this/is/a/nested/url', 0, '12345', NULL),
-(10, 'abcdefg', '/testmedia', 0, 'TEST_MEDIA', NULL);
+(10, 'abcdefg', '/testmedia', 0, 'TEST_MEDIA', NULL),
+(12, 'testdelete_place', '/testdelete', 0, 'TEST_MEDIA', 'MY_SUPER_INTERFACE');
 
 -- --------------------------------------------------------
 

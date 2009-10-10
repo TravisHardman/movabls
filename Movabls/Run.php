@@ -98,7 +98,6 @@ class Movabls_Run {
         if (empty($tags))
             return false;
 
-        //TODO: Put toplevel tags as variables in expressions?
         foreach($tags as $value) {
             if (isset($value->movabl_GUID) && $value->movabl_type == 'media') {
                 if (!isset($this->media->{$value->movabl_GUID}))
@@ -264,10 +263,8 @@ class Movabls_Run {
 
         foreach ($tags as $name => $tag) {
 
-            if (isset($tag->toplevel_tag))
-                $tags->$name = $this->interfaces->$interface_GUID->{$tag->toplevel_tag};
-            elseif (isset($tag->expression))
-                $tags->$name = $this->run_expression($tag->expression);
+            if (isset($tag->expression))
+                $tags->$name = $this->run_expression($tag->expression,$interface_GUID);
             elseif (isset($tag->movabl_GUID)) {
                 if (isset($tag->interface_GUID))
                     $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $tag->interface_GUID);
@@ -305,14 +302,26 @@ class Movabls_Run {
     }
 
     /**
-     * Runs a php expression and returns its value;
+     * Runs a php expression and returns its value - uses toplevel tags from the
+     * current interface as arguments
      * @param <string> $expression - php expression
      * @return <mixed> evaluated value
      */
-    private function run_expression($expression) {
+    private function run_expression($expression,$interface_GUID) {
 
-        $tempfunction = create_function('',"return $expression;");
-        return call_user_func($tempfunction);
+        $values = array();
+
+        foreach ($this->interfaces->$interface_GUID as $tag => $value) {
+            $args[] = $tag;
+            $values[] = $value;
+        }
+        if (empty($args))
+            $args = '';
+        else
+            $args = '$'.implode(',$',$args);
+
+        $tempfunction = create_function($args,"return $expression;");
+        return call_user_func_array($tempfunction,$values);
 
     }
 

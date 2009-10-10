@@ -108,6 +108,7 @@ class Movabls_Permissions {
             $new_children = Movabls_Permissions::set_children($escaped_data,false,$mvsdb);
         
         //Prepare the new data array to set this movabl
+        $groupstring = array();
         foreach ($escaped_data['groups'] as $group) {
             $template = array(
                 'group_GUID' => $group['guid'],
@@ -164,18 +165,20 @@ class Movabls_Permissions {
         $results->free();
 
         //Add new data if the rows don't already exist
-        foreach ($new_data as $data) {
-            $key = array_search($data,$old_data_index);
-            if ($key === false) {
-                $data['inheritance_type'] = $data['inheritance_type'] !== null ? "'".$data['inheritance_type']."'" : "NULL";
-                $data['inheritance_GUID'] = $data['inheritance_GUID'] !== null ? "'".$data['inheritance_GUID']."'" : "NULL";
-                $data['movabl_GUID'] = $data['movabl_GUID'] !== null ? "'".$data['movabl_GUID']."'" : "NULL";
-                $mvsdb->query("INSERT INTO mvs_permissions
-                               (group_GUID,movabl_type,movabl_GUID,permission_type,inheritance_type,inheritance_GUID)
-                               VALUES ('{$data['group_GUID']}','{$data['movabl_type']}',{$data['movabl_GUID']},'{$data['permission_type']}',{$data['inheritance_type']},{$data['inheritance_GUID']})");
+        if (!empty($new_data)) {
+            foreach ($new_data as $data) {
+                $key = array_search($data,$old_data_index);
+                if ($key === false) {
+                    $data['inheritance_type'] = $data['inheritance_type'] !== null ? "'".$data['inheritance_type']."'" : "NULL";
+                    $data['inheritance_GUID'] = $data['inheritance_GUID'] !== null ? "'".$data['inheritance_GUID']."'" : "NULL";
+                    $data['movabl_GUID'] = $data['movabl_GUID'] !== null ? "'".$data['movabl_GUID']."'" : "NULL";
+                    $mvsdb->query("INSERT INTO mvs_permissions
+                                   (group_GUID,movabl_type,movabl_GUID,permission_type,inheritance_type,inheritance_GUID)
+                                   VALUES ('{$data['group_GUID']}','{$data['movabl_type']}',{$data['movabl_GUID']},'{$data['permission_type']}',{$data['inheritance_type']},{$data['inheritance_GUID']})");
+                }
+                else
+                    unset($old_data[$key],$old_data_index[$key]);
             }
-            else
-                unset($old_data[$key],$old_data_index[$key]);            
         }
 
         //old_data that were not included in new_data should be removed
@@ -352,9 +355,13 @@ class Movabls_Permissions {
             }
             $current[$row['group_GUID']][$row['permission_type']] = true;
         }
+        if (!empty($current))
+            $current = array_values($current);
+        else
+            $current = array();
 
         $results->free();
-        Movabls_Permissions::set_permission($movabl_type,$movabl_guid,array_values($current),null,null,$mvsdb);
+        Movabls_Permissions::set_permission($movabl_type,$movabl_guid,$current,null,null,$mvsdb);
 
         //Now set all of the parents
         $movabl_type = $mvsdb->real_escape_string($movabl_type);
@@ -379,9 +386,11 @@ class Movabls_Permissions {
 
         $results->free();
 
-        foreach ($parents as $key => $groups) {
-            $key = unserialize($key);
-            Movabls_Permissions::set_permission($key[0],$key[1],array_values($groups),null,null,$mvsdb);
+        if (!empty($parents)) {
+            foreach ($parents as $key => $groups) {
+                $key = unserialize($key);
+                Movabls_Permissions::set_permission($key[0],$key[1],array_values($groups),null,null,$mvsdb);
+            }
         }
 
     }
@@ -461,13 +470,7 @@ class Movabls_Permissions {
      */
     public static function delete_permissions($movabl_type,$movabl_guid,$mvsdb = null) {
 
-        //TODO: Right now, when you delete a movabl, it's references in packages, places, and interfaces are
-        //not deleted, just the movabl itself, which means that its children will still inherit from its parents
-        //because the relationship hasn't been broken.  Probably need to delete all references in packages, places,
-        //and interfaces as well and just replace them with null or something - chew on that...
-
-        //Then when you resolve the above TODO, run this to delete all the children's permissions too
-        //Movabls_Permissions::reinforce_permissions($movabl_type,$movabl_guid,$mvsdb);
+        Movabls_Permissions::reinforce_permissions($movabl_type,$movabl_guid,$mvsdb);
 
         if (empty($mvsdb))
             $mvsdb = Movabls_Permissions::db_link();
@@ -500,12 +503,16 @@ class Movabls_Permissions {
         $data['inheritance_type'] = !empty($inheritance_type) ? $mvsdb->real_escape_string($inheritance_type) : null;
         $data['inheritance_GUID'] = !empty($inheritance_GUID) ? $mvsdb->real_escape_string($inheritance_GUID) : null;
 
-        foreach ($groups as $k => $group) {
-            $data['groups'][$k]['guid'] = $mvsdb->real_escape_string($group['guid']);
-            $data['groups'][$k]['read'] = $group['read'] ? true : false;
-            $data['groups'][$k]['write'] = $group['write'] ? true : false;
-            $data['groups'][$k]['execute'] = $group['execute'] ? true : false;
+        if (!empty($groups)) {
+            foreach ($groups as $k => $group) {
+                $data['groups'][$k]['guid'] = $mvsdb->real_escape_string($group['guid']);
+                $data['groups'][$k]['read'] = $group['read'] ? true : false;
+                $data['groups'][$k]['write'] = $group['write'] ? true : false;
+                $data['groups'][$k]['execute'] = $group['execute'] ? true : false;
+            }
         }
+        else
+            $data['groups'] = array();
 
         return $data;
 
