@@ -15,24 +15,14 @@ function __autoload($name) {
     
 }
 
-try {
+ //Get session
+Movabls_Session::get_session();
+//Override all superglobals with read-only variants
+$GLOBALS = new Movabls_Globals();
+unset($_SERVER,$_GET,$_POST,$_FILES,$_COOKIE,$_SESSION,$_REQUEST,$_ENV,$_USER);
 
-    //Override all superglobals with read-only variants
-    $GLOBALS = new Movabls_Globals();
-    unset($_SERVER,$_GET,$_POST,$_FILES,$_COOKIE,$_SESSION,$_REQUEST,$_ENV);
-    //Run it!
-    new Movabls_Run;
-
-} catch (Exception $e) {
-
-    //TODO: Set up the ability for people to create error places
-    switch ($e->getCode()) {
-        default: header("HTTP/1.1 404 ".$e->getMessage(),true,404);break;
-    //default: header("HTTP/1.1 500 ".$e->getMessage(),true,500);break;
-    }
-    die($e->getMessage());
-    
-}
+//Run it!
+new Movabls_Run;
 
 /*
 $iterations = 1000;

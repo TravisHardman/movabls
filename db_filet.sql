@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 09, 2009 at 09:04 PM
+-- Generation Time: Oct 11, 2009 at 07:25 PM
 -- Server version: 5.1.30
 -- PHP Version: 5.2.8
 
@@ -81,10 +81,9 @@ CREATE TABLE IF NOT EXISTS `mvs_interfaces` (
 --
 
 INSERT INTO `mvs_interfaces` (`interface_id`, `interface_GUID`, `content`) VALUES
-(1, 'TEST_INT', '{"mytag":{"movabl_GUID":"NESTED_MEDIA","movabl_type":"media","tags":{"footag":{"movabl_GUID":"FOO_MEDIA","movabl_type":"media"}}},"othertag":{"expression":"strtoupper($mytag)"},"functiontag":{"movabl_GUID":"NESTED_FUNCTION","movabl_type":"function","tags":{"tentimes":{"movabl_GUID":"FOO_MEDIA","movabl_type":"media"}}},"placetag":{"movabl_GUID":"NESTED_PLACE","movabl_type":"place"},"expressiontag":{"expression":"$GLOBALS->_SERVER[\\"REQUEST_URI\\"]"},"otherexpressiontag":{"expression":"(rand(0,10) > 5 ? \\"HIGH NUMBER!!!\\" : \\"LOW NUMBER!!!\\")"},"finalexpressiontag":{"expression":"Movabls::get_movabl(''place'',''test'')"},"phptag":{"php":"date","interface_GUID":"MY_SUPER_INTERFACE"}}'),
+(1, 'TEST_INT', '{"mytag":{"movabl_GUID":"NESTED_MEDIA","movabl_type":"media","tags":{"footag":{"movabl_GUID":"FOO_MEDIA","movabl_type":"media"}}},"othertag":{"expression":"strtoupper($mytag)"},"functiontag":{"movabl_GUID":"NESTED_FUNCTION","movabl_type":"function","tags":{"tentimes":{"movabl_GUID":"FOO_MEDIA","movabl_type":"media"}}},"placetag":{"movabl_GUID":"NESTED_PLACE","movabl_type":"place"},"expressiontag":{"expression":"$GLOBALS->_SERVER[\\"REQUEST_URI\\"]"},"otherexpressiontag":{"expression":"(rand(0,10) > 5 ? \\"HIGH NUMBER!!!\\" : \\"LOW NUMBER!!!\\")"},"finalexpressiontag":{"expression":"Movabls::get_movabl(''place'',''test'')"},"phptag":{"php":"date","interface_GUID":null}}'),
 (2, 'tripleslashintguid', '{"tripletag":{"movabl_GUID":"FOO_MEDIA","movabl_type":"media"},"tripletag2":{"movabl_GUID":"triplefunction","movabl_type":"function"}}'),
-(3, 'excite_interface', '{"placeList":{"movabl_GUID":"placeList","movabl_type":"function"},"GLOBALS":{"movabl_GUID":"GLOBALS","movabl_type":"function"}}'),
-(6, 'MY_SUPER_INTERFACE', '{"format":{"expression":"\\"m\\/d\\/Y\\""},"time":{"expression":"time()-86400"},"media":{"movabl_type":"media","movabl_GUID":"binmedia"}}');
+(3, 'excite_interface', '{"placeList":{"movabl_GUID":"placeList","movabl_type":"function"},"GLOBALS":{"movabl_GUID":"GLOBALS","movabl_type":"function"}}');
 
 -- --------------------------------------------------------
 
@@ -137,7 +136,6 @@ CREATE TABLE IF NOT EXISTS `mvs_meta` (
 INSERT INTO `mvs_meta` (`meta_id`, `movabls_GUID`, `movabls_type`, `tag_name`, `key`, `value`) VALUES
 (1, 'test', 'place', NULL, 'name', 'test place'),
 (2, 'TEST_MEDIA', 'media_tag', 'mytag', 'description', 'newly revised tag description'),
-(3, 'TEST_INT', 'interface_tag', 'mytag', 'description', 'interface tag description'),
 (13, 'TEST_MEDIA', 'media_tag', 'othertag', 'description', 'add some other description but no label'),
 (10, 'TEST_MEDIA', 'media_tag', 'mytag', 'label', 'awesome tag label'),
 (14, 'TEST_MEDIA', 'media', NULL, 'test', 'test'),
@@ -161,7 +159,7 @@ CREATE TABLE IF NOT EXISTS `mvs_packages` (
 --
 
 INSERT INTO `mvs_packages` (`id`, `package_GUID`, `contents`) VALUES
-(1, 'TEST_PACKAGE', '[{"movabl_type":"media","movabl_GUID":"TEST_MEDIA"},{"movabl_type":"media","movabl_GUID":"NESTED_MEDIA"},\r\n{"movabl_type":"interface","movabl_GUID":"MY_SUPER_INTERFACE"}]');
+(1, 'TEST_PACKAGE', '[{"movabl_type":"media","movabl_GUID":"TEST_MEDIA"},{"movabl_type":"media","movabl_GUID":"NESTED_MEDIA"}]');
 
 -- --------------------------------------------------------
 
@@ -205,8 +203,6 @@ INSERT INTO `mvs_permissions` (`permission_id`, `group_GUID`, `movabl_type`, `mo
 (245, 'mysiteusers', 'interface', 'tripleslashintguid', 'read', 'site', NULL),
 (189, 'mysiteusers', 'interface', 'TEST_INT', 'write', 'site', NULL),
 (244, 'mysiteusers', 'interface', 'TEST_INT', 'read', 'site', NULL),
-(243, 'mysiteusers', 'interface', 'MY_SUPER_INTERFACE', 'read', 'site', NULL),
-(187, 'mysiteusers', 'interface', 'MY_SUPER_INTERFACE', 'write', 'site', NULL),
 (185, 'mysiteusers', 'place', 'NESTED_PLACE', 'write', 'site', NULL),
 (242, 'mysiteusers', 'place', 'NESTED_PLACE', 'read', 'site', NULL),
 (183, 'mysiteusers', 'media', '12345', 'write', 'site', NULL),
@@ -247,21 +243,12 @@ INSERT INTO `mvs_permissions` (`permission_id`, `group_GUID`, `movabl_type`, `mo
 (218, 'mysiteusers', 'media', '12345', 'write', 'interface', 'TEST_INT'),
 (219, 'mysiteusers', 'place', 'NESTED_PLACE', 'read', 'interface', 'TEST_INT'),
 (220, 'mysiteusers', 'place', 'NESTED_PLACE', 'write', 'interface', 'TEST_INT'),
-(221, 'mysiteusers', 'media', 'binmedia', 'read', 'interface', 'TEST_INT'),
-(222, 'mysiteusers', 'media', 'binmedia', 'write', 'interface', 'TEST_INT'),
-(223, 'mysiteusers', 'interface', 'MY_SUPER_INTERFACE', 'read', 'interface', 'TEST_INT'),
-(224, 'mysiteusers', 'interface', 'MY_SUPER_INTERFACE', 'write', 'interface', 'TEST_INT'),
 (225, 'mysiteusers', 'interface', 'TEST_INT', 'read', NULL, NULL),
 (226, 'mysiteusers', 'interface', 'TEST_INT', 'write', NULL, NULL),
-(230, 'mysiteusers', 'media', 'TEST_MEDIA', 'read', 'interface', 'TEST_INT'),
 (231, 'mysiteusers', 'media', 'NESTED_MEDIA', 'read', 'site', NULL),
 (255, 'mysiteusers', 'place', 'testdelete_place', 'write', 'site', NULL),
 (256, 'mysiteusers', 'package', 'TEST_PACKAGE', 'read', 'site', NULL),
 (259, 'mysiteusers', 'media', 'TEST_MEDIA', 'write', 'place', 'testdelete_place'),
-(260, 'mysiteusers', 'media', 'binmedia', 'read', 'place', 'testdelete_place'),
-(261, 'mysiteusers', 'media', 'binmedia', 'write', 'place', 'testdelete_place'),
-(262, 'mysiteusers', 'interface', 'MY_SUPER_INTERFACE', 'read', 'place', 'testdelete_place'),
-(263, 'mysiteusers', 'interface', 'MY_SUPER_INTERFACE', 'write', 'place', 'testdelete_place'),
 (264, 'mysiteusers', 'place', 'testdelete_place', 'read', NULL, NULL),
 (265, 'mysiteusers', 'place', 'testdelete_place', 'write', NULL, NULL);
 
@@ -304,7 +291,10 @@ INSERT INTO `mvs_places` (`place_id`, `place_GUID`, `url`, `https`, `media_GUID`
 
 CREATE TABLE IF NOT EXISTS `mvs_sessions` (
   `session_id` int(11) NOT NULL AUTO_INCREMENT,
-  `hash` varchar(512) NOT NULL,
+  `sslsession` varchar(512) NOT NULL,
+  `sslrequests` varchar(512) NOT NULL,
+  `httpsession` varchar(512) NOT NULL,
+  `httprequests` varchar(512) NOT NULL,
   `user_GUID` varchar(512) NOT NULL,
   `expiration` datetime DEFAULT NULL,
   `userdata` text NOT NULL,

@@ -18,6 +18,9 @@ class Movabls_Permissions {
         if ($GLOBALS->_USER['is_owner'])
             return true;
 
+        if (empty($GLOBALS->_USER['groups']))
+            return false;
+
         if (empty($mvsdb))
             $mvsdb = Movabls_Permissions::db_link();
 
@@ -53,7 +56,7 @@ class Movabls_Permissions {
     public static function set_movabl_permissions($movabl_type,$movabl_guid,$groups,$mvsdb = null) {
 
         if (!Movabls_Permissions::permissions_editor($GLOBALS->_USER,$mvsdb))
-            throw new Exception('You do not have permission to edit permissions.');
+            throw new Exception('You do not have permission to edit permissions.',500);
             
         Movabls_Permissions::set_permission($movabl_type, $movabl_guid, $groups, $mvsdb);
 
@@ -528,6 +531,9 @@ class Movabls_Permissions {
 
         if ($GLOBALS->_USER['is_owner'])
             return true;
+
+        if (empty($GLOBALS->_USER['groups']))
+            return false;
 
         if (empty($mvsdb))
             $mvsdb = Movabls_Permissions::db_link();

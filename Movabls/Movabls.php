@@ -91,7 +91,7 @@ class Movabls {
         $mvsdb = Movabls::db_link();
 
         if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'read', $mvsdb))
-            throw new Exception("You do not have permission to view this Movabl");
+            throw new Exception("You do not have permission to view this Movabl",403);
 
         $movabl_type = $mvsdb->real_escape_string($movabl_type);
         $movabl_guid = $mvsdb->real_escape_string($movabl_guid);
@@ -101,7 +101,7 @@ class Movabls {
         $result = $mvsdb->query("SELECT x.* FROM `mvs_$table` AS x WHERE x.{$movabl_type}_GUID = '$movabl_guid'");
 
         if (empty($result))
-            throw new Exception ("Movabl ($movabl_type: $movabl_guid) not found");
+            throw new Exception ("Movabl ($movabl_type: $movabl_guid) not found",500);
 
         $movabl = $result->fetch_assoc();
             
@@ -158,7 +158,7 @@ class Movabls {
         //If it's a single item, check whether they have permission to view it
         if (!empty($types) && !is_array($types) && !empty($guids) && !is_array($guids)) {
             if (!Movabls_Permissions::check_permission($types, $guids, 'read', $mvsdb))
-                throw new Exception("You do not have permission to view this Movabl");
+                throw new Exception("You do not have permission to view this Movabl",403);
         }
         //Otherwise, if the user is not the owner, just get entries for which they have read permission
         elseif (!$GLOBALS->_USER['is_owner']) {
@@ -225,7 +225,7 @@ class Movabls {
         //If it's a single item, check whether they have permission to view it
         if (!empty($types) && !is_array($types) && !empty($guids) && !is_array($guids)) {
             if (!Movabls_Permissions::check_permission($types, $guids, 'read', $mvsdb))
-                throw new Exception("You do not have permission to view this Movabl");
+                throw new Exception("You do not have permission to view this Movabl",403);
         }
         //Otherwise, if the user is not the owner, just get entries for which they have read permission
         elseif (!$GLOBALS->_USER['is_owner']) {
@@ -286,7 +286,7 @@ class Movabls {
             $mvsdb = Movabls::db_link();
 
         if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write', $mvsdb))
-            throw new Exception("You do not have permission to edit this Movabl");
+            throw new Exception("You do not have permission to edit this Movabl",500);
 
         if (!empty($data['meta']))
             $meta = $data['meta'];
@@ -356,7 +356,7 @@ class Movabls {
             $mvsdb = Movabls::db_link();
 
         if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write', $mvsdb))
-            throw new Exception("You do not have permission to edit this Movabl");
+            throw new Exception("You do not have permission to edit this Movabl",500);
 
         $old_meta = Movabls::get_meta($movabl_type,$movabl_guid);
         if (!empty($old_meta[$movabl_guid]))
@@ -414,7 +414,7 @@ class Movabls {
             $mvsdb = Movabls::db_link();
 
         if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write', $mvsdb))
-            throw new Exception("You do not have permission to edit this Movabl");
+            throw new Exception("You do not have permission to edit this Movabl",500);
 
         $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
         $sanitized_type = $mvsdb->real_escape_string($movabl_type.'_tag');
@@ -484,7 +484,7 @@ class Movabls {
         $mvsdb = Movabls::db_link();
 
         if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write', $mvsdb))
-            throw new Exception("You do not have permission to delete this Movabl");
+            throw new Exception("You do not have permission to delete this Movabl",500);
 
         $table = Movabls::table_name($movabl_type);
         $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
@@ -627,7 +627,7 @@ class Movabls {
                 );
                 break;
             default:
-                throw new Exception('Incorrect Movabl Type');
+                throw new Exception('Incorrect Movabl Type',500);
                 break;
         }
         return $data;
@@ -650,7 +650,7 @@ class Movabls {
     private static function generate_datastring($query_type,$data) {
 
         if (empty($data))
-            throw new Exception ('No Data Provided for '.uc_first($query_type));
+            throw new Exception ('No Data Provided for '.uc_first($query_type),500);
         if ($query_type == 'update') {
             $datastring = '';
             $i = 1;
@@ -665,7 +665,7 @@ class Movabls {
             $datastring .= "('".implode("','",array_values($data))."')";
         }
         else
-            throw new Exception ('Datastring Generator Only Works for Updates and Inserts');
+            throw new Exception ('Datastring Generator Only Works for Updates and Inserts',500);
         return $datastring;
 
     }
@@ -682,7 +682,7 @@ class Movabls {
         elseif (in_array($movabl_type,array('place','interface','function','package')))
             $table = $movabl_type.'s';
         else
-            throw new Exception ('Please specify a valid type of Movabl');
+            throw new Exception ('Please specify a valid type of Movabl',500);
         return $table;
         
     }

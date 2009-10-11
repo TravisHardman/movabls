@@ -13,32 +13,74 @@ class Movabls_Run {
 
     public function __construct() {
 
-        $this->mvsdb = new mysqli('localhost','root','h4ppyf4rmers','db_filet');
-        $place = $this->get_place();
+        try {
+
+            $this->mvsdb = new mysqli('localhost','root','h4ppyf4rmers','db_filet');
+            print_r($this->run_place());
+            
+        }
+        catch (Exception $e) {
+
+            //TODO: Create an error handler that puts errors in $GLOBALS->_ERRORS
+            //then use that array in the '%' place and below in die();
+            //Determine the http headers in the '%' place, b/c you might want to
+            //redirect to login on a 403
+            try {
+                print_r($this->run_place('%'));
+            }
+            catch (Exception $ignore_this) {
+                switch ($e->getCode()) {
+                    case 403:header("HTTP/1.1 403 ".$e->getMessage(),true,403);break;
+                    case 404:header("HTTP/1.1 404 ".$e->getMessage(),true,404);break;
+                    //500 errors don't show up in the browser? Lame...
+                    default:break;
+                }
+                die($e->getMessage());
+            }
+            
+        }
+
+    }
+
+    /**
+     * Runs a place and returns the output
+     * @param string $url
+     * @return output
+     */
+    private function run_place($url = null) {
+
+        $place = $this->get_place($url);
         if (!empty($place->interface_GUID))
             $this->get_interface($place->interface_GUID);
         else
             $place->interface_GUID = null;
         $this->select_movabls($place->media_GUID);
-        print_r($this->run_movabl('media',$place->media_GUID,$place->interface_GUID));
+        return $this->run_movabl('media',$place->media_GUID,$place->interface_GUID);
 
     }
 
     /**
      * Takes the Request URI and determines which place to run, adding it to the place array along the way
+     * @param string url
      * @return array from database
      */
-    private function get_place() {
+    private function get_place($url = null) {
 
         //Find correct place to use (static places [without %] take precedence over dynamic places [with %])
-        if (strpos($GLOBALS->_SERVER['REQUEST_URI'],'?') !=0) 
-            $url = substr($GLOBALS->_SERVER['REQUEST_URI'],0,strpos($GLOBALS->_SERVER['REQUEST_URI'],'?'));
-        else 
-            $url =$GLOBALS->_SERVER['REQUEST_URI'];
+        if (empty($url)) {
+            if (strpos($GLOBALS->_SERVER['REQUEST_URI'],'?') !=0)
+                $url = substr($GLOBALS->_SERVER['REQUEST_URI'],0,strpos($GLOBALS->_SERVER['REQUEST_URI'],'?'));
+            else
+                $url =$GLOBALS->_SERVER['REQUEST_URI'];
+        }
         $url = $this->mvsdb->real_escape_string($url);
 
+        if ($url == '%')
+            $error_place = '';
+        else
+            $error_place = 'AND url != "%"';
         $result = $this->mvsdb->query("SELECT place_GUID,url,https,media_GUID,interface_GUID FROM `mvs_places`
-					   WHERE ('$url' LIKE url OR '$url/' LIKE url)");
+					   WHERE ('$url' LIKE url OR '$url/' LIKE url) $error_place");
         //Logic: Look for the URL with the greatest length before a '%' sign
         $max = 0;
         while($row = $result->fetch_object()) {
@@ -58,6 +100,9 @@ class Movabls_Run {
             throw new Exception ('Place Not Found',404);
 
         $this->places->{$place->place_GUID} = $place->url;
+
+        if (!Movabls_Permissions::check_permission('place', $place->place_GUID, 'execute', $this->mvsdb))
+            throw new Exception('You do not have permission to access this place',403);
 
         if ($place->https && !$GLOBALS->_SERVER['HTTPS']) {
             header('Location: https://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
