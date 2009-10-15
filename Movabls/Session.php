@@ -41,7 +41,7 @@ class Movabls_Session {
         if ($results->num_rows > 0) {
             $row = $results->fetch_assoc();
             //Request key is incorrect, meaning somebody is trying to gain unauthorized access
-            //or has successfully gained access - destroy session for safety
+            //or has successfully gained access via a replay - destroy session for safety
             if ($request != $row[$type.'request']) {
                 Movabls_Session::delete_session($row['session_id'],$mvsdb);
                 $_USER = array();
@@ -49,10 +49,12 @@ class Movabls_Session {
             }
             else {
                 $token = Movabls_Session::get_token();
-                $mvsdb->query("UPDATE mvs_sessions SET {$type}request = '$token'
+                $expiration = date('Y-m-d h:i:s',time()+$row['term']);
+                $mvsdb->query("UPDATE mvs_sessions SET {$type}request = '$token', expiration = '$expiration'
                                WHERE session_id = {$row['session_id']}");
-                Movabls_Session::set_cookie($type,'request',$token);
-                //Create user array
+                Movabls_Session::set_cookie($type,'request',$token,$row['term']);
+                $_USER = json_decode($row['userdata'],true);
+                $_USER['session_id'] = $row['session_id'];
             }
         }
         else {
@@ -76,12 +78,13 @@ class Movabls_Session {
      * Sets a movabls session cookie
      * @param string $type = 'ssl' or 'http'
      * @param string $name = 'request' or 'session'
-     * @param string $token 
+     * @param string $token
+     * @param string $expiration
      */
-    private static function set_cookie($type,$name,$token) {
+    private static function set_cookie($type,$name,$token,$term) {
 
         $name = $type.$name;
-        $expiration = time()+$expiration;
+        $expiration = time()+$term;
         $secure = $type == 'ssl';
         setcookie($name,$token,$expiration,'/',$_SERVER['HTTP_HOST'],$secure,true);
 
@@ -108,10 +111,10 @@ class Movabls_Session {
      */
     private static function remove_cookies() {
 
-        Movabls_Session::set_cookie('ssl','request',false);
-        Movabls_Session::set_cookie('http','request',false);
-        Movabls_Session::set_cookie('ssl','session',false);
-        Movabls_Session::set_cookie('http','session',false);
+        Movabls_Session::set_cookie('ssl','request',false,-86400);
+        Movabls_Session::set_cookie('http','request',false,-86400);
+        Movabls_Session::set_cookie('ssl','session',false,-86400);
+        Movabls_Session::set_cookie('http','session',false,-86400);
 
     }
 

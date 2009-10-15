@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 11, 2009 at 07:25 PM
+-- Generation Time: Oct 15, 2009 at 12:06 AM
 -- Server version: 5.1.30
 -- PHP Version: 5.2.8
 
@@ -296,6 +296,7 @@ CREATE TABLE IF NOT EXISTS `mvs_sessions` (
   `httpsession` varchar(512) NOT NULL,
   `httprequests` varchar(512) NOT NULL,
   `user_GUID` varchar(512) NOT NULL,
+  `term` int(11) NOT NULL,
   `expiration` datetime DEFAULT NULL,
   `userdata` text NOT NULL,
   PRIMARY KEY (`session_id`)
