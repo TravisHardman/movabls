@@ -308,9 +308,7 @@ class Movabls_Run {
 
         foreach ($tags as $name => $tag) {
 
-            if (isset($tag->toplevel_tag))
-                $tags->$name = $this->interfaces->$interface_GUID->{$tag->toplevel_tag};
-            elseif (isset($tag->expression))
+            if (isset($tag->expression))
                 $tags->$name = $this->run_expression($tag->expression,$interface_GUID);
             elseif (isset($tag->movabl_GUID)) {
                 if (isset($tag->interface_GUID))
