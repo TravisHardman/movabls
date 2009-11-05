@@ -44,41 +44,165 @@ class Movabls {
     }
 
     /**
-     * Gets a list of all places on the site
-     * @return array
+     * Gets a full index of the site, filtering for certain packages
+     * Places return the full place info
+     * Media, Functions, Interfaces return meta
+     * @param array $packages
+     * @param bool $uncategorized = whether to get movabls not in a package
+     * @return array ('places','media','functions','interfaces')
      */
-    public static function get_places() {
+    public static function get_index($packages = 'all',$uncatagorized = false) {
         
         $mvsdb = Movabls::db_link();
 
-        $join = $where = $group = '';
+        foreach ($packages as $k => $package)
+            $packages[$k] = $mvsdb->real_escape_string($package);
+
+        $index = array(
+            'media' => array(),
+            'function' => array(),
+            'interfaces' => array(),
+            'places' => array()
+        );
+
+        $join = $group = '';
+        $where = ' WHERE 1';
 
         //If the user is not the owner, just get entries for which they have read permission
         if (!$GLOBALS->_USER['is_owner']) {
-            $join = " INNER JOIN mvs_permissions AS p ON p.movabl_GUID = x.place_GUID";
-            $where = " WHERE p.permission_type = 'read' AND p.movabl_type = 'place'";
+            $join = " INNER JOIN mvs_permissions AS p ON p.movabl_GUID = x.package_GUID";
+            $where .= " AND p.permission_type = 'read' AND p.movabl_type = 'package'";
             $group = " GROUP BY p.movabl_type,p.movabl_GUID";
         }
 
-        $result = $mvsdb->query("SELECT x.* FROM `mvs_places` AS x $join $where $group ORDER BY x.url ASC");
-        if(empty($result))
-            return array();
-
-        while ($row = $result->fetch_assoc()) {
-            $ids[] = $row['place_GUID'];
-            $places[$row['place_GUID']] = $row;
-            $places[$row['place_GUID']]['meta'] = array();
+        if ($packages != 'all') {
+            $package_string = "'".explode("','",$packages)."'";
+            $where = " AND package_GUID IN ($package_string)";
         }
-            
+        
+        $result = $mvsdb->query("SELECT * FROM mvs_packages $join $where $group");
+        
+        //Add package elements to the index array
+        while ($row = $result->fetch_assoc()) {
+            $contents = json_decode($row['contents'],true);
+            foreach ($contents as $movabl) {
+                $indexkey = Movabls::table_name($movabl['movabl_type']);
+                $index[$indexkey][$movabl['movabl_GUID']] = false;
+            }
+        }
         $result->free();
 
-        $allmeta = Movabls::get_meta('place',$ids,$mvsdb);
+        //Get all sub-elements of places and interfaces in the selected packages
+        $new = true;
+        while ($new) {
 
-        foreach ($allmeta as $guid => $meta)
-            $places[$guid]['meta'] = $meta;
+            $new = false;
 
-        return $places;
+            //See if new places came from the last iteration, and add their sub-elements
+            $places = array();
+            foreach ($index['places'] as $guid => $sub) {
+                if ($sub === false)
+                    $places[] = $guid;
+            }
+            if (!empty($places)) {
+                $places_string = "'".explode("','",$places)."'";
+                $result = $mvsdb->query("SELECT * FROM mvs_places WHERE place_GUID IN ($places_string)");
+                while ($row = $result->fetch_assoc()) {
+                    $index['places'][$row['place_GUID']] = $row;
+                    if (!isset($index['media'][$row['media_GUID']]))
+                        $index['media'][$row['media_GUID']] = false;
+                    if (!isset($index['interfaces'][$row['interface_GUID']]))
+                        $index['interfaces'][$row['interface_GUID']] = false;
+                }
+                $result->free();
+            }
+
+            //See if new interfaces came from the last iteration, and add their sub-elements
+            $interfaces = array();
+            foreach ($index['interfaces'] as $guid => $sub) {
+                if ($sub === false)
+                    $interfaces[] = $guid;
+            }
+            if (!empty($interfaces)) {
+                $interfaces_string = "'".explode("','",$interfaces)."'";
+                $result = $mvsdb->query("SELECT * FROM mvs_interfaces WHERE interface_GUID IN ($interfaces_string)");
+                while ($row = $result->fetch_assoc()) {
+                    //Add tags meta to the interface content
+                    $tagmeta = Movabls::get_tags_meta('interface',$row['interface_GUID'],$mvsdb);
+                    if(is_array($row['content'])) {
+                        foreach ($row['content'] as $tag => $value)
+                            $row['content'][$tag]['meta'] = isset($tagmeta[$row['interface_GUID']][$tag]) ? $tagmeta[$row['interface_GUID']][$tag] : array();
+                    }
+                    $index['interfaces'][$row['interface_GUID']] = $row;
+                    Movabls::add_tags_to_index($index,$row['content']);
+                }
+                $result->free();
+            }
+
+            //If there are new places or interfaces, loop through again
+            if (array_search(false,$index['places'],true) !== false)
+                $new = true;
+            else if (array_search(false,$index['interfaces'],true) !== false)
+                $new = true;
+
+        }
+
+        //If uncategorized, get all of the movabls not in any packages
+        if ($uncategorized)
+            Movabls::add_uncategorized_to_index($index,$mvsdb);
+
+        //Get meta for all four index arrays
+        $index['media'] = Movabls::get_meta('media',array_keys($index['media']),$mvsdb);
+        $index['functions'] = Movabls::get_meta('function',array_keys($index['functions']),$mvsdb);
+        $interfaces_meta = Movabls::get_meta('interface',array_keys($index['interfaces']),$mvsdb);
+        foreach ($interfaces_meta as $guid => $meta)
+            $index['interfaces'][$guid]['meta'] = $meta;
+        $places_meta = Movabls::get_meta('place',array_keys($index['places']),$mvsdb);
+        foreach ($places_meta as $guid => $meta)
+            $index['places'][$guid]['meta'] = $meta;
+
+        return $index;
 	
+    }
+
+    /**
+     * Recurs through the tags and adds all movabls to the index array
+     * @param array $index
+     * @param array $tags
+     */
+    private static function add_tags_to_index(&$index,$tags) {
+
+        if (!empty($tags)) {
+            foreach ($tags as $value) {
+                if (isset($value['movabl_type'])) {
+                    $indexkey = Movabls::table_name($value['movabl_type']);
+                    if (!isset($index[$indexkey][$value['movabl_GUID']]))
+                        $index[$indexkey][$value['movabl_GUID']] = false;
+                }
+                if (isset($value['tags']))
+                    Movabls::add_tags_to_index($index,$value['tags']);
+                elseif (isset($value['interface_GUID'])) {
+                    if (!isset($index['interfaces'][$value['interface_GUID']]))
+                        $index['interfaces'][$value['interface_GUID']] = false;
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Gets all movabls that aren't part of any package or sub-element of a package
+     * and adds them to the index
+     * @param array $index
+     * @param mysqli handle $mvsdb 
+     */
+    private static function add_uncategorized_to_index(&$index,$mvsdb = null) {
+
+        if (empty($mvsdb))
+            $mvsdb = Movabls::db_link();
+
+        //TODO: Finish coding this function
+
     }
 
     /**
@@ -115,10 +239,10 @@ class Movabls {
         switch ($movabl_type) {
             case 'interface':
                 $movabl['content'] = json_decode($movabl['content'],true);
-                if(is_array($inputs)) {
+                if(is_array($movabl['content'])) {
                     foreach ($movabl['content'] as $tag => $value)
                         $movabl['content'][$tag]['meta'] = isset($tagmeta[$movabl_guid][$tag]) ? $tagmeta[$movabl_guid][$tag] : array();
-                }    
+                }
                 break;
             case 'package':
                 $movabl['contents'] = json_decode($movabl['contents'],true);
