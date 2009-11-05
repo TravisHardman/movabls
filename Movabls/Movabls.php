@@ -51,16 +51,18 @@ class Movabls {
      * @param bool $uncategorized = whether to get movabls not in a package
      * @return array ('places','media','functions','interfaces')
      */
-    public static function get_index($packages = 'all',$uncatagorized = false) {
+    public static function get_index($packages = 'all',$uncategorized = true) {
         
         $mvsdb = Movabls::db_link();
-
-        foreach ($packages as $k => $package)
-            $packages[$k] = $mvsdb->real_escape_string($package);
+        
+        if (!empty($packages) && $packages != 'all') {
+            foreach ($packages as $k => $package)
+                $packages[$k] = $mvsdb->real_escape_string($package);
+        }
 
         $index = array(
             'media' => array(),
-            'function' => array(),
+            'functions' => array(),
             'interfaces' => array(),
             'places' => array()
         );
@@ -93,7 +95,10 @@ class Movabls {
         $result->free();
 
         //Get all sub-elements of places and interfaces in the selected packages
-        $new = true;
+        if (!empty($index['places']) || !empty($index['interfaces']))
+            $new = true;
+        else
+            $new = false;
         while ($new) {
 
             $new = false;
@@ -152,14 +157,20 @@ class Movabls {
             Movabls::add_uncategorized_to_index($index,$mvsdb);
 
         //Get meta for all four index arrays
-        $index['media'] = Movabls::get_meta('media',array_keys($index['media']),$mvsdb);
-        $index['functions'] = Movabls::get_meta('function',array_keys($index['functions']),$mvsdb);
-        $interfaces_meta = Movabls::get_meta('interface',array_keys($index['interfaces']),$mvsdb);
-        foreach ($interfaces_meta as $guid => $meta)
-            $index['interfaces'][$guid]['meta'] = $meta;
-        $places_meta = Movabls::get_meta('place',array_keys($index['places']),$mvsdb);
-        foreach ($places_meta as $guid => $meta)
-            $index['places'][$guid]['meta'] = $meta;
+        if (!empty($index['media']))
+            $index['media'] = Movabls::get_meta('media',array_keys($index['media']),$mvsdb);
+        if (!empty($index['functions']))
+            $index['functions'] = Movabls::get_meta('function',array_keys($index['functions']),$mvsdb);
+        if (!empty($index['interfaces'])) {
+            $interfaces_meta = Movabls::get_meta('interface',array_keys($index['interfaces']),$mvsdb);
+            foreach ($interfaces_meta as $guid => $meta)
+                $index['interfaces'][$guid]['meta'] = $meta;
+        }
+        if (!empty($index['places'])) {
+            $places_meta = Movabls::get_meta('place',array_keys($index['places']),$mvsdb);
+            foreach ($places_meta as $guid => $meta)
+                $index['places'][$guid]['meta'] = $meta;
+        }
 
         return $index;
 	
