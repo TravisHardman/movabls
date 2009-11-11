@@ -15,34 +15,76 @@ class Movabls_Run {
 
         try {
 
+            $this->media = new StdClass();
+            $this->functions = new StdClass();
+            $this->places = new StdClass();
+            $this->interfaces = new StdClass();
+
+            set_error_handler(array($this,'error_handler'));
             $this->mvsdb = new mysqli('localhost','root','h4ppyf4rmers','db_filet');
             print_r($this->run_place());
             
         }
         catch (Exception $e) {
 
-            //We're about to execute user code so we need to lock globals in case we didn't
-            //get to the point yet where it has already been locked
-            $GLOBALS->lock();
-
-            //TODO: Create an error handler that puts errors in $GLOBALS->_ERRORS
-            //then use that array in the '%' place and below in die();
-            //Determine the http headers in the '%' place, b/c you might want to
-            //redirect to login on a 403
-            try {
-                print_r($this->run_place('%'));
-            }
-            catch (Exception $ignore_this) {
-                switch ($e->getCode()) {
-                    case 403:header("HTTP/1.1 403 ".$e->getMessage(),true,403);break;
-                    case 404:header("HTTP/1.1 404 ".$e->getMessage(),true,404);break;
-                    //500 errors don't show up in the browser? Lame...
-                    default:break;
-                }
-                die($e->getMessage());
-            }
-            
+            $this->error_handler('Exception',$e->getMessage(),$e->getFile(),$e->getLine(),$e->getCode());
+                       
         }
+
+    }
+
+    /**
+     * This function is set as the error handler for running movabls.  It takes all errors and
+     * puts them into the $GLOBALS->_ERRORS array.  On fatal errors, it runs the user's error place.
+     * @param mixed $errno
+     * @param string $errstr
+     * @param string $errfile
+     * @param int $errline
+     * @param int $http_status
+     * @return true
+     */
+    public function error_handler ($errno, $errstr, $errfile = '', $errline = '', $http_status = 200) {
+
+        //Echo out warnings and notices?
+        //TODO: Change errfile to the movabl that generated the error
+        //TODO: Change errline to the line from that user-generated function
+        
+        switch ($errno) {
+        case E_USER_ERROR:
+            $GLOBALS->add_error('PHP Error',true,$errstr,$errline,$errfile,$http_status);
+            break;
+
+        case E_USER_WARNING:
+            $GLOBALS->add_error('PHP Warning',false,$errstr,$errline,$errfile,$http_status);
+            return true;
+            break;
+
+        case E_USER_NOTICE:
+            $GLOBALS->add_error('PHP Notice',false,$errstr,$errline,$errfile,$http_status);
+            return true;
+            break;
+
+        case 'Exception':
+            $GLOBALS->add_error('Exception',true,$errstr,$errline,$errfile,$http_status);
+            break;
+
+        default:
+            $GLOBALS->add_error('PHP Unknown',false,$errstr,$errline,$errfile,$http_status);
+            return true;
+            break;
+        }
+
+        //In case they haven't been locked yet when this error was thrown
+        $GLOBALS->lock();
+
+        //Try to run the user's custom error place
+        try {
+            print_r($this->run_place('%'));
+        }
+        catch (Exception $ignore_this) {
+            print_r($GLOBALS->_ERRORS);
+        }
+        exit(1);
 
     }
 
@@ -144,6 +186,7 @@ class Movabls_Run {
         $pattern = str_replace('%','(.*)?',$pattern);
         preg_match_all($pattern,$url,$matches);
         array_shift($matches);
+        $return = array();
         foreach ($matches as $key => $match)
             $return[$inputs[$key]] = $match[0];
         return $return;

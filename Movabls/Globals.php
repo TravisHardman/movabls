@@ -26,6 +26,8 @@ class Movabls_Globals {
             'groups' => array('mysiteusers','mysiteadmins')
         );
         $this->data['_USER']['groups'][] = 'Everyone';
+        $this->data['_PLACE'] = array();
+        $this->data['_ERRORS'] = array();
     }
 
     function __get($var) {
@@ -52,6 +54,19 @@ class Movabls_Globals {
 
     function lock() {
         $this->lock = true;
+    }
+
+    function add_error($type,$fatal,$message,$line,$file,$http_status) {
+
+        $this->data['_ERRORS'][] = array(
+            'type' => $type,
+            'fatal' => $fatal,
+            'message' => $message,
+            'line' => $line,
+            'file' => $file,
+            'http_status' => $http_status
+        );
+        
     }
 }
 ?>
