@@ -21,6 +21,10 @@ class Movabls_Run {
         }
         catch (Exception $e) {
 
+            //We're about to execute user code so we need to lock globals in case we didn't
+            //get to the point yet where it has already been locked
+            $GLOBALS->lock();
+
             //TODO: Create an error handler that puts errors in $GLOBALS->_ERRORS
             //then use that array in the '%' place and below in die();
             //Determine the http headers in the '%' place, b/c you might want to
@@ -45,11 +49,22 @@ class Movabls_Run {
     /**
      * Runs a place and returns the output
      * @param string $url
+     * @param bool $original = whether this is the url sent by the client
      * @return output
      */
     private function run_place($url = null) {
 
+        if (empty($url)) {
+            if (strpos($GLOBALS->_SERVER['REQUEST_URI'],'?') !=0)
+                $url = substr($GLOBALS->_SERVER['REQUEST_URI'],0,strpos($GLOBALS->_SERVER['REQUEST_URI'],'?'));
+            else
+                $url =$GLOBALS->_SERVER['REQUEST_URI'];
+        }
         $place = $this->get_place($url);
+
+        //We're about to execute user code, so we need to lock globals now that we're done with it.
+        $GLOBALS->lock();
+        
         if (!empty($place->interface_GUID))
             $this->get_interface($place->interface_GUID);
         else
@@ -61,27 +76,22 @@ class Movabls_Run {
 
     /**
      * Takes the Request URI and determines which place to run, adding it to the place array along the way
-     * @param string url
+     * @param string $url
      * @return array from database
      */
-    private function get_place($url = null) {
+    private function get_place($url) {
 
         //Find correct place to use (static places [without %] take precedence over dynamic places [with %])
-        if (empty($url)) {
-            if (strpos($GLOBALS->_SERVER['REQUEST_URI'],'?') !=0)
-                $url = substr($GLOBALS->_SERVER['REQUEST_URI'],0,strpos($GLOBALS->_SERVER['REQUEST_URI'],'?'));
-            else
-                $url =$GLOBALS->_SERVER['REQUEST_URI'];
-        }
         $url = $this->mvsdb->real_escape_string($url);
 
         if ($url == '%')
             $error_place = '';
         else
             $error_place = 'AND url != "%"';
-        $result = $this->mvsdb->query("SELECT place_GUID,url,https,media_GUID,interface_GUID FROM `mvs_places`
-					   WHERE ('$url' LIKE url OR '$url/' LIKE url) $error_place");
-        //Logic: Look for the URL with the greatest length before a '%' sign
+        $result = $this->mvsdb->query("SELECT place_GUID,url,inputs,https,media_GUID,interface_GUID FROM `mvs_places`
+                                       WHERE ('$url' LIKE url OR '$url/' LIKE url) $error_place");
+
+        //Look for the URL with the greatest length before a '%' sign
         $max = 0;
         while($row = $result->fetch_object()) {
             if ($row->url == $url) {
@@ -99,7 +109,14 @@ class Movabls_Run {
         if (!isset($place))
             throw new Exception ('Place Not Found',404);
 
-        $this->places->{$place->place_GUID} = $place->url;
+        $place->inputs = json_decode($place->inputs);
+
+        //If this is not the error place, extract input values from the url and set them in globals
+        if ($url != '%')
+            $GLOBALS->_PLACE = $this->extract_url_variables($place->url,$url,$place->inputs);
+
+        $this->construct_place_url($place->url,$place->inputs);       
+        $this->places->{$place->place_GUID} = $place;
 
         if (!Movabls_Permissions::check_permission('place', $place->place_GUID, 'execute', $this->mvsdb))
             throw new Exception('You do not have permission to access this place',403);
@@ -110,6 +127,44 @@ class Movabls_Run {
         }
         
         return $place;
+
+    }
+
+    /**
+     * Takes the url pattern of the place, determines the values of the variables from the
+     * actual url, and puts those values into the globals array
+     * @param string $pattern
+     * @param string $url
+     * @param array $inputs
+     * @return array = key/value pairings
+     */
+    private function extract_url_variables($pattern,$url,$inputs) {
+
+        $pattern = '/'.preg_quote($pattern,'/').'/';
+        $pattern = str_replace('%','(.*)?',$pattern);
+        preg_match_all($pattern,$url,$matches);
+        array_shift($matches);
+        foreach ($matches as $key => $match)
+            $return[$inputs[$key]] = $match[0];
+        return $return;
+
+    }
+
+    /**
+     * Takes the url and inputs fields from a place and merges them together
+     * @param string &$url
+     * @param array &$inputs
+     */
+    private function construct_place_url(&$url,&$inputs) {
+
+        if (!empty($inputs)) {
+            foreach ($inputs as $input)
+                $place_inputs[] = '{{'.$input.'}}';
+            $url = str_replace('%','%s',$url);
+            $url = vsprintf($url,$place_inputs);
+        }
+        else
+            $inputs = array();
 
     }
 
@@ -180,9 +235,9 @@ class Movabls_Run {
 
         $result = $this->mvsdb->query("SELECT media_GUID,inputs,mimetype,content FROM mvs_media
                                        WHERE media_GUID IN ($media)");
-        if (empty($result))
+        if ($result->num_rows == 0)
             throw new Exception ("No Media Found",500);
-
+        
         while ($row = $result->fetch_object()) {
 
             $content_mime_type = split("/",$row->mimetype);
@@ -223,7 +278,7 @@ class Movabls_Run {
 
             $result = $this->mvsdb->query("SELECT function_GUID,inputs,content FROM mvs_functions
                                            WHERE function_GUID IN ($functions)");
-            if (empty($result))
+            if ($result->num_rows == 0)
                 throw new Exception ("Functions Not Found",500);
             while ($row = $result->fetch_object()) {
                 $row->inputs = json_decode($row->inputs);
@@ -247,12 +302,14 @@ class Movabls_Run {
                 $places[] = $this->mvsdb->real_escape_string($key);
             $places = '"'.implode('","',$places).'"';
 
-            $result = $this->mvsdb->query("SELECT place_GUID,url FROM mvs_places
+            $result = $this->mvsdb->query("SELECT place_GUID,url,inputs,https,media_GUID,interface_GUID FROM mvs_places
                                            WHERE place_GUID IN ($places)");
-            if (empty($result))
+            if ($result->num_rows == 0)
                 throw new Exception ("Places Not Found",500);
             while ($row = $result->fetch_object()) {
-                $this->places->{$row->place_GUID} = $row->url;
+                $row->inputs = json_decode($row->inputs);
+                $this->construct_place_url($row->url,$row->inputs);
+                $this->places->{$row->place_GUID} = $row;
             }
             $result->free();
 
@@ -272,7 +329,7 @@ class Movabls_Run {
     private function run_movabl($type,$movabl_GUID,$interface_GUID,$tags = null,$toplevel = true) {
 
         if ($type == 'place')
-            return $this->places->$movabl_GUID;
+            return $this->places->$movabl_GUID->url;
         elseif ($type == 'function')
             $type = 'functions';
         elseif ($type != 'media')

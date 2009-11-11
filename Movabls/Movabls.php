@@ -142,7 +142,7 @@ class Movabls {
             $where[] = "package_GUID IN ($package_string)";
         }
 
-        $where = " WHERE ".implode(' AND ',$where);
+        $where = !empty($where) ? " WHERE ".implode(' AND ',$where) : '';
         $result = $mvsdb->query("SELECT * FROM mvs_packages x $join $where $group");
         
         //Add package elements to the index array
@@ -172,6 +172,8 @@ class Movabls {
                 $places_string = "'".implode("','",$places)."'";
                 $result = $mvsdb->query("SELECT * FROM mvs_places WHERE place_GUID IN ($places_string)");
                 while ($row = $result->fetch_assoc()) {
+                    $row['inputs'] = json_decode($row['inputs']);
+                    $row['url'] = Movabls::construct_place_url($row['url'],$row['inputs']);
                     $index['places'][$row['place_GUID']] = $row;
                     Movabls::add_item_to_index($index,'media',$row['media_GUID']);
                     Movabls::add_item_to_index($index,'interface',$row['interface_GUID']);
@@ -205,6 +207,25 @@ class Movabls {
         }
 
         return $index;
+
+    }
+
+    /**
+     * Takes a url and an array of inputs and constructs the place url
+     * @param string $url
+     * @param array $inputs
+     * @return string
+     */
+    private static function construct_place_url($url,$inputs) {
+
+        if (!empty($inputs)) {
+            foreach ($inputs as $key => $input)
+                $inputs[$key] = '{{'.$input.'}}';
+            $url = str_replace('%','%s',$url);
+            $url = vsprintf($url,$inputs);
+        }
+
+        return $url;
 
     }
 
@@ -284,8 +305,11 @@ class Movabls {
 
         $result = $mvsdb->query("SELECT * FROM mvs_places");
         while($row = $result->fetch_assoc()) {
-            if (!isset($categorized['places'][$row['place_GUID']]))
+            if (!isset($categorized['places'][$row['place_GUID']])) {
+                $row['inputs'] = json_decode($row['inputs']);
+                $row['url'] = Movabls::construct_place_url($row['url'],$row['inputs']);
                 $index['places'][$row['place_GUID']] = $row;
+            }
         }
 
     }
@@ -362,7 +386,7 @@ class Movabls {
 
         $meta = array();
 
-        $query = "SELECT m.* FROM `mvs_meta` AS m";
+        $query = "SELECT m.*,mvs_media.mimetype FROM `mvs_meta` AS m";
 
         //If it's a single item, check whether they have permission to view it
         if (!empty($types) && !is_array($types) && !empty($guids) && !is_array($guids)) {
@@ -519,6 +543,15 @@ class Movabls {
                 }
                 else
                     $tagsmeta = array();
+                break;
+            case 'place':
+                //If url includes {{something}}, extract those and use them to replace the inputs
+                if (preg_match_all('/{{.*}}/',$data['url'],$matches)) {
+                    $data['url'] = preg_replace('/{{.*}}/','%',$data['url']);
+                    $data['inputs'] = array();
+                    foreach ($matches[0] as $match)
+                        $data['inputs'][] = substr($match,2,-2);
+                }
                 break;
         }
 
@@ -822,6 +855,7 @@ class Movabls {
             case 'place':
                 $data = array(
                     'url'           => $mvsdb->real_escape_string(urlencode($data['url'])),
+                    'inputs'        => !empty($data['inputs']) ? $mvsdb->real_escape_string(json_encode($data['inputs'])) : '',
                     'https'         => $data['https'] ? '1' : '0',
                     'media_GUID'    => $mvsdb->real_escape_string($data['media_GUID']),
                 );

@@ -6,9 +6,9 @@
 class Movabls_Globals {
 
     private $data = array();
+    private $lock = false;
 
     function __construct() {
-        $this->data['GLOBALS'] = $GLOBALS;
         $this->data['_SERVER'] = $_SERVER;
         $this->data['_GET'] = $_GET;
         $this->data['_POST'] = $_POST;
@@ -25,6 +25,7 @@ class Movabls_Globals {
             'is_owner' => true,
             'groups' => array('mysiteusers','mysiteadmins')
         );
+        $this->data['_USER']['groups'][] = 'Everyone';
     }
 
     function __get($var) {
@@ -32,7 +33,10 @@ class Movabls_Globals {
     }
 
     function __set($var,$value) {
-        throw new Exception ("Global variables are read-only. \$$var cannot be set",500);
+        if ($this->lock)
+            throw new Exception ("Global variables are read-only. \$$var cannot be set",500);
+        else
+            $this->data[$var] = $value;
     }
 
     function __isset($var) {
@@ -40,8 +44,14 @@ class Movabls_Globals {
     }
 
     function __unset($var) {
-        throw new Exception ("Global variables are read-only. \$$var cannot be unset",500);
+        if ($this->lock)
+            throw new Exception ("Global variables are read-only. \$$var cannot be unset",500);
+        else
+            unset($this->data[$var]);
     }
 
+    function lock() {
+        $this->lock = true;
+    }
 }
 ?>
