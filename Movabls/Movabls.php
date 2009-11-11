@@ -13,18 +13,9 @@ class Movabls {
 
         $mvsdb = Movabls::db_link();
 
-        $join = $where = $group = '';
+        $permissions = Movabls::join_permissions('package');
 
-        //If the user is not the owner, just get entries for which they have read permission
-        if (!$GLOBALS->_USER['is_owner']) {
-            $groups = "'".implode("','",$GLOBALS->_USER['groups'])."'";
-            $join = " INNER JOIN mvs_permissions AS p ON p.movabl_GUID = x.package_GUID";
-            $where = " WHERE p.permission_type = 'read' AND p.movabl_type = 'package'
-                       AND p.group_GUID IN ($groups)";
-            $group = " GROUP BY p.movabl_type,p.movabl_GUID";
-        }
-
-        $result = $mvsdb->query("SELECT x.package_id,x.package_GUID FROM `mvs_packages` AS x $join $where $group");
+        $result = $mvsdb->query("SELECT x.package_id,x.package_GUID FROM `mvs_packages` AS x $permissions");
         if(empty($result))
             return array();
 
@@ -124,26 +115,16 @@ class Movabls {
             'places' => array()
         );
 
-        $join = $group = '';
         $where = array();
-
-        //If the user is not the owner, just get entries for which they have read permission
-        if (!$GLOBALS->_USER['is_owner']) {
-            $groups = "'".implode("','",$GLOBALS->_USER['groups'])."'";
-            $join = " INNER JOIN mvs_permissions AS p ON p.movabl_GUID = x.package_GUID";
-            $where[] = "p.permission_type = 'read'";
-            $where[] = "p.movabl_type = 'package'";
-            $where[] = "p.group_GUID IN ($groups)";
-            $group = " GROUP BY p.movabl_type,p.movabl_GUID";
-        }
 
         if ($packages != 'all') {
             $package_string = "'".explode("','",$packages)."'";
             $where[] = "package_GUID IN ($package_string)";
         }
 
-        $where = !empty($where) ? " WHERE ".implode(' AND ',$where) : '';
-        $result = $mvsdb->query("SELECT * FROM mvs_packages x $join $where $group");
+        $permissions = Movabls::join_permissions('package',$where);
+
+        $result = $mvsdb->query("SELECT * FROM mvs_packages x $permissions");
         
         //Add package elements to the index array
         while ($row = $result->fetch_assoc()) {
@@ -171,6 +152,10 @@ class Movabls {
             if (!empty($places)) {
                 $places_string = "'".implode("','",$places)."'";
                 $result = $mvsdb->query("SELECT * FROM mvs_places WHERE place_GUID IN ($places_string)");
+                if ($result->num_rows == 0) {
+                    foreach ($places as $guid)
+                        unset($index['places'][$guid]);
+                }
                 while ($row = $result->fetch_assoc()) {
                     $row['inputs'] = json_decode($row['inputs']);
                     $row['url'] = Movabls::construct_place_url($row['url'],$row['inputs']);
@@ -190,6 +175,10 @@ class Movabls {
             if (!empty($interfaces)) {
                 $interfaces_string = "'".implode("','",$interfaces)."'";
                 $result = $mvsdb->query("SELECT * FROM mvs_interfaces WHERE interface_GUID IN ($interfaces_string)");
+                if ($result->num_rows == 0) {
+                    foreach ($interfaces as $guid)
+                        unset($index['interfaces'][$guid]);
+                }
                 while ($row = $result->fetch_assoc()) {
                     $row['content'] = json_decode($row['content'],true);
                     $index['interfaces'][$row['interface_GUID']] = $row;
@@ -280,22 +269,22 @@ class Movabls {
 
         $categorized = Movabls::get_packages_content();
 
-        //TODO: Join permissions into these queries - also, check how you're doing that
-        //elsewhere because I'm not sure that it works...
-
-        $result = $mvsdb->query("SELECT media_GUID FROM mvs_media");
+        $permissions = Movabls::join_permissions('media');
+        $result = $mvsdb->query("SELECT media_GUID FROM mvs_media AS x $permissions");
         while($row = $result->fetch_assoc()) {
             if (!isset($categorized['media'][$row['media_GUID']]))
                 Movabls::add_item_to_index($index,'media',$row['media_GUID']);
         }
 
-        $result = $mvsdb->query("SELECT function_GUID FROM mvs_functions");
+        $permissions = Movabls::join_permissions('function');
+        $result = $mvsdb->query("SELECT function_GUID FROM mvs_functions AS x $permissions");
         while($row = $result->fetch_assoc()) {
             if (!isset($categorized['functions'][$row['function_GUID']]))
                 Movabls::add_item_to_index($index,'function',$row['function_GUID']);
         }
 
-        $result = $mvsdb->query("SELECT * FROM mvs_interfaces");
+        $permissions = Movabls::join_permissions('interface');
+        $result = $mvsdb->query("SELECT * FROM mvs_interfaces AS x $permissions");
         while($row = $result->fetch_assoc()) {
             if (!isset($categorized['interfaces'][$row['interface_GUID']])) {
                 $row['content'] = json_decode($row['content'],true);
@@ -303,7 +292,8 @@ class Movabls {
             }
         }
 
-        $result = $mvsdb->query("SELECT * FROM mvs_places");
+        $permissions = Movabls::join_permissions('place');
+        $result = $mvsdb->query("SELECT * FROM mvs_places AS x $permissions");
         while($row = $result->fetch_assoc()) {
             if (!isset($categorized['places'][$row['place_GUID']])) {
                 $row['inputs'] = json_decode($row['inputs']);
@@ -311,6 +301,44 @@ class Movabls {
                 $index['places'][$row['place_GUID']] = $row;
             }
         }
+
+    }
+
+    /**
+     * Creates a string to append to a SQL query to join permissions
+     * @param string $type
+     * @param array $where = existing where array
+     * @return string
+     */
+    private static function join_permissions($type,$where = array()) {
+        
+        $group = $join = '';
+
+        if (!$GLOBALS->_USER['is_owner']) {
+
+            $where = array();
+            $groups = "'".implode("','",$GLOBALS->_USER['groups'])."'";
+            
+            if ($type == 'meta')
+                $join = " INNER JOIN mvs_permissions AS p ON p.movabl_GUID = m.movabls_GUID AND p.movabl_type = m.movabls_type";
+            else
+                $join = " INNER JOIN mvs_permissions AS p ON p.movabl_GUID = x.{$type}_GUID";
+
+            if ($type != 'meta')
+                $where[] = "p.movabl_type = '$type'";
+            $where[] = "p.permission_type = 'read'";
+            $where[] = "p.group_GUID IN ($groups)";
+
+            $group = " GROUP BY p.movabl_type,p.movabl_GUID";
+
+        }
+
+        if (!empty($where))
+            $where = 'WHERE '.implode(' AND ',$where);
+        else
+            $where = '';
+
+        return "$join $where $group";
 
     }
 
@@ -386,21 +414,13 @@ class Movabls {
 
         $meta = array();
 
-        $query = "SELECT m.*,mvs_media.mimetype FROM `mvs_meta` AS m";
+        $query = "SELECT m.* FROM `mvs_meta` AS m";
 
         //If it's a single item, check whether they have permission to view it
         if (!empty($types) && !is_array($types) && !empty($guids) && !is_array($guids)) {
             if (!Movabls_Permissions::check_permission($types, $guids, 'read', $mvsdb))
                 throw new Exception("You do not have permission to view this Movabl",403);
-        }
-        //Otherwise, if the user is not the owner, just get entries for which they have read permission
-        elseif (!$GLOBALS->_USER['is_owner']) {
-            $groups = "'".implode("','",$GLOBALS->_USER['groups'])."'";
-            $query .= " INNER JOIN mvs_permissions AS p ON p.movabl_GUID = m.movabls_GUID AND p.movabl_type = m.movabls_type";
-            $where[] = "p.permission_type = 'read'";
-            $where[] = "p.group_GUID IN ($groups)";
-            $group = " GROUP BY p.movabl_type,p.movabl_GUID";
-        }
+        }        
 
         if (!empty($guids)) {
             if (!is_array($guids))
@@ -420,11 +440,7 @@ class Movabls {
             $where[] = "m.movabls_type IN ($in_string)";
         }
 
-        if (!empty($where))
-            $query .= " WHERE ".implode(' AND ',$where);
-
-        if (!empty($group))
-            $query .= " $group";
+        $query .= ' '.Movabls::join_permissions('meta',$where);
 
         $result = $mvsdb->query($query);
 
@@ -462,14 +478,6 @@ class Movabls {
             if (!Movabls_Permissions::check_permission($types, $guids, 'read', $mvsdb))
                 throw new Exception("You do not have permission to view this Movabl",403);
         }
-        //Otherwise, if the user is not the owner, just get entries for which they have read permission
-        elseif (!$GLOBALS->_USER['is_owner']) {
-            $groups = "'".implode("','",$GLOBALS->_USER['groups'])."'";
-            $query .= " INNER JOIN mvs_permissions AS p ON p.movabl_GUID = m.movabls_GUID AND p.movabl_type = m.movabls_type";
-            $where[] = "p.permission_type = 'read'";
-            $where[] = "p.group_GUID IN ($groups)";
-            $group = " GROUP BY p.movabl_type,p.movabl_GUID";
-        }
 
         if (!empty($guids)) {
             if (!is_array($guids))
@@ -489,11 +497,7 @@ class Movabls {
             $where[] = "m.movabls_type IN ($in_string)";
         }
 
-        if (!empty($where))
-            $query .= " WHERE ".implode(' AND ',$where);
-
-        if (!empty($group))
-            $query .= " $group";
+        $query .= ' '.Movabls::join_permissions('meta',$where);
 
         $result = $mvsdb->query($query);
 
