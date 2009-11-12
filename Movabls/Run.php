@@ -15,12 +15,19 @@ class Movabls_Run {
 
         try {
 
+            //Instantiate containers
             $this->media = new StdClass();
             $this->functions = new StdClass();
             $this->places = new StdClass();
             $this->interfaces = new StdClass();
 
+            //Set up error reporting
+            error_reporting(E_ALL);
+            ini_set('display_errors',0); //TODO: May have to be set in actual php.ini if we want to restrict ini_set
             set_error_handler(array($this,'error_handler'));
+            register_shutdown_function(array($this,'shutdown_handler'));
+
+            //Run it!
             $this->mvsdb = new mysqli('localhost','root','h4ppyf4rmers','db_filet');
             print_r($this->run_place());
             
@@ -48,36 +55,43 @@ class Movabls_Run {
         //Echo out warnings and notices?
         //TODO: Change errfile to the movabl that generated the error
         //TODO: Change errline to the line from that user-generated function
+        //Note: Compiler errors will not be handled by this function, so syntax should be checked on save by the API
         
         switch ($errno) {
-        case E_USER_ERROR:
-            $GLOBALS->add_error('PHP Error',true,$errstr,$errline,$errfile,$http_status);
-            break;
 
-        case E_USER_WARNING:
-            $GLOBALS->add_error('PHP Warning',false,$errstr,$errline,$errfile,$http_status);
-            return true;
-            break;
+            case E_ERROR:
+            case E_USER_ERROR:
+                $GLOBALS->add_error('PHP Error',true,$errstr,$errline,$errfile,500);
+                break;
 
-        case E_USER_NOTICE:
-            $GLOBALS->add_error('PHP Notice',false,$errstr,$errline,$errfile,$http_status);
-            return true;
-            break;
+            case E_WARNING:
+            case E_USER_WARNING:
+                $GLOBALS->add_error('PHP Warning',false,$errstr,$errline,$errfile,200);
+                return true;
+                break;
 
-        case 'Exception':
-            $GLOBALS->add_error('Exception',true,$errstr,$errline,$errfile,$http_status);
-            break;
+            case E_NOTICE:
+            case E_USER_NOTICE:
+                $GLOBALS->add_error('PHP Notice',false,$errstr,$errline,$errfile,200);
+                return true;
+                break;
 
-        default:
-            $GLOBALS->add_error('PHP Unknown',false,$errstr,$errline,$errfile,$http_status);
-            return true;
-            break;
+            case 'Exception':
+                $GLOBALS->add_error('Uncaught Exception',true,$errstr,$errline,$errfile,$http_status);
+                break;
+
+            default:
+                $GLOBALS->add_error('PHP Unknown',false,$errstr,$errline,$errfile,$http_status);
+                return true;
+                break;
+            
         }
 
         //In case they haven't been locked yet when this error was thrown
         $GLOBALS->lock();
 
         //Try to run the user's custom error place
+        //TODO: This will be an infinite loop if there's an error in the "%" place
         try {
             print_r($this->run_place('%'));
         }
@@ -85,6 +99,19 @@ class Movabls_Run {
             print_r($GLOBALS->_ERRORS);
         }
         exit(1);
+
+    }
+
+    /**
+     * This function executes on shutdown of the script as a method for catching
+     * errors of type E_ERROR and sending them through the default error reporting
+     * mechanism.  Compiler, core, and parse errors will still not be caught.
+     */
+    public function shutdown_handler() {
+
+        $error = error_get_last();
+        if (isset($error['type']) && $error['type'] == E_ERROR)
+            $this->error_handler($error['type'],$error['message'],$error['file'],$error['line']);
 
     }
 
