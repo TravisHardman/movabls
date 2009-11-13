@@ -41,81 +41,6 @@ class Movabls_Run {
     }
 
     /**
-     * This function is set as the error handler for running movabls.  It takes all errors and
-     * puts them into the $GLOBALS->_ERRORS array.  On fatal errors, it runs the user's error place.
-     * @param mixed $errno
-     * @param string $errstr
-     * @param string $errfile
-     * @param int $errline
-     * @param int $http_status
-     * @return true
-     */
-    public function error_handler ($errno, $errstr, $errfile = '', $errline = '', $http_status = 200) {
-
-        //Echo out warnings and notices?
-        //TODO: Change errfile to the movabl that generated the error
-        //TODO: Change errline to the line from that user-generated function
-        //Note: Compiler errors will not be handled by this function, so syntax should be checked on save by the API
-        
-        switch ($errno) {
-
-            case E_ERROR:
-            case E_USER_ERROR:
-                $GLOBALS->add_error('PHP Error',true,$errstr,$errline,$errfile,500);
-                break;
-
-            case E_WARNING:
-            case E_USER_WARNING:
-                $GLOBALS->add_error('PHP Warning',false,$errstr,$errline,$errfile,200);
-                return true;
-                break;
-
-            case E_NOTICE:
-            case E_USER_NOTICE:
-                $GLOBALS->add_error('PHP Notice',false,$errstr,$errline,$errfile,200);
-                return true;
-                break;
-
-            case 'Exception':
-                $GLOBALS->add_error('Uncaught Exception',true,$errstr,$errline,$errfile,$http_status);
-                break;
-
-            default:
-                $GLOBALS->add_error('PHP Unknown',false,$errstr,$errline,$errfile,$http_status);
-                return true;
-                break;
-            
-        }
-
-        //In case they haven't been locked yet when this error was thrown
-        $GLOBALS->lock();
-
-        //Try to run the user's custom error place
-        //TODO: This will be an infinite loop if there's an error in the "%" place
-        try {
-            print_r($this->run_place('%'));
-        }
-        catch (Exception $ignore_this) {
-            print_r($GLOBALS->_ERRORS);
-        }
-        exit(1);
-
-    }
-
-    /**
-     * This function executes on shutdown of the script as a method for catching
-     * errors of type E_ERROR and sending them through the default error reporting
-     * mechanism.  Compiler, core, and parse errors will still not be caught.
-     */
-    public function shutdown_handler() {
-
-        $error = error_get_last();
-        if (isset($error['type']) && $error['type'] == E_ERROR)
-            $this->error_handler($error['type'],$error['message'],$error['file'],$error['line']);
-
-    }
-
-    /**
      * Runs a place and returns the output
      * @param string $url
      * @param bool $original = whether this is the url sent by the client
@@ -178,14 +103,10 @@ class Movabls_Run {
         if (!isset($place))
             throw new Exception ('Place Not Found',404);
 
-        $place->inputs = json_decode($place->inputs);
-
-        //If this is not the error place, extract input values from the url and set them in globals
         if ($url != '%')
-            $GLOBALS->_PLACE = $this->extract_url_variables($place->url,$url,$place->inputs);
-
-        $this->construct_place_url($place->url,$place->inputs);       
-        $this->places->{$place->place_GUID} = $place;
+            $this->add_place($place,$url);
+        else
+            $this->add_place();
 
         if (!Movabls_Permissions::check_permission('place', $place->place_GUID, 'execute', $this->mvsdb))
             throw new Exception('You do not have permission to access this place',403);
@@ -340,7 +261,7 @@ class Movabls_Run {
         }
         $result->free();
 
-        if (!empty($this->functions)) {
+        if ($this->functions != new StdClass()) {
             
             foreach ($this->functions as $key => $val)
                 $functions[] = $this->mvsdb->real_escape_string($key);
@@ -366,7 +287,7 @@ class Movabls_Run {
             
         }
 
-        if (!empty($this->places)) {
+        if ($this->places != new StdClass()) {
 
             foreach ($this->places as $key => $val)
                 $places[] = $this->mvsdb->real_escape_string($key);
@@ -376,14 +297,42 @@ class Movabls_Run {
                                            WHERE place_GUID IN ($places)");
             if ($result->num_rows == 0)
                 throw new Exception ("Places Not Found",500);
-            while ($row = $result->fetch_object()) {
-                $row->inputs = json_decode($row->inputs);
-                $this->construct_place_url($row->url,$row->inputs);
-                $this->places->{$row->place_GUID} = $row;
-            }
+            while ($row = $result->fetch_object())
+                $this->add_place($row);
             $result->free();
 
         }
+
+    }
+
+    /**
+     * Adds place inputs and handle to $this->places.  If this is the original place, toplevel
+     * will be set to the REQUEST_URI, and the variables from the URL will be extracted and added
+     * to the $GLOBALS->_PLACE array
+     * @param StdClass $place
+     * @param string $toplevel 
+     */
+    private function add_place($place,$toplevel = null) {
+
+        $place->inputs = json_decode($place->inputs);
+
+        if (!empty($toplevel))
+            $GLOBALS->_PLACE = $this->extract_url_variables($place->url,$toplevel,$place->inputs);
+
+        if (empty($place->inputs)) {
+            $place->inputs = array();
+            $argstring = '';
+        }
+        else
+            $argstring = '$'.implode(',$',$place->inputs);
+
+        $this->construct_place_url($place->url,$place->inputs);
+        $renderer = new Movabls_MediaRender($place->url,$place->inputs);
+        $code = 'ob_start(); ?>'.$renderer->output.'<?php return ob_get_clean();';
+        
+        $this->places->{$place->place_GUID} = new StdClass();
+        $this->places->{$place->place_GUID}->inputs = $place->inputs;
+        $this->places->{$place->place_GUID}->handle = create_function($argstring, $code);
 
     }
 
@@ -398,12 +347,7 @@ class Movabls_Run {
      */
     private function run_movabl($type,$movabl_GUID,$interface_GUID,$tags = null,$toplevel = true) {
 
-        if ($type == 'place')
-            return $this->places->$movabl_GUID->url;
-        elseif ($type == 'function')
-            $type = 'functions';
-        elseif ($type != 'media')
-            return null;
+        $type = Movabls::table_name($type);
 
         if (empty($this->$type->$movabl_GUID))
             return null;
@@ -442,15 +386,19 @@ class Movabls_Run {
                     $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $tag->interface_GUID);
                 elseif (isset($tag->tags))
                     $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $interface_GUID, $tag->tags, false);
+                elseif (isset($tag->lambda)) {
+                    $type = Movabls::table_name($tag->movabl_type);
+                    $tags->$name = $this->$type->{$tag->movabl_GUID}->handle;
+                }
                 else
                     $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $interface_GUID, null, false);
             }
             else
                 $tags->$name = null;
 
-            if ($toplevel)//if this is top-level, set the tag in $this->interfaces
+            if ($toplevel) //if this is top-level, set the tag in $this->interfaces
                 $this->interfaces->$interface_GUID->$name = $tags->$name;
-
+                
         }
 
         $return = array();
@@ -494,6 +442,81 @@ class Movabls_Run {
 
         $tempfunction = create_function($args,"return $expression;");
         return call_user_func_array($tempfunction,$values);
+
+    }
+
+    /**
+     * This function is set as the error handler for running movabls.  It takes all errors and
+     * puts them into the $GLOBALS->_ERRORS array.  On fatal errors, it runs the user's error place.
+     * @param mixed $errno
+     * @param string $errstr
+     * @param string $errfile
+     * @param int $errline
+     * @param int $http_status
+     * @return true
+     */
+    public function error_handler ($errno, $errstr, $errfile = '', $errline = '', $http_status = 200) {
+
+        //Echo out warnings and notices?
+        //TODO: Change errfile to the movabl that generated the error
+        //TODO: Change errline to the line from that user-generated function
+        //Note: Compiler errors will not be handled by this function, so syntax should be checked on save by the API
+
+        switch ($errno) {
+
+            case E_ERROR:
+            case E_USER_ERROR:
+                $GLOBALS->add_error('PHP Error',true,$errstr,$errline,$errfile,500);
+                break;
+
+            case E_WARNING:
+            case E_USER_WARNING:
+                $GLOBALS->add_error('PHP Warning',false,$errstr,$errline,$errfile,200);
+                return true;
+                break;
+
+            case E_NOTICE:
+            case E_USER_NOTICE:
+                $GLOBALS->add_error('PHP Notice',false,$errstr,$errline,$errfile,200);
+                return true;
+                break;
+
+            case 'Exception':
+                $GLOBALS->add_error('Uncaught Exception',true,$errstr,$errline,$errfile,$http_status);
+                break;
+
+            default:
+                $GLOBALS->add_error('PHP Unknown',false,$errstr,$errline,$errfile,$http_status);
+                return true;
+                break;
+
+        }
+
+        //In case they haven't been locked yet when this error was thrown
+        $GLOBALS->lock();
+
+        //Try to run the user's custom error place
+        //TODO: This will be an infinite loop if there's an error in the "%" place
+        try {
+            print_r($this->run_place('%'));
+        }
+        catch (Exception $ignore_this) {
+            print_r($GLOBALS->_ERRORS);
+        }
+        exit(1);
+
+    }
+
+    /**
+     * This function executes on shutdown of the script as a method for catching
+     * errors of type E_ERROR and sending them through the default error reporting
+     * mechanism.  Compiler, core, and parse errors will still not be caught.
+     */
+    public function shutdown_handler() {
+
+        $error = error_get_last();
+        if (isset($error['type']) && $error['type'] == E_ERROR)
+            $this->error_handler($error['type'],$error['message'],$error['file'],$error['line']);
 
     }
 

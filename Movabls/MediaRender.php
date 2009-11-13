@@ -241,12 +241,12 @@ class Movabls_MediaRender {
         if ($var === 'true' || $var === 'false' || preg_match('/[^0-9\.]/',$var) === 0)
             return $var;
         //If variable is a string, escape $ signs and return as is
-        if (substr($var,0,1) === '"' && substr($var,strlen($var)-1,1) === '"')
+        if (substr($var,0,1) === '"' && substr($var,-1) === '"')
             return str_replace('$','\$',$var);
         //If variable is an array, run each item through this function and return the array
-        if (substr($var,0,1) === '(' && substr($var,strlen($var)-1,1) === ')') {
+        if (substr($var,0,1) === '[' && substr($var,-1) === ']') {
             $var = substr($var,1);
-            $var = substr($var,0,strlen($var)-1);
+            $var = substr($var,0,-1);
             $array = explode(',',$var);
             foreach ($array as $key => $value)
                 $array[$key] = $this->variable(trim($value));
@@ -282,8 +282,18 @@ class Movabls_MediaRender {
             }
             return $return;
         }
+        //If the variable is a lambda call, run the lambda with the specified inputs
+        if (strpos($var,'(') > 0 && substr($var,-1) == ')') {
+            $args = substr($var,strpos($var,'(')+1,-1);
+            $args = explode(',',$args);
+            foreach ($args as $k => $arg)
+                $args[$k] = $this->variable($arg);
+            $var = substr($var,0,strpos($var,'('));
+            $var = $this->variable($var);
+            return 'call_user_func_array('.$var.',array('.implode(',',$args).'))';
+        }
         if (!in_array($var,$this->available))
-            throw new Exception("Media could not be compiled: tag \"$var\" not recognized",500);//TODO: Line number? Or something...
+            throw new Exception("Media could not be compiled: tag \"$var\" not specified as an input",500);//TODO: Line number? Or something...
         return '$'.$var;
     }
 

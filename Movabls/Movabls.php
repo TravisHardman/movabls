@@ -926,14 +926,14 @@ class Movabls {
      * @param string $movabl_type
      * @return string 
      */
-    private static function table_name($movabl_type) {
+    public static function table_name($movabl_type) {
 
         if($movabl_type == 'media')
             $table = 'media';
         elseif (in_array($movabl_type,array('place','interface','function','package')))
             $table = $movabl_type.'s';
         else
-            throw new Exception ('Please specify a valid type of Movabl',500);
+            throw new Exception ('Invalid Movabl Type Specified',500);
         return $table;
         
     }
