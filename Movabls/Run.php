@@ -64,7 +64,11 @@ class Movabls_Run {
         else
             $place->interface_GUID = null;
         $this->select_movabls($place->media_GUID);
-        return $this->run_movabl('media',$place->media_GUID,$place->interface_GUID);
+        $output = $this->run_movabl('media',$place->media_GUID,$place->interface_GUID);
+
+        //Set the content-type to that of the primary media before outputting
+        header('Content-Type: '.$this->media->{$place->media_GUID}->mimetype);
+        return $output;
 
     }
 
@@ -106,7 +110,7 @@ class Movabls_Run {
         if ($url != '%')
             $this->add_place($place,$url);
         else
-            $this->add_place();
+            $this->add_place($place);
 
         if (!Movabls_Permissions::check_permission('place', $place->place_GUID, 'execute', $this->mvsdb))
             throw new Exception('You do not have permission to access this place',403);
@@ -255,9 +259,9 @@ class Movabls_Run {
 
             $this->media->{$row->media_GUID} = new StdClass();
             $this->media->{$row->media_GUID}->inputs = $row->inputs;
+            $this->media->{$row->media_GUID}->mimetype = $row->mimetype;
             $this->media->{$row->media_GUID}->handle = create_function($argstring, $code);
-            if ($row->media_GUID == $primary_GUID)
-                header('Content-Type: '.$row->mimetype);
+                
         }
         $result->free();
 
@@ -331,6 +335,7 @@ class Movabls_Run {
         $code = 'ob_start(); ?>'.$renderer->output.'<?php return ob_get_clean();';
         
         $this->places->{$place->place_GUID} = new StdClass();
+        $this->places->{$place->place_GUID}->url = $place->url;
         $this->places->{$place->place_GUID}->inputs = $place->inputs;
         $this->places->{$place->place_GUID}->handle = create_function($argstring, $code);
 
@@ -496,8 +501,12 @@ class Movabls_Run {
         $GLOBALS->lock();
 
         //Try to run the user's custom error place
-        //TODO: This will be an infinite loop if there's an error in the "%" place
         try {
+            //To prevent an infinite loop, check to see if we've already tried to run the error place
+            foreach ($this->places as $place) {
+                if ($place->url == '%')
+                    throw new Exception('Error place contains errors!');
+            }
             print_r($this->run_place('%'));
         }
         catch (Exception $ignore_this) {
@@ -514,6 +523,7 @@ class Movabls_Run {
      */
     public function shutdown_handler() {
 
+        //TODO: create_function returns false if there's a syntax error, so catch those and send them
         $error = error_get_last();
         if (isset($error['type']) && $error['type'] == E_ERROR)
             $this->error_handler($error['type'],$error['message'],$error['file'],$error['line']);
