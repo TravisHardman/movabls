@@ -10,6 +10,7 @@ class Movabls_Globals {
 
     function __construct() {
         $this->data['_SERVER'] = $_SERVER;
+        $this->data['_SERVER']['SITE_ID'] = 1;
         $this->data['_GET'] = $_GET;
         $this->data['_POST'] = $_POST;
         $this->data['_FILES'] = $_FILES;

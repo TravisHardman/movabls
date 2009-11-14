@@ -885,11 +885,41 @@ class Movabls {
 
     }
 
+    /**
+     * Generates a globally unique 32-byte string consisting of 0-9 and a-z characters
+     * @param string $movabl_type
+     * @return string 
+     */
     private static function generate_guid($movabl_type) {
-        //TODO: guid generation.  remember that guid should reflect the site it was created on
-        //to ensure global uniqueness - what if a matching guid was created on this site
-        //and then deleted?  is there a better way to check uniqueness?
-        return rand(10000,99999);
+
+        //Movabl type - 3 characters ensures uniqueness across types
+        switch ($movabl_type) {
+            case 'media': $type = 'mda'; break;
+            case 'function': $type = 'fnc'; break;
+            case 'interface': $type = 'int'; break;
+            case 'place': $type = 'plc'; break;
+            case 'package': $type = 'pkg'; break;
+            default:
+                throw new Exception ('Invalid movabl type specified for guid generation',500);
+                break;
+        }
+
+        //Site ID - 6 characters in base 36 ensures uniqueness across sites
+        $site_id = $GLOBALS->_SERVER['SITE_ID'];
+        $site_id = base_convert($site_id,10,36);
+        $site_id = str_pad($site_id,8,'0',STR_PAD_LEFT);
+
+        //Microtime - 9 characters in base 36 ensures uniqueness within this site
+        $microtime = microtime(true)*10000;
+        $microtime = base_convert($microtime,10,36);
+
+        //Random number - 12 characters in base 36 ensures randomness
+        $rand = '';
+        for ($i=1;$i<=12;$i++)
+            $rand .= base_convert(mt_rand(0,35),10,36);
+
+        return $type . $site_id . $microtime . $rand;
+
     }
 
     /**

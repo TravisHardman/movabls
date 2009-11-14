@@ -23,7 +23,7 @@ class Movabls_Run {
 
             //Set up error reporting
             error_reporting(E_ALL);
-            ini_set('display_errors',0); //TODO: May have to be set in actual php.ini if we want to restrict ini_set
+            ini_set('display_errors',0);
             set_error_handler(array($this,'error_handler'));
             register_shutdown_function(array($this,'shutdown_handler'));
 
