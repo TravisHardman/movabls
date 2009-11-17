@@ -57,17 +57,17 @@ class Movabls_Globals {
         $this->lock = true;
     }
 
-    function add_error($type,$fatal,$message,$line,$file,$http_status) {
+    function add_error($type,$fatal,$message,$line,$movabl,$stack,$http_status) {
 
         $this->data['_ERRORS'][] = array(
             'type' => $type,
             'fatal' => $fatal,
             'message' => $message,
             'line' => $line,
-            'file' => $file,
+            'movabl' => $movabl,
+            'stack' => $stack,
             'http_status' => $http_status
         );
         
     }
 }
-?>

@@ -215,18 +215,18 @@ class Movabls_MediaRender {
         //Note: under all circumstances, add new variables to available array so they validate later
         if (($length = strpos($tag,':')) === false) {
             if (!$this->valid_name($tag))
-                throw new Exception ("Improper variable name: '$tag'",500);
+                throw new Exception ("Media could not be compiled: Improper variable name: '$tag'",500);
             $this->available[] = $tag;
             return $return.$tag;
         }
         $key = trim(substr($tag,0,$length));
         if (!$this->valid_name($key))
-            throw new Exception ("Improper variable name: '$key'",500);
+            throw new Exception ("Media could not be compiled: Improper variable name: '$key'",500);
         $this->available[] = $key;
         $return .= $key;
         $tag = trim(substr(trim(substr($tag,$length)),1));
         if (!$this->valid_name($tag))
-            throw new Exception ("Improper variable name: '$tag'",500);
+            throw new Exception ("Media could not be compiled: Improper variable name: '$tag'",500);
         $this->available[] = $tag;
         return $return.' => $'.$tag;
     }
@@ -312,4 +312,3 @@ class Movabls_MediaRender {
     }
 
 }
-?>

@@ -42,4 +42,3 @@ echo "mean run: ".(array_sum($times)/count($times))."<br />\n";
 echo "max run: ".max($times)."<br />\n";
 echo "std dev: ".sqrt($variance)."<br />\n";
 // */
-?>

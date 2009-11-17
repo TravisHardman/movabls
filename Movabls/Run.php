@@ -10,16 +10,11 @@ class Movabls_Run {
     private $functions; //Function lambda handles
     private $places; //Place urls
     private $interfaces; //Interface objects
+    private $stack; //Current running stack
 
     public function __construct() {
 
         try {
-
-            //Instantiate containers
-            $this->media = new StdClass();
-            $this->functions = new StdClass();
-            $this->places = new StdClass();
-            $this->interfaces = new StdClass();
 
             //Set up error reporting
             error_reporting(E_ALL);
@@ -33,7 +28,7 @@ class Movabls_Run {
             
         }
         catch (Exception $e) {
-
+            
             $this->error_handler('Exception',$e->getMessage(),$e->getFile(),$e->getLine(),$e->getCode());
                        
         }
@@ -47,6 +42,13 @@ class Movabls_Run {
      * @return output
      */
     private function run_place($url = null) {
+
+        //Instantiate / reset containers
+        $this->media = new StdClass();
+        $this->functions = new StdClass();
+        $this->places = new StdClass();
+        $this->interfaces = new StdClass();
+        $this->stack = new Movabls_Stack();
 
         if (empty($url)) {
             if (strpos($GLOBALS->_SERVER['REQUEST_URI'],'?') !=0)
@@ -64,7 +66,15 @@ class Movabls_Run {
         else
             $place->interface_GUID = null;
         $this->select_movabls($place->media_GUID);
+        
+        //Add to stack and run
+        $info = array(
+            'movabl_type' => 'media',
+            'movabl_GUID' => $place->media_GUID
+        );
+        $this->stack->push($info);
         $output = $this->run_movabl('media',$place->media_GUID,$place->interface_GUID);
+        $this->stack->pop();
 
         //Set the content-type to that of the primary media before outputting
         header('Content-Type: '.$this->media->{$place->media_GUID}->mimetype);
@@ -221,6 +231,7 @@ class Movabls_Run {
      */
     private function select_movabls($primary_GUID) {
 
+        //TODO: If a movabl is not found, needs to throw an error and reference the interface that calls the movabl
         if (!isset($this->media->$primary_GUID))
             $this->media->$primary_GUID = null;
 
@@ -247,6 +258,12 @@ class Movabls_Run {
             }
             else
                 $argstring = '$'.implode(',$',$row->inputs);
+
+            $info = array(
+                'movabl_type' => 'media',
+                'movabl_GUID' => $row->media_GUID
+            );
+            $this->stack->push($info);
                 
             $renderer = new Movabls_MediaRender($row->content,$row->inputs);
 
@@ -260,7 +277,13 @@ class Movabls_Run {
             $this->media->{$row->media_GUID} = new StdClass();
             $this->media->{$row->media_GUID}->inputs = $row->inputs;
             $this->media->{$row->media_GUID}->mimetype = $row->mimetype;
-            $this->media->{$row->media_GUID}->handle = create_function($argstring, $code);
+
+            if ($handle = create_function($argstring, $code))
+                $this->media->{$row->media_GUID}->handle = $handle;
+            else
+                throw new Exception('Syntax Error in User-Defined Media',500);
+
+            $this->stack->pop();
                 
         }
         $result->free();
@@ -285,7 +308,20 @@ class Movabls_Run {
                     $argstring = '$'.implode(',$',$row->inputs);
                 $this->functions->{$row->function_GUID} = new StdClass();
                 $this->functions->{$row->function_GUID}->inputs = $row->inputs;
-                $this->functions->{$row->function_GUID}->handle = create_function($argstring, $row->content);
+
+                $info = array(
+                    'movabl_type' => 'function',
+                    'movabl_GUID' => $row->function_GUID
+                );
+                $this->stack->push($info);
+
+                if ($handle = create_function($argstring, $row->content))
+                    $this->functions->{$row->function_GUID}->handle = $handle;
+                else
+                    throw new Exception('Syntax Error in User-Defined Function',500);
+
+                $this->stack->pop();
+
             }
             $result->free();
             
@@ -337,7 +373,19 @@ class Movabls_Run {
         $this->places->{$place->place_GUID} = new StdClass();
         $this->places->{$place->place_GUID}->url = $place->url;
         $this->places->{$place->place_GUID}->inputs = $place->inputs;
-        $this->places->{$place->place_GUID}->handle = create_function($argstring, $code);
+
+        $info = array(
+            'movabl_type' => 'place',
+            'movabl_GUID' => $place->place_GUID
+        );
+        $this->stack->push($info);
+
+        if ($handle = create_function($argstring, $code))
+            $this->places->{$place->place_GUID}->handle = $handle;
+        else
+            throw new Exception('Syntax Error in Place URL',500);
+            
+        $this->stack->pop();
 
     }
 
@@ -361,8 +409,15 @@ class Movabls_Run {
 
         if (empty($movabl->inputs) || (empty($tags) && !$toplevel))
             $inputs = array();
-        elseif ($toplevel)
+        elseif ($toplevel) {
+            $info = array(
+                'movabl_type' => 'interface',
+                'movabl_GUID' => $interface_GUID
+            );
+            $this->stack->push($info);
             $inputs = $this->run_tags($interface_GUID,$this->interfaces->$interface_GUID,$movabl->inputs,true);
+            $this->stack->pop();
+        }
         else //Run tags within interface
             $inputs = $this->run_tags($interface_GUID,$tags,$movabl->inputs,false);
 
@@ -384,9 +439,21 @@ class Movabls_Run {
 
         foreach ($tags as $name => $tag) {
 
-            if (isset($tag->expression))
+            if (isset($tag->expression)) {
+                $info = array(
+                    'expression' => $tag->expression
+                );
+                $this->stack->push($info,$name);
                 $tags->$name = $this->run_expression($tag->expression,$interface_GUID);
+                $this->stack->pop();
+            }
             elseif (isset($tag->movabl_GUID)) {
+                $info = array(
+                    'movabl_type' => $tag->movabl_type,
+                    'movabl_GUID' => $tag->movabl_GUID
+                );
+                $this->stack->push($info,$name);
+
                 if (isset($tag->interface_GUID))
                     $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $tag->interface_GUID);
                 elseif (isset($tag->tags))
@@ -397,6 +464,8 @@ class Movabls_Run {
                 }
                 else
                     $tags->$name = $this->run_movabl($tag->movabl_type, $tag->movabl_GUID, $interface_GUID, null, false);
+
+                $this->stack->pop();
             }
             else
                 $tags->$name = null;
@@ -445,8 +514,10 @@ class Movabls_Run {
         else
             $args = '$'.implode(',$',$args);
 
-        $tempfunction = create_function($args,"return $expression;");
-        return call_user_func_array($tempfunction,$values);
+        if ($handle = create_function($args,"return $expression;"))
+            return call_user_func_array($handle,$values);
+        else
+            throw new Exception('Syntax Error in User-Defined Expression',500);
 
     }
 
@@ -462,54 +533,63 @@ class Movabls_Run {
      */
     public function error_handler ($errno, $errstr, $errfile = '', $errline = '', $http_status = 200) {
 
-        //Echo out warnings and notices?
-        //TODO: Change errfile to the movabl that generated the error
-        //TODO: Change errline to the line from that user-generated function
-        //Note: Compiler errors will not be handled by this function, so syntax should be checked on save by the API
+        //TODO: Echo out warnings and notices?
+        //TODO: Syntax should be checked by the API or the IDE, since syntax errors will not give line numbers
 
+        //Change the errline to null if the error was not in a user-defined function
+        if (strpos($errfile,'runtime-created function') === false)
+            $errline = null;
+
+        //Change the errfile to the Movabl that threw the error
+        $errfile = $this->stack->top();
+
+        //Add the error to the $GLOBALS->_ERRORS array
         switch ($errno) {
 
             case E_ERROR:
             case E_USER_ERROR:
-                $GLOBALS->add_error('PHP Error',true,$errstr,$errline,$errfile,500);
+                $GLOBALS->add_error('PHP Error',true,$errstr,$errline,$errfile,$this->stack->get(),500);
                 break;
 
             case E_WARNING:
             case E_USER_WARNING:
-                $GLOBALS->add_error('PHP Warning',false,$errstr,$errline,$errfile,200);
+                $GLOBALS->add_error('PHP Warning',false,$errstr,$errline,$errfile,$this->stack->get(),200);
                 return true;
                 break;
 
             case E_NOTICE:
             case E_USER_NOTICE:
-                $GLOBALS->add_error('PHP Notice',false,$errstr,$errline,$errfile,200);
+                $GLOBALS->add_error('PHP Notice',false,$errstr,$errline,$errfile,$this->stack->get(),200);
                 return true;
                 break;
 
             case 'Exception':
-                $GLOBALS->add_error('Uncaught Exception',true,$errstr,$errline,$errfile,$http_status);
+                $GLOBALS->add_error('Uncaught Exception',true,$errstr,$errline,$errfile,$this->stack->get(),$http_status);
                 break;
 
             default:
-                $GLOBALS->add_error('PHP Unknown',false,$errstr,$errline,$errfile,$http_status);
+                $GLOBALS->add_error('PHP Unknown',false,$errstr,$errline,$errfile,$this->stack->get(),$http_status);
                 return true;
                 break;
 
         }
-
+        
         //In case they haven't been locked yet when this error was thrown
         $GLOBALS->lock();
 
         //Try to run the user's custom error place
         try {
-            //To prevent an infinite loop, check to see if we've already tried to run the error place
+            //To prevent an infinite loop, check to see if we're already running the error place
             foreach ($this->places as $place) {
-                if ($place->url == '%')
+                if (!empty($place) && $place->url == '%')
                     throw new Exception('Error place contains errors!');
             }
             print_r($this->run_place('%'));
         }
-        catch (Exception $ignore_this) {
+        catch (Exception $error_place) {
+            if ($error_place->getMessage() != 'Error place contains errors!')
+                $this->error_handler('Exception',$error_place->getMessage(),$error_place->getFile(),$error_place->getLine(),$error_place->getCode());
+            echo 'Error place contains errors!<br /><br />Dumping $GLOBALS->_ERRORS:<br /><br />';
             print_r($GLOBALS->_ERRORS);
         }
         exit(1);
@@ -523,7 +603,6 @@ class Movabls_Run {
      */
     public function shutdown_handler() {
 
-        //TODO: create_function returns false if there's a syntax error, so catch those and send them
         $error = error_get_last();
         if (isset($error['type']) && $error['type'] == E_ERROR)
             $this->error_handler($error['type'],$error['message'],$error['file'],$error['line']);
@@ -531,4 +610,3 @@ class Movabls_Run {
     }
 
 }
-?>
