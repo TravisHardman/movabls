@@ -858,7 +858,7 @@ class Movabls {
                 break;
             case 'place':
                 $data = array(
-                    'url'           => $mvsdb->real_escape_string(urlencode($data['url'])),
+                    'url'           => $mvsdb->real_escape_string($data['url']),
                     'inputs'        => !empty($data['inputs']) ? $mvsdb->real_escape_string(json_encode($data['inputs'])) : '',
                     'https'         => $data['https'] ? '1' : '0',
                     'media_GUID'    => $mvsdb->real_escape_string($data['media_GUID']),
