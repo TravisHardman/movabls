@@ -936,8 +936,8 @@ class Movabls {
             $datastring = '';
             $i = 1;
             foreach ($data as $k => $v) {
-                $datastring = $i==1 ? '' : ',';
-                $datastring = " `$k` = '$v'";
+                $datastring .= $i==1 ? '' : ',';
+                $datastring .= " `$k` = '$v'";
                 $i++;
             }
         }
