@@ -857,14 +857,16 @@ class Movabls {
                 );
                 break;
             case 'place':
-                $data = array(
+				if (!empty($data['interface_GUID']))
+					$clean_interface_GUID =  $mvsdb->real_escape_string($data['interface_GUID']);
+				$data = array(
                     'url'           => $mvsdb->real_escape_string($data['url']),
                     'inputs'        => !empty($data['inputs']) ? $mvsdb->real_escape_string(json_encode($data['inputs'])) : '',
                     'https'         => $data['https'] ? '1' : '0',
                     'media_GUID'    => $mvsdb->real_escape_string($data['media_GUID']),
                 );
-                if (!empty($data['interface_GUID']))
-                    $data['interface_GUID'] = $mvsdb->real_escape_string($data['interface_GUID']);
+                if (!empty($clean_interface_GUID))
+                    $data['interface_GUID'] = $clean_interface_GUID;
                 break;
             case 'meta':
                 $pre_data = $data;
