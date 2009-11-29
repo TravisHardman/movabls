@@ -118,7 +118,7 @@ class Movabls {
         $where = array();
 
         if ($packages != 'all') {
-            $package_string = "'".explode("','",$packages)."'";
+            $package_string = "'".implode("','",$packages)."'";
             $where[] = "package_GUID IN ($package_string)";
         }
 
@@ -130,7 +130,7 @@ class Movabls {
         while ($row = $result->fetch_assoc()) {
             $contents = json_decode($row['contents'],true);
             foreach ($contents as $movabl)
-                Movabls::add_item_to_index($index,$movabl['movabl_type'],$movabl['movabl_GUID']);
+                Movabls::add_item_to_index($index,$movabl['movabl_type'],$movabl['movabl_guid']);
         }
         $result->free();
         
