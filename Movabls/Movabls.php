@@ -519,7 +519,7 @@ class Movabls {
      * @param array $data
      * @param string $movabl_guid
      * @param mysqli handle $mvsdb
-     * @return bool
+     * @return $movabl_guid
      */
     public static function set_movabl($movabl_type,$data,$movabl_guid = null, $mvsdb = null) {
 
