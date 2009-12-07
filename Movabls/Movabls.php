@@ -587,7 +587,7 @@ class Movabls {
         if (!empty($tagsmeta))
             Movabls::set_tags_meta($tagsmeta,$movabl_type,$movabl_guid,$mvsdb);
 
-        return $movabl_guid	
+        return $movabl_guid;	
     }
 
     /**
