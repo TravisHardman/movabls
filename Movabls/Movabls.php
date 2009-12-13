@@ -118,7 +118,7 @@ class Movabls {
         $where = array();
 
         if ($packages != 'all') {
-            $package_string = "'".explode("','",$packages)."'";
+            $package_string = "'".implode("','",$packages)."'";
             $where[] = "package_GUID IN ($package_string)";
         }
 
@@ -519,7 +519,7 @@ class Movabls {
      * @param array $data
      * @param string $movabl_guid
      * @param mysqli handle $mvsdb
-     * @return bool
+     * @return $movabl_guid
      */
     public static function set_movabl($movabl_type,$data,$movabl_guid = null, $mvsdb = null) {
 
@@ -587,8 +587,7 @@ class Movabls {
         if (!empty($tagsmeta))
             self::set_tags_meta($tagsmeta,$movabl_type,$movabl_guid,$mvsdb);
 
-        return true;
-	
+        return $movabl_guid;	
     }
 
     /**
@@ -857,14 +856,16 @@ class Movabls {
                 );
                 break;
             case 'place':
-                $data = array(
-                    'url'           => $mvsdb->real_escape_string(urlencode($data['url'])),
+				if (!empty($data['interface_GUID']))
+					$clean_interface_GUID =  $mvsdb->real_escape_string($data['interface_GUID']);
+				$data = array(
+                    'url'           => $mvsdb->real_escape_string($data['url']),
                     'inputs'        => !empty($data['inputs']) ? $mvsdb->real_escape_string(json_encode($data['inputs'])) : '',
                     'https'         => $data['https'] ? '1' : '0',
                     'media_GUID'    => $mvsdb->real_escape_string($data['media_GUID']),
                 );
-                if (!empty($data['interface_GUID']))
-                    $data['interface_GUID'] = $mvsdb->real_escape_string($data['interface_GUID']);
+                if (!empty($clean_interface_GUID))
+                    $data['interface_GUID'] = $clean_interface_GUID;
                 break;
             case 'meta':
                 $pre_data = $data;
@@ -936,8 +937,8 @@ class Movabls {
             $datastring = '';
             $i = 1;
             foreach ($data as $k => $v) {
-                $datastring = $i==1 ? '' : ',';
-                $datastring = " `$k` = '$v'";
+                $datastring .= $i==1 ? '' : ',';
+                $datastring .= " `$k` = '$v'";
                 $i++;
             }
         }
