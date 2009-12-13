@@ -7,16 +7,21 @@ class Movabls_Session {
 
     /**
      * Uses the cookies variable to get the session and create the $_USER global
-     * @global array $_USER
+     * @param mysqli handle $mvsdb
+     * @global array $GLOBALS->_USER
      */
-    public static function get_session() {
+    public static function get_session($mvsdb = null) {
 
         //This code can only be called in bootstrapping before $GLOBALS is created
         if (!empty($GLOBALS->_USER))
             return;
 
-        global $_USER;
-        $mvsdb = Movabls_Session::db_link();
+        if (empty($mvsdb))
+            $mvsdb = self::db_link();
+
+        //Approx every 10000 requests, delete expired sessions
+        if (mt_rand(1,10000) == 14)
+            self::delete_expired_sessions($mvsdb);
 
         if (!empty($_COOKIE['sslsession'])) {
             $type = 'ssl';
@@ -32,7 +37,7 @@ class Movabls_Session {
         unset($_COOKIE['httpsession'],$_COOKIE['httprequest'],$_COOKIE['sslsession'],$_COOKIE['sslrequest']);
 
         if (!isset($type)) {
-            $_USER = array();
+            $GLOBALS->_USER = array();
             return;
         }
             
@@ -40,26 +45,31 @@ class Movabls_Session {
                                   WHERE {$type}session = '$session'");
         if ($results->num_rows > 0) {
             $row = $results->fetch_assoc();
-            //Request key is incorrect, meaning somebody is trying to gain unauthorized access
+
+            //If request key is incorrect, meaning somebody is trying to gain unauthorized access
             //or has successfully gained access via a replay - destroy session for safety
-            if ($request != $row[$type.'request']) {
-                Movabls_Session::delete_session($row['session_id'],$mvsdb);
-                $_USER = array();
+            $checks[0] = $request != $row[$type.'request'];
+            //If session is expired
+            $checks[1] = strtotime($row['expiration']) < time();
+            
+            if (in_array(false,$checks)) {
+                self::delete_session($row['session_id'],$mvsdb);
+                $GLOBALS->_USER = array();
                 return;
             }
             else {
-                $token = Movabls_Session::get_token();
+                $token = self::get_token();
                 $expiration = date('Y-m-d h:i:s',time()+$row['term']);
                 $mvsdb->query("UPDATE mvs_sessions SET {$type}request = '$token', expiration = '$expiration'
                                WHERE session_id = {$row['session_id']}");
-                Movabls_Session::set_cookie($type,'request',$token,$row['term']);
-                $_USER = json_decode($row['userdata'],true);
-                $_USER['session_id'] = $row['session_id'];
+                self::set_cookie($type,'request',$token,$row['term']);
+                $GLOBALS->_USER = json_decode($row['userdata'],true);
+                $GLOBALS->_USER['session_id'] = $row['session_id'];
             }
         }
         else {
-            Movabls_Session::remove_cookies();
-            $_USER = array();
+            self::remove_cookies();
+            $GLOBALS->_USER = array();
             return;
         }
 
@@ -98,11 +108,11 @@ class Movabls_Session {
     private static function delete_session($session_id = null,$mvsdb = null) {
         
         if (empty($mvsdb))
-            $mvsdb = Movabls_Permissions::db_link();
+            $mvsdb = selfs::db_link();
 
         if (!empty($session_id))
             $mvsdb->query("DELETE FROM mvs_sessions WHERE session_id = $session_id");
-        Movabls_Session::remove_cookies();
+        self::remove_cookies();
         
     }
 
@@ -111,10 +121,10 @@ class Movabls_Session {
      */
     private static function remove_cookies() {
 
-        Movabls_Session::set_cookie('ssl','request',false,-86400);
-        Movabls_Session::set_cookie('http','request',false,-86400);
-        Movabls_Session::set_cookie('ssl','session',false,-86400);
-        Movabls_Session::set_cookie('http','session',false,-86400);
+        self::set_cookie('ssl','request',false,-86400);
+        self::set_cookie('http','request',false,-86400);
+        self::set_cookie('ssl','session',false,-86400);
+        self::set_cookie('http','session',false,-86400);
 
     }
 
@@ -124,7 +134,20 @@ class Movabls_Session {
     public static function destroy_session() {
 
         $session_id = $GLOBALS->_USER['session_id'];
-        Movabls_Session::delete_session($session_id);
+        self::delete_session($session_id);
+
+    }
+
+    /**
+     * Runs through the database and deletes expired sessions
+     * @param mysqli_handle $mvsdb
+     */
+    private static function delete_expired_sessions($mvsdb = null) {
+
+        if (empty($mvsdb))
+            $mvsdb = selfs::db_link();
+
+        $mvsdb->query("DELETE FROM mvs_sessions WHERE expiration < NOW()");
 
     }
 

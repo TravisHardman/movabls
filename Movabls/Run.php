@@ -22,8 +22,13 @@ class Movabls_Run {
             set_error_handler(array($this,'error_handler'));
             register_shutdown_function(array($this,'shutdown_handler'));
 
-            //Run it!
+            //Get database handle
             $this->mvsdb = new mysqli('localhost','root','h4ppyf4rmers','db_filet');
+
+            //Get session
+            Movabls_Session::get_session($this->mvsdb);
+
+            //Run it!
             print_r($this->run_place());
             
         }

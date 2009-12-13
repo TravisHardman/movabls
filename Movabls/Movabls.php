@@ -11,9 +11,9 @@ class Movabls {
      */
     public static function get_packages() {
 
-        $mvsdb = Movabls::db_link();
+        $mvsdb = self::db_link();
 
-        $permissions = Movabls::join_permissions('package');
+        $permissions = self::join_permissions('package');
 
         $result = $mvsdb->query("SELECT x.package_id,x.package_GUID FROM `mvs_packages` AS x $permissions");
         if(empty($result))
@@ -27,7 +27,7 @@ class Movabls {
 
         $result->free();
 
-        $allmeta = Movabls::get_meta('package',$ids,$mvsdb);
+        $allmeta = self::get_meta('package',$ids,$mvsdb);
 
         foreach ($allmeta as $guid => $meta)
             $packages[$guid]['meta'] = $meta;
@@ -46,39 +46,39 @@ class Movabls {
      */
     public static function get_index($packages = 'all',$uncategorized = true) {
         
-        $mvsdb = Movabls::db_link();
+        $mvsdb = self::db_link();
         
-        $index = Movabls::get_packages_content($packages,$mvsdb);
+        $index = self::get_packages_content($packages,$mvsdb);
 
         //If uncategorized, get all of the movabls not in any packages
         if ($uncategorized)
-            Movabls::add_uncategorized_to_index($index,$mvsdb);
+            self::add_uncategorized_to_index($index,$mvsdb);
 
         //Get meta for all four index arrays
         if (!empty($index['media'])) {
-            $all_meta = Movabls::get_meta('media',array_keys($index['media']),$mvsdb);
+            $all_meta = self::get_meta('media',array_keys($index['media']),$mvsdb);
             foreach ($all_meta as $guid => $meta)
                 $index['media'][$guid] = $meta;
         }
         if (!empty($index['functions'])) {
-            $all_meta = Movabls::get_meta('function',array_keys($index['functions']),$mvsdb);
+            $all_meta = self::get_meta('function',array_keys($index['functions']),$mvsdb);
             foreach ($all_meta as $guid => $meta)
                 $index['functions'][$guid] = $meta;
         }
         if (!empty($index['interfaces'])) {
-            $interfaces_meta = Movabls::get_meta('interface',array_keys($index['interfaces']),$mvsdb);
+            $interfaces_meta = self::get_meta('interface',array_keys($index['interfaces']),$mvsdb);
             foreach ($interfaces_meta as $guid => $meta)
                 $index['interfaces'][$guid]['meta'] = $meta;
         }
         if (!empty($index['places'])) {
-            $places_meta = Movabls::get_meta('place',array_keys($index['places']),$mvsdb);
+            $places_meta = self::get_meta('place',array_keys($index['places']),$mvsdb);
             foreach ($places_meta as $guid => $meta)
                 $index['places'][$guid]['meta'] = $meta;
         }
 
         //Loop through interfaces and add meta to toplevel tags
         if (!empty($index['interfaces'])) {
-            $tagmeta = Movabls::get_tags_meta('interface',array_keys($index['interfaces']),$mvsdb);
+            $tagmeta = self::get_tags_meta('interface',array_keys($index['interfaces']),$mvsdb);
             foreach ($index['interfaces'] as $row) {
                 if(is_array($row['content'])) {
                     foreach ($row['content'] as $tag => $value)
@@ -101,7 +101,7 @@ class Movabls {
     private static function get_packages_content($packages = 'all',$mvsdb = null) {
 
         if (empty($mvsdb))
-            $mvsdb = Movabls::db_link();
+            $mvsdb = self::db_link();
 
         if (!empty($packages) && $packages != 'all') {
             foreach ($packages as $k => $package)
@@ -122,7 +122,7 @@ class Movabls {
             $where[] = "package_GUID IN ($package_string)";
         }
 
-        $permissions = Movabls::join_permissions('package',$where);
+        $permissions = self::join_permissions('package',$where);
 
         $result = $mvsdb->query("SELECT * FROM mvs_packages x $permissions");
         
@@ -130,7 +130,7 @@ class Movabls {
         while ($row = $result->fetch_assoc()) {
             $contents = json_decode($row['contents'],true);
             foreach ($contents as $movabl)
-                Movabls::add_item_to_index($index,$movabl['movabl_type'],$movabl['movabl_GUID']);
+                self::add_item_to_index($index,$movabl['movabl_type'],$movabl['movabl_GUID']);
         }
         $result->free();
         
@@ -158,10 +158,10 @@ class Movabls {
                 }
                 while ($row = $result->fetch_assoc()) {
                     $row['inputs'] = json_decode($row['inputs']);
-                    $row['url'] = Movabls::construct_place_url($row['url'],$row['inputs']);
+                    $row['url'] = self::construct_place_url($row['url'],$row['inputs']);
                     $index['places'][$row['place_GUID']] = $row;
-                    Movabls::add_item_to_index($index,'media',$row['media_GUID']);
-                    Movabls::add_item_to_index($index,'interface',$row['interface_GUID']);
+                    self::add_item_to_index($index,'media',$row['media_GUID']);
+                    self::add_item_to_index($index,'interface',$row['interface_GUID']);
                 }
                 $result->free();
             }
@@ -182,7 +182,7 @@ class Movabls {
                 while ($row = $result->fetch_assoc()) {
                     $row['content'] = json_decode($row['content'],true);
                     $index['interfaces'][$row['interface_GUID']] = $row;
-                    Movabls::add_tags_to_index($index,$row['content']);
+                    self::add_tags_to_index($index,$row['content']);
                 }
                 $result->free();
             }
@@ -229,7 +229,7 @@ class Movabls {
         if (empty($type) || empty($guid))
             return;
 
-        $type = Movabls::table_name($type);
+        $type = self::table_name($type);
         if (!isset($index[$type][$guid]))
             $index[$type][$guid] = false;
 
@@ -245,11 +245,11 @@ class Movabls {
         if (!empty($tags)) {
             foreach ($tags as $value) {
                 if (isset($value['movabl_type']))
-                    Movabls::add_item_to_index($index,$value['movabl_type'],$value['movabl_GUID']);
+                    self::add_item_to_index($index,$value['movabl_type'],$value['movabl_GUID']);
                 if (isset($value['tags']))
-                    Movabls::add_tags_to_index($index,$value['tags']);
+                    self::add_tags_to_index($index,$value['tags']);
                 elseif (isset($value['interface_GUID'])) {
-                    Movabls::add_item_to_index($index,'interface',$value['interface_GUID']);
+                    self::add_item_to_index($index,'interface',$value['interface_GUID']);
                 }
             }
         }
@@ -265,25 +265,25 @@ class Movabls {
     private static function add_uncategorized_to_index(&$index,$mvsdb = null) {
 
         if (empty($mvsdb))
-            $mvsdb = Movabls::db_link();
+            $mvsdb = self::db_link();
 
-        $categorized = Movabls::get_packages_content();
+        $categorized = self::get_packages_content();
 
-        $permissions = Movabls::join_permissions('media');
+        $permissions = self::join_permissions('media');
         $result = $mvsdb->query("SELECT media_GUID FROM mvs_media AS x $permissions");
         while($row = $result->fetch_assoc()) {
             if (!isset($categorized['media'][$row['media_GUID']]))
-                Movabls::add_item_to_index($index,'media',$row['media_GUID']);
+                self::add_item_to_index($index,'media',$row['media_GUID']);
         }
 
-        $permissions = Movabls::join_permissions('function');
+        $permissions = self::join_permissions('function');
         $result = $mvsdb->query("SELECT function_GUID FROM mvs_functions AS x $permissions");
         while($row = $result->fetch_assoc()) {
             if (!isset($categorized['functions'][$row['function_GUID']]))
-                Movabls::add_item_to_index($index,'function',$row['function_GUID']);
+                self::add_item_to_index($index,'function',$row['function_GUID']);
         }
 
-        $permissions = Movabls::join_permissions('interface');
+        $permissions = self::join_permissions('interface');
         $result = $mvsdb->query("SELECT * FROM mvs_interfaces AS x $permissions");
         while($row = $result->fetch_assoc()) {
             if (!isset($categorized['interfaces'][$row['interface_GUID']])) {
@@ -292,12 +292,12 @@ class Movabls {
             }
         }
 
-        $permissions = Movabls::join_permissions('place');
+        $permissions = self::join_permissions('place');
         $result = $mvsdb->query("SELECT * FROM mvs_places AS x $permissions");
         while($row = $result->fetch_assoc()) {
             if (!isset($categorized['places'][$row['place_GUID']])) {
                 $row['inputs'] = json_decode($row['inputs']);
-                $row['url'] = Movabls::construct_place_url($row['url'],$row['inputs']);
+                $row['url'] = self::construct_place_url($row['url'],$row['inputs']);
                 $index['places'][$row['place_GUID']] = $row;
             }
         }
@@ -349,7 +349,7 @@ class Movabls {
      */
     public static function get_movabl($movabl_type, $movabl_guid) {
 
-        $mvsdb = Movabls::db_link();
+        $mvsdb = self::db_link();
 
         if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'read', $mvsdb))
             throw new Exception("You do not have permission to view this Movabl",403);
@@ -357,7 +357,7 @@ class Movabls {
         $movabl_type = $mvsdb->real_escape_string($movabl_type);
         $movabl_guid = $mvsdb->real_escape_string($movabl_guid);
 
-        $table = Movabls::table_name($movabl_type);
+        $table = self::table_name($movabl_type);
             
         $result = $mvsdb->query("SELECT x.* FROM `mvs_$table` AS x WHERE x.{$movabl_type}_GUID = '$movabl_guid'");
 
@@ -368,10 +368,10 @@ class Movabls {
             
         $result->free();
 
-        $meta = Movabls::get_meta($movabl_type,$movabl_guid,$mvsdb);
+        $meta = self::get_meta($movabl_type,$movabl_guid,$mvsdb);
         $movabl['meta'] = isset($meta[$movabl_guid]) ? $meta[$movabl_guid] : array();
 
-        $tagmeta = Movabls::get_tags_meta($movabl_type,$movabl_guid,$mvsdb);
+        $tagmeta = self::get_tags_meta($movabl_type,$movabl_guid,$mvsdb);
 
         switch ($movabl_type) {
             case 'interface':
@@ -410,7 +410,7 @@ class Movabls {
     public static function get_meta($types,$guids = null,$mvsdb = null) {
 
         if (empty($mvsdb))
-            $mvsdb = Movabls::db_link();
+            $mvsdb = self::db_link();
 
         $meta = array();
 
@@ -440,7 +440,7 @@ class Movabls {
             $where[] = "m.movabls_type IN ($in_string)";
         }
 
-        $query .= ' '.Movabls::join_permissions('meta',$where);
+        $query .= ' '.self::join_permissions('meta',$where);
 
         $result = $mvsdb->query($query);
 
@@ -467,7 +467,7 @@ class Movabls {
     public static function get_tags_meta($types = null,$guids = null,$mvsdb = null) {
 
         if (empty($mvsdb))
-            $mvsdb = Movabls::db_link();
+            $mvsdb = self::db_link();
 
         $meta = array();
 
@@ -497,7 +497,7 @@ class Movabls {
             $where[] = "m.movabls_type IN ($in_string)";
         }
 
-        $query .= ' '.Movabls::join_permissions('meta',$where);
+        $query .= ' '.self::join_permissions('meta',$where);
 
         $result = $mvsdb->query($query);
 
@@ -524,7 +524,7 @@ class Movabls {
     public static function set_movabl($movabl_type,$data,$movabl_guid = null, $mvsdb = null) {
 
         if (empty($mvsdb))
-            $mvsdb = Movabls::db_link();
+            $mvsdb = self::db_link();
 
         if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write', $mvsdb))
             throw new Exception("You do not have permission to edit this Movabl",500);
@@ -559,18 +559,18 @@ class Movabls {
                 break;
         }
 
-        $data = Movabls::sanitize_data($movabl_type,$data,$mvsdb);
-        $table = Movabls::table_name($movabl_type);
+        $data = self::sanitize_data($movabl_type,$data,$mvsdb);
+        $table = self::table_name($movabl_type);
         $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
         $sanitized_type = $mvsdb->real_escape_string($movabl_type);
 
         if (!empty($movabl_guid)) {
-            $datastring = Movabls::generate_datastring('update',$data);
+            $datastring = self::generate_datastring('update',$data);
             $result = $mvsdb->query("UPDATE `mvs_$table` SET $datastring WHERE {$sanitized_type}_GUID = '$sanitized_guid'");
         }
         else {
-            $data["{$movabl_type}_guid"] = Movabls::generate_guid($movabl_type);
-            $datastring = Movabls::generate_datastring('insert',$data);
+            $data["{$movabl_type}_guid"] = self::generate_guid($movabl_type);
+            $datastring = self::generate_datastring('insert',$data);
             $result = $mvsdb->query("INSERT INTO `mvs_$table` $datastring");
             $movabl_guid = $data["{$movabl_type}_guid"];
             //If it's new, we need to give it permissions that pertain to the site
@@ -583,9 +583,9 @@ class Movabls {
             Movabls_Permissions::reinforce_permissions($movabl_type,$movabl_guid,$mvsdb);
 
         if (!empty($meta))
-            Movabls::set_meta($meta,$movabl_type,$movabl_guid,$mvsdb);
+            self::set_meta($meta,$movabl_type,$movabl_guid,$mvsdb);
         if (!empty($tagsmeta))
-            Movabls::set_tags_meta($tagsmeta,$movabl_type,$movabl_guid,$mvsdb);
+            self::set_tags_meta($tagsmeta,$movabl_type,$movabl_guid,$mvsdb);
 
         return true;
 	
@@ -603,12 +603,12 @@ class Movabls {
     public static function set_meta($new_meta,$movabl_type,$movabl_guid,$mvsdb = null) {
 
         if (empty($mvsdb))
-            $mvsdb = Movabls::db_link();
+            $mvsdb = self::db_link();
 
         if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write', $mvsdb))
             throw new Exception("You do not have permission to edit this Movabl",500);
 
-        $old_meta = Movabls::get_meta($movabl_type,$movabl_guid);
+        $old_meta = self::get_meta($movabl_type,$movabl_guid);
         if (!empty($old_meta[$movabl_guid]))
             $old_meta = $old_meta[$movabl_guid];
         else
@@ -627,8 +627,8 @@ class Movabls {
                 $inserts[$new_k] = $new_v;
         }
 
-        $inserts = Movabls::sanitize_data('meta',$inserts,$mvsdb);
-        $updates = Movabls::sanitize_data('meta',$updates,$mvsdb);
+        $inserts = self::sanitize_data('meta',$inserts,$mvsdb);
+        $updates = self::sanitize_data('meta',$updates,$mvsdb);
         $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
         $sanitized_type = $mvsdb->real_escape_string($movabl_type);
 
@@ -661,7 +661,7 @@ class Movabls {
     public static function set_tags_meta($new_tags_meta,$movabl_type,$movabl_guid,$mvsdb = null) {
 
         if (empty($mvsdb))
-            $mvsdb = Movabls::db_link();
+            $mvsdb = self::db_link();
 
         if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write', $mvsdb))
             throw new Exception("You do not have permission to edit this Movabl",500);
@@ -669,7 +669,7 @@ class Movabls {
         $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
         $sanitized_type = $mvsdb->real_escape_string($movabl_type.'_tag');
 
-        $old_tags_meta = Movabls::get_tags_meta($movabl_type,$movabl_guid,$mvsdb);
+        $old_tags_meta = self::get_tags_meta($movabl_type,$movabl_guid,$mvsdb);
         if (!empty($old_tags_meta))
             $old_tags_meta = $old_tags_meta[$movabl_guid];
         else
@@ -693,8 +693,8 @@ class Movabls {
                     $inserts[$new_k] = $new_v;
             }
 
-            $inserts = Movabls::sanitize_data('meta',$inserts,$mvsdb);
-            $updates = Movabls::sanitize_data('meta',$updates,$mvsdb);
+            $inserts = self::sanitize_data('meta',$inserts,$mvsdb);
+            $updates = self::sanitize_data('meta',$updates,$mvsdb);
             $sanitized_tag = $mvsdb->real_escape_string($new_tag);
 
             if (!empty($inserts)) {
@@ -731,20 +731,20 @@ class Movabls {
      */
     public static function delete_movabl($movabl_type,$movabl_guid) {
 
-        $mvsdb = Movabls::db_link();
+        $mvsdb = self::db_link();
 
         if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write', $mvsdb))
             throw new Exception("You do not have permission to delete this Movabl",500);
 
-        $table = Movabls::table_name($movabl_type);
+        $table = self::table_name($movabl_type);
         $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
         $sanitized_type = $mvsdb->real_escape_string($movabl_type);
 
         $result = $mvsdb->query("DELETE FROM `mvs_$table` WHERE {$sanitized_type}_GUID = '$sanitized_guid'");
 
-        Movabls::set_meta(array(),$movabl_type,$movabl_guid,$mvsdb);
-        Movabls::set_tags_meta(array(),$movabl_type,$movabl_guid,$mvsdb);
-        Movabls::delete_references($sanitized_type,$sanitized_guid,$mvsdb);
+        self::set_meta(array(),$movabl_type,$movabl_guid,$mvsdb);
+        self::set_tags_meta(array(),$movabl_type,$movabl_guid,$mvsdb);
+        self::delete_references($sanitized_type,$sanitized_guid,$mvsdb);
         Movabls_Permissions::delete_permissions($sanitized_type,$sanitized_guid,$mvsdb);
 
         return true;
@@ -770,7 +770,7 @@ class Movabls {
                 if ($content == array('movabl_type'=>$movabl_type,'movabl_GUID'=>$movabl_guid))
                     unset($row['contents'][$k]);
             }
-            Movabls::set_movabl('package', $row, $row['package_GUID'], $mvsdb);
+            self::set_movabl('package', $row, $row['package_GUID'], $mvsdb);
         }
         $results->free();
 
@@ -779,7 +779,7 @@ class Movabls {
                                   WHERE {$movabl_type}_GUID LIKE '%$movabl_guid%'");
         while ($row = $results->fetch_assoc()) {
             unset($row['place_id'],$row[$movabl_type.'_GUID']);
-            Movabls::set_movabl('place', $row, $row['place_GUID'], $mvsdb);
+            self::set_movabl('place', $row, $row['place_GUID'], $mvsdb);
         }
         $results->free();
 
@@ -789,8 +789,8 @@ class Movabls {
         while ($row = $results->fetch_assoc()) {
             unset($row['interface_id']);
             $row['content'] = json_decode($row['content'],true);
-            $row['content'] = Movabls::delete_from_interface($row['content'],$movabl_type,$movabl_guid,$mvsdb);
-            Movabls::set_movabl('interface', $row, $row['interface_GUID'], $mvsdb);
+            $row['content'] = self::delete_from_interface($row['content'],$movabl_type,$movabl_guid,$mvsdb);
+            self::set_movabl('interface', $row, $row['interface_GUID'], $mvsdb);
         }
         $results->free();
 
@@ -815,7 +815,7 @@ class Movabls {
                 elseif (!empty($tagvalue['interface_GUID']) && $movabl_type == 'interface' && $tagvalue['interface_GUID'] == $movabl_guid)
                     $tree[$tagname]['interface_GUID'] = null;
                 elseif (!empty($tagvalue['tags']))
-                    $tree[$tagname]['tags'] = Movabls::delete_from_interface($tree[$tagname]['tags'],$movabl_type,$movabl_guid,$mvsdb);
+                    $tree[$tagname]['tags'] = self::delete_from_interface($tree[$tagname]['tags'],$movabl_type,$movabl_guid,$mvsdb);
             }
             return $tree;
         }

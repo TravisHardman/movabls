@@ -15,11 +15,9 @@ function __autoload($name) {
     
 }
 
- //Get session
-Movabls_Session::get_session();
 //Override all superglobals with read-only variants
 $GLOBALS = new Movabls_Globals();
-unset($_SERVER,$_GET,$_POST,$_FILES,$_COOKIE,$_SESSION,$_REQUEST,$_ENV,$_USER);
+unset($_SERVER,$_GET,$_POST,$_FILES,$_COOKIE,$_SESSION,$_REQUEST,$_ENV);
 //Run it!
 new Movabls_Run;
 
