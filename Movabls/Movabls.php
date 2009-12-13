@@ -37,6 +37,52 @@ class Movabls {
     }
 
     /**
+     * Adds a movabl to the given package
+     * @param string $package_guid
+     * @param string $movabl_type
+     * @param string $movabl_guid
+     * @return bool
+     */
+    public static function add_to_package($package_guid, $movabl_type, $movabl_guid) {
+
+        $package = self::get_movabl('package', $package_guid);
+        foreach ($package['contents'] as $movabl) {
+            if ($movabl['movabl_type'] == $movabl_type && $movabl['movabl_GUID'] == $movabl_guid)
+                return true;
+        }
+
+        $package['contents'][] = array(
+            'movabl_type' => $movabl_type,
+            'movabl_GUID' => $movabl_guid
+        );
+        self::set_movabl('package',$package);
+        return true;
+
+    }
+
+    /**
+     * Removes a movabl from the given package
+     * @param string $package_guid
+     * @param string $movabl_type
+     * @param string $movabl_guid
+     * @return bool
+     */
+    public static function remove_from_package($package_guid, $movabl_type, $movabl_guid) {
+
+        $package = self::get_movabl('package', $package_guid);
+        foreach ($package['contents'] as $key => $movabl) {
+            if ($movabl['movabl_type'] == $movabl_type && $movabl['movabl_GUID'] == $movabl_guid) {
+                unset($package['contents'][$key]);
+                $package['contents'] = array_values($package['contents']);
+                self::set_movabl('package',$package);
+                break;
+            }
+        }
+        return true;
+
+    }
+
+    /**
      * Gets a full index of the site, filtering for certain packages
      * Places return the full place info
      * Media, Functions, Interfaces return meta
