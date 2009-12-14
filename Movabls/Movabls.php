@@ -1021,7 +1021,7 @@ class Movabls {
      */
     private static function db_link() {
         
-        $mvsdb = new mysqli('localhost','root','h4ppyf4rmers','db_filet');
+        $mvsdb = new mysqli('localhost','root','h4ppyf4rmers','movabls_system');
         if (mysqli_connect_errno()) {
             printf("Connect failed: %s\n", mysqli_connect_error());
             exit();

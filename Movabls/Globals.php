@@ -11,6 +11,7 @@ class Movabls_Globals {
     function __construct() {
         $this->data['_SERVER'] = $_SERVER;
         $this->data['_SERVER']['SITE_ID'] = 1;
+        $this->data['_SERVER']['DATABASE'] = 'movabls_user';
         $this->data['_GET'] = $_GET;
         $this->data['_POST'] = $_POST;
         $this->data['_FILES'] = $_FILES;
@@ -23,8 +24,7 @@ class Movabls_Globals {
             'user_GUID' => '12345',
             'username' => 'travis',
             'email' => 'travis@likestripes.com',
-            'is_owner' => true,
-            'groups' => array('mysiteusers','mysiteadmins')
+            'groups' => array(1,2)
         );
         $this->data['_USER']['groups'][] = 'Everyone';
         $this->data['_PLACE'] = array();
