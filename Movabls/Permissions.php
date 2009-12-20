@@ -234,22 +234,21 @@ class Movabls_Permissions {
             case 'place':
                 $results = $mvsdb->query("SELECT media_GUID,interface_GUID FROM mvs_places WHERE place_GUID = '{$escaped_data['movabl_GUID']}'");
                 $row = $results->fetch_assoc();
-                $extras[] = array('movabl_type'=>'media','movabl_GUID'=>$row['media_GUID']);
-                if (!empty($row['interface_GUID']))
-                    $extras[] = array('movabl_type'=>'interface','movabl_GUID'=>$row['interface_GUID']);
+                $extras = Movabls::get_submovabls('place',$row);
                 $results->free();
                 break;
             case 'interface':
                 $results = $mvsdb->query("SELECT content FROM mvs_interfaces WHERE interface_GUID = '{$escaped_data['movabl_GUID']}'");
                 $row = $results->fetch_assoc();
-                $tags = json_decode($row['content'],true);
-                $extras = self::get_tags($tags);
+                $row['content'] = json_decode($row['content'],true);
+                $extras = Movabls::get_submovabls('interface',$row);
                 $results->free();
                 break;
             case 'package':
                 $results = $mvsdb->query("SELECT contents FROM mvs_packages WHERE package_GUID = '{$escaped_data['movabl_GUID']}'");
                 $row = $results->fetch_assoc();
-                $extras = json_decode($row['contents'],true);
+                $row['contents'] = json_decode($row['contents'],true);
+                $extras = Movabls::get_submovabls('package',$row);
                 $results->free();
                 break;
         }
@@ -276,29 +275,6 @@ class Movabls_Permissions {
         foreach ($new_children as $k => $v)
             $new_children[$k] = unserialize($v);
         return $new_children;
-    }
-
-    /**
-     * Extracts sub-movabls from an interface
-     * @param tags $tags
-     * @param extras array so far $extras
-     * @return extras array after this round
-     */
-    private static function get_tags($tags,$extras = array()) {
-
-        if (!empty($tags)) {
-            foreach ($tags as $value) {
-                if (isset($value['movabl_type']))
-                    $extras[] = array('movabl_type'=>$value['movabl_type'],'movabl_GUID'=>$value['movabl_GUID']);
-                if (isset($value['tags']))
-                    $extras = self::get_tags($value['tags'],$extras);
-                elseif (isset($value['interface_GUID']))
-                    $extras[] = array('movabl_type'=>'interface','movabl_GUID'=>$value['interface_GUID']);
-            }
-        }
-
-        return $extras;
-
     }
 
     /**

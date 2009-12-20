@@ -680,12 +680,12 @@ class Movabls {
      * @param string $movabl_type
      * @param array $data 
      */
-    private static function get_submovabls($movabl_type,$data) {
+    public static function get_submovabls($movabl_type,$data) {
         
         $sub_movabls = array();
         switch ($movabl_type) {
             case 'package':
-                $sub_movabls = $data;
+                $sub_movabls = $data['contents'];
                 break;
             case 'place':
                 if (!empty($data['media_GUID']))
