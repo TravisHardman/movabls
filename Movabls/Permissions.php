@@ -55,8 +55,8 @@ class Movabls_Permissions {
      */
     public static function set_movabl_permissions($movabl_type,$movabl_guid,$groups,$mvsdb = null) {
 
-        if (!self::permissions_editor($GLOBALS->_USER,$mvsdb))
-            throw new Exception('You do not have permission to edit permissions.',500);
+        if (!in_array(1,$GLOBALS->_USER['groups']))
+            throw new Exception('Only administrators can edit permissions.',500);
             
         self::set_permission($movabl_type, $movabl_guid, $groups, $mvsdb);
 
@@ -518,34 +518,6 @@ class Movabls_Permissions {
             $data['groups'] = array();
 
         return $data;
-
-    }
-
-    /**
-     * Determines whether the current user has permission to edit permissions
-     * @param array $user
-     * @param mysqli handle $mvsdb
-     * @return bool
-     */
-    public static function permissions_editor($mvsdb = null) {
-
-        if (in_array(1,$GLOBALS->_USER['groups']))
-            return true;
-
-        if (empty($GLOBALS->_USER['groups']))
-            return false;
-
-        if (empty($mvsdb))
-            $mvsdb = self::db_link();
-        
-        $groups = "'".implode("','",$GLOBALS->_USER['groups'])."'";
-        $results = $mvsdb->query("SELECT group_id FROM `{$GLOBALS->_SERVER['DATABASE']}`.mvs_groups
-                                    WHERE group_id IN ($groups)
-                                    AND permissions_editor = 1");
-        if ($results->num_rows == 0)
-            return false;
-        else
-            return true;
 
     }
 

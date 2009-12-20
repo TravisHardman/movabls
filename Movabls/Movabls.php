@@ -45,6 +45,9 @@ class Movabls {
      */
     public static function add_to_package($package_guid, $movabl_type, $movabl_guid) {
 
+        if (!in_array(1,$GLOBALS->_USER['groups']))
+            throw new Exception('Only administrators can add Movabls to a package',500);
+
         $package = self::get_movabl('package', $package_guid);
         foreach ($package['contents'] as $movabl) {
             if ($movabl['movabl_type'] == $movabl_type && $movabl['movabl_GUID'] == $movabl_guid)
@@ -575,6 +578,9 @@ class Movabls {
         if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write', $mvsdb))
             throw new Exception("You do not have permission to edit this Movabl",500);
 
+        if (!in_array(1,$GLOBALS->_USER['groups']) && self::movabls_added($movabl_type,$data,$movabl_guid,$mvsdb))
+            throw new Exception("Only administrators may add new movabls to a place, interface, or package",500);
+
         if (!empty($data['meta']))
             $meta = $data['meta'];
 
@@ -634,6 +640,95 @@ class Movabls {
             self::set_tags_meta($tagsmeta,$movabl_type,$movabl_guid,$mvsdb);
 
         return $movabl_guid;	
+    }
+
+    /**
+     * Determines whether movabls have been added to the movabl specified in this revision
+     * @param string $movabl_type
+     * @param array $newdata
+     * @param string $movabl_guid
+     * @param mysqli handle $mvsdb
+     * @return bool 
+     */
+    private static function movabls_added($movabl_type,$newdata,$movabl_guid = null,$mvsdb = null) {
+
+        if (empty($mvsdb))
+            $mvsdb = self::db_link();
+            
+        if (!in_array($movabl_type,array('package','place','interface')))
+            return false;
+
+        $old_movabls = array();
+        if (!empty($movabl_guid)) {
+            $olddata = self::get_movabl($movabl_type,$movabl_guid);
+            $old_movabls = self::get_submovabls($movabl_type,$olddata);
+        }
+
+        $new_movabls = self::get_submovabls($movabl_type,$newdata);
+
+        foreach ($new_movabls as $movabl) {
+            if (!in_array($movabl,$old_movabls))
+                return true;
+        }
+
+        return false;
+
+    }
+    
+    /**
+     * Gets a list of movabls that are beneath the one specified
+     * @param string $movabl_type
+     * @param array $data 
+     */
+    private static function get_submovabls($movabl_type,$data) {
+        
+        $sub_movabls = array();
+        switch ($movabl_type) {
+            case 'package':
+                $sub_movabls = $data;
+                break;
+            case 'place':
+                if (!empty($data['media_GUID']))
+                    $sub_movabls[] = array(
+                        'movabl_type' => 'media',
+                        'movabl_GUID' => $data['media_GUID']
+                    );
+                if (!empty($data['media_GUID']))
+                    $sub_movabls[] = array(
+                        'movabl_type' => 'interface',
+                        'movabl_GUID' => $data['interface_GUID']
+                    );
+                break;
+            case 'interface':
+                if (!empty($data['content']))
+                    $sub_movabls = self::get_tags($data['content']);
+                break;
+        }
+        return $sub_movabls;
+        
+    }
+
+    /**
+     * Extracts sub-movabls from an interface
+     * @param tags $tags
+     * @param extras array so far $extras
+     * @return extras array after this round
+     */
+    private static function get_tags($tags,$extras = array()) {
+
+        if (!empty($tags)) {
+            foreach ($tags as $value) {
+                if (isset($value['movabl_type']))
+                    $extras[] = array('movabl_type'=>$value['movabl_type'],'movabl_GUID'=>$value['movabl_GUID']);
+                if (isset($value['tags']))
+                    $extras = self::get_tags($value['tags'],$extras);
+                elseif (isset($value['interface_GUID']))
+                    $extras[] = array('movabl_type'=>'interface','movabl_GUID'=>$value['interface_GUID']);
+            }
+        }
+
+        return $extras;
+
     }
 
     /**
