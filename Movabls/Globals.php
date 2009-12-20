@@ -24,9 +24,9 @@ class Movabls_Globals {
             'user_GUID' => '12345',
             'username' => 'travis',
             'email' => 'travis@likestripes.com',
-            'groups' => array(1,2)
+            'groups' => array(1)
         );
-        $this->data['_USER']['groups'][] = 'Everyone';
+        $this->data['_USER']['groups'][] = 2;
         $this->data['_PLACE'] = array();
         $this->data['_ERRORS'] = array();
     }

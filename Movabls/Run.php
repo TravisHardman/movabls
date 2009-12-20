@@ -162,10 +162,11 @@ class Movabls_Run {
 
     /**
      * Takes the url and inputs fields from a place and merges them together
+     * If the place is secure, makes sure the URL goes to HTTPS, else uses HTTP
      * @param string &$url
      * @param array &$inputs
      */
-    private function construct_place_url(&$url,&$inputs) {
+    private function construct_place_url(&$url,&$inputs,$secure = false) {
 
         if (!empty($inputs)) {
             foreach ($inputs as $input)
@@ -175,6 +176,11 @@ class Movabls_Run {
         }
         else
             $inputs = array();
+
+        if ($secure)
+            $url = 'https://'.$GLOBALS->_SERVER['HTTP_HOST'].$url;
+        else
+            $url = 'http://'.$GLOBALS->_SERVER['HTTP_HOST'].$url;
 
     }
 
@@ -371,7 +377,7 @@ class Movabls_Run {
         else
             $argstring = '$'.implode(',$',$place->inputs);
 
-        $this->construct_place_url($place->url,$place->inputs);
+        $this->construct_place_url($place->url,$place->inputs,$place->https);
         $renderer = new Movabls_MediaRender($place->url,$place->inputs);
         $code = 'ob_start(); ?>'.$renderer->output.'<?php return ob_get_clean();';
         

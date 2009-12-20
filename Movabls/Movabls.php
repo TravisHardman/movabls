@@ -365,7 +365,6 @@ class Movabls {
 
         if (!$GLOBALS->_USER['is_owner']) {
 
-            $where = array();
             $groups = "'".implode("','",$GLOBALS->_USER['groups'])."'";
             
             if ($type == 'meta')
@@ -376,7 +375,7 @@ class Movabls {
             if ($type != 'meta')
                 $where[] = "p.movabl_type = '$type'";
             $where[] = "p.permission_type = 'read'";
-            $where[] = "p.group_GUID IN ($groups)";
+            $where[] = "p.group_id IN ($groups)";
 
             $group = " GROUP BY p.movabl_type,p.movabl_GUID";
 
