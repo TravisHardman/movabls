@@ -104,8 +104,20 @@ class Movabls_Session {
         $httpsession = self::get_token();
         $httprequest = self::get_token();
         $user_id = $mvsdb->real_escape_string($user_id);
-        //TODO: How do we determine the term?  Have a term for each group, and use the shortest one?
-        $term = 3600;
+
+        //To determine session term, take the term settings for each of the
+        //user's groups and use the shortest term
+        $results = $mvsdb->query("SELECT MIN(g.session_term) AS term FROM `movabls_user`.`mvs_groups` g
+                                  INNER JOIN `movabls_user`.`mvs_group_memberships` m ON g.group_id = m.group_id
+                                  WHERE m.user_id = $user_id AND g.session_term != 'NULL'");
+        $row = $results->fetch_assoc();
+        $results->free();
+        $term = $row['term'];
+
+        //If term is not defined. Session will remain open for a year.
+        if (empty($term))
+            $term = 31536000;
+        
         $expiration = date('Y-m-d H:i:s',time()+$term);
 
         $mvsdb->query("INSERT INTO mvs_sessions (sslsession,sslrequest,httpsession,httprequest,user_id,term,expiration)
