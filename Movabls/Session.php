@@ -8,13 +8,18 @@ class Movabls_Session {
     /**
      * Uses the cookies variable to get the session and create the $_USER global
      * @param mysqli handle $mvsdb
-     * @global array $GLOBALS->_USER
+     * @global array $_USER
+     * @global array $_SESSION
      */
     public static function get_session($mvsdb = null) {
 
         //This code can only be called in bootstrapping before $GLOBALS is created
         if (!empty($GLOBALS->_USER))
             return;
+
+        global $_USER,$_SESSION;
+        $_USER = array();
+        $_SESSION = array();
 
         if (empty($mvsdb))
             $mvsdb = self::db_link();
@@ -26,108 +31,100 @@ class Movabls_Session {
         if (!empty($_COOKIE['sslsession'])) {
             $type = 'ssl';
             $session = $_COOKIE['sslsession'];
-            $request = $_COOKIE['sslrequest'];
         }
         elseif (!empty($_COOKIE['httpsession'])) {
             $type = 'http';
             $session = $_COOKIE['httpsession'];
-            $request = $_COOKIE['httprequest'];
         }
 
-        unset($_COOKIE['httpsession'],$_COOKIE['httprequest'],$_COOKIE['sslsession'],$_COOKIE['sslrequest']);
+        unset($_COOKIE['httpsession'],$_COOKIE['sslsession']);
 
-        if (!isset($type)) {
-            $GLOBALS->_USER = array();
+        if (!isset($type))
             return;
-        }
             
         $results = $mvsdb->query("SELECT * FROM mvs_sessions
                                   WHERE {$type}session = '$session'");
         if ($results->num_rows > 0) {
             $session = $results->fetch_assoc();
             $results->free();
-
-            //If request key is incorrect, meaning somebody is trying to gain unauthorized access
-            //or has successfully gained access via a replay - destroy session for safety
-            $checks[0] = $request != $session[$type.'request'];
-            //If session is expired
-            $checks[1] = strtotime($session['expiration']) < time();
             
-            if (in_array(false,$checks)) {
+            if (strtotime($session['expiration']) < time()) {
                 self::delete_session($session['session_id'],$mvsdb);
-                $GLOBALS->_USER = array();
                 return;
             }
             else {
-                //Regenerate request token
-                $token = self::get_token();
                 $expiration = date('Y-m-d h:i:s',time()+$session['term']);
-                $mvsdb->query("UPDATE mvs_sessions SET {$type}request = '$token', expiration = '$expiration'
+                $mvsdb->query("UPDATE mvs_sessions SET expiration = '$expiration'
                                WHERE session_id = {$session['session_id']}");
-                self::set_cookie($type,'request',$token,$session['term']);
+                //TODO: Regenerate cookies with new expiration? How does google do this
+                //without sending cookies on each request?
 
-                //Add _USER to globals
+                //Create $_SESSION array
+                $results = $mvsdb->query("SELECT `key`,`value` FROM mvs_sessiondata
+                                          WHERE session_id = {$session['session_id']}");
+                while ($row = $results->fetch_assoc())
+                    $_SESSION[$row['key']] = json_decode($row['value'],true);
+                $results->free();
+                
+                //Create $_USER array
                 $results = $mvsdb->query("SELECT * FROM `movabls_user`.`mvs_users`
                                           WHERE user_id = {$session['user_id']}");
-                $user = $results->fetch_assoc();
+                $_USER = $results->fetch_assoc();
+                $_USER['session_id'] = $session['session_id'];
                 $results->free();
-                $GLOBALS->_USER = $user;
-                $GLOBALS->_USER['session_id'] = $session['session_id'];
-
-                //Add _USER['groups'] to globals
+                
+                //Add $_USER['groups']
                 $results = $mvsdb->query("SELECT DISTINCT group_id FROM `movabls_user`.`mvs_group_memberships`
                                           WHERE user_id = {$session['user_id']}");
-                $GLOBALS->_USER['groups'] = array();
+                $_USER['groups'] = array();
                 while($row = $results->fetch_assoc())
-                    $GLOBALS->_USER['groups'][] = $row['group_id'];
+                    $_USER['groups'][] = $row['group_id'];
                 $results->free();
             }
         }
         else {
             self::remove_cookies();
-            $GLOBALS->_USER = array();
             return;
         }
 
     }
 
-    private static function create_session($user_id,$mvsdb = null) {
+    /**
+     * Sets a key => value pair of session data
+     * @param string $key
+     * @param mixed $value
+     */
+    public static function set_data($key,$value) {
 
-        if (empty($mvsdb))
-            $mvsdb = self::db_link();
-            
-        if (!$GLOBALS->_SERVER['HTTPS'])
-            throw new Exception('Users may only log in over a secure (HTTPS) connection',500);
+        $mvsdb = self::db_link();
 
-        $sslsession = self::get_token();
-        $sslrequest = self::get_token();
-        $httpsession = self::get_token();
-        $httprequest = self::get_token();
-        $user_id = $mvsdb->real_escape_string($user_id);
+        $key = $mvsdb->real_escape_string($key);
+        $value = json_encode($value);
 
-        //To determine session term, take the term settings for each of the
-        //user's groups and use the shortest term
-        $results = $mvsdb->query("SELECT MIN(g.session_term) AS term FROM `movabls_user`.`mvs_groups` g
-                                  INNER JOIN `movabls_user`.`mvs_group_memberships` m ON g.group_id = m.group_id
-                                  WHERE m.user_id = $user_id AND g.session_term != 'NULL'");
-        $row = $results->fetch_assoc();
-        $results->free();
-        $term = $row['term'];
+        if (isset($GLOBALS->_SESSION[$key])) {
+            $mvsdb->query("UPDATE mvs_sessiondata SET value = '$value'
+                           WHERE session_id = {$GLOBALS->_USER['session_id']}
+                           AND key = '$key'");
+        }
+        else {
+            $mvsdb->query("INSERT INTO mvs_sessiondata (session_id,key,value)
+                           VALUES ({$GLOBALS->_USER['session_id']},'$key','$value')");
+        }
+        $GLOBALS->set_session_data($key,$value);
 
-        //If term is not defined. Session will remain open for a year.
-        if (empty($term))
-            $term = 31536000;
-        
-        $expiration = date('Y-m-d H:i:s',time()+$term);
+    }
 
-        $mvsdb->query("INSERT INTO mvs_sessions (sslsession,sslrequest,httpsession,httprequest,user_id,term,expiration)
-                       VALUES ('$sslsession','$sslrequest','$httpsession','$httprequest',$user_id,$term,'$expiration')");
+    /**
+     * Unsets a session data key
+     * @param string $key
+     */
+    public static function unset_data($key) {
 
-        self::set_cookie('ssl', 'session', $sslsession, $term);
-        self::set_cookie('ssl', 'request', $sslrequest, $term);
-        self::set_cookie('http', 'session', $httpsession, $term);
-        self::set_cookie('http', 'request', $httprequest, $term);
-        
+        $mvsdb->query("DELETE mvs_sessiondata
+                       WHERE session_id = {$GLOBALS->_USER['session_id']}
+                       AND key = '$key'");
+        $GLOBALS->set_session_data($key,null);
+
     }
 
     /**
@@ -168,6 +165,57 @@ class Movabls_Session {
     }
 
     /**
+     * Creates a session for the specified user
+     * @param int $user_id
+     * @param mysqli handle $mvsdb
+     */
+    private static function create_session($user_id,$mvsdb = null) {
+
+        if (empty($mvsdb))
+            $mvsdb = self::db_link();
+
+        //TODO: Uncomment this when you have HTTPS set up
+        //if (!$GLOBALS->_SERVER['HTTPS'])
+          //  throw new Exception('Users may only log in over a secure (HTTPS) connection',500);
+
+        $sslsession = self::get_token();
+        $httpsession = self::get_token();
+        $user_id = $mvsdb->real_escape_string($user_id);
+
+        //To determine session term, take the term settings for each of the
+        //user's groups and use the shortest term
+        $results = $mvsdb->query("SELECT MIN(g.session_term) AS term FROM `movabls_user`.`mvs_groups` g
+                                  INNER JOIN `movabls_user`.`mvs_group_memberships` m ON g.group_id = m.group_id
+                                  WHERE m.user_id = $user_id AND g.session_term != 'NULL'");
+        $row = $results->fetch_assoc();
+        $results->free();
+        $term = $row['term'];
+
+        //If term is not defined. Session will remain open for a year.
+        if (empty($term))
+            $term = 31536000;
+
+        $expiration = date('Y-m-d H:i:s',time()+$term);
+
+        $mvsdb->query("INSERT INTO mvs_sessions (sslsession,httpsession,user_id,term,expiration)
+                       VALUES ('$sslsession','$httpsession',$user_id,$term,'$expiration')");
+
+        self::set_cookie('sslsession', $sslsession, $term);
+        self::set_cookie('httpsession', $httpsession, $term);
+
+    }
+
+    /**
+     * Public wrapper function to destroy the current user's session
+     */
+    public static function logout() {
+
+        $session_id = $GLOBALS->_USER['session_id'];
+        self::delete_session($session_id);
+
+    }
+
+    /**
      * Generates a password hash from a password and nonce
      * @param string $password
      * @param string $nonce
@@ -200,16 +248,14 @@ class Movabls_Session {
 
     /**
      * Sets a movabls session cookie
-     * @param string $type = 'ssl' or 'http'
-     * @param string $name = 'request' or 'session'
+     * @param string $name
      * @param string $token
      * @param string $expiration
      */
-    private static function set_cookie($type,$name,$token,$term) {
+    private static function set_cookie($name,$token,$term) {
 
-        $name = $type.$name;
         $expiration = time()+$term;
-        $secure = $type == 'ssl';
+        $secure = $type == 'sslsession';
         setcookie($name,$token,$expiration,'/',$_SERVER['HTTP_HOST'],$secure,true);
 
     }
@@ -224,8 +270,11 @@ class Movabls_Session {
         if (empty($mvsdb))
             $mvsdb = self::db_link();
 
-        if (!empty($session_id))
+        if (!empty($session_id)) {
             $mvsdb->query("DELETE FROM mvs_sessions WHERE session_id = $session_id");
+            $mvsdb->query("DELETE FROM mvs_sessiondata WHERE session_id = $session_id");
+        }
+
         self::remove_cookies();
         
     }
@@ -235,20 +284,8 @@ class Movabls_Session {
      */
     private static function remove_cookies() {
 
-        self::set_cookie('ssl','request',false,-86400);
-        self::set_cookie('http','request',false,-86400);
         self::set_cookie('ssl','session',false,-86400);
         self::set_cookie('http','session',false,-86400);
-
-    }
-
-    /**
-     * Public wrapper function to destroy the current user's session
-     */
-    public static function destroy_session() {
-
-        $session_id = $GLOBALS->_USER['session_id'];
-        self::delete_session($session_id);
 
     }
 
@@ -261,7 +298,30 @@ class Movabls_Session {
         if (empty($mvsdb))
             $mvsdb = self::db_link();
 
+        $mvsdb->query("DELETE FROM mvs_sessiondata d
+                       INNER JOIN mvs_sessions s ON d.session_id = s.session_id
+                       WHERE s.expires < NOW()");
         $mvsdb->query("DELETE FROM mvs_sessions WHERE expiration < NOW()");
+
+    }
+
+    /**
+     * Creates a user in the system database
+     * @param int $user_id
+     * @param string $password
+     * @param mysqli handle $mvsdb
+     */
+    public static function create_user($user_id,$password,$mvsdb = null) {
+
+        if (empty($mvsdb))
+            $mvsdb = self::db_link();
+            
+        $user_id = $mvsdb->real_escape_string($user_id);
+        $nonce = self::generate_nonce();
+        $password = self::generate_password($password, $nonce);
+
+        $mvsdb->query("INSERT INTO mvs_users (user_id,password,nonce)
+                       VALUES ($user_id,'$password','$nonce')");
 
     }
 

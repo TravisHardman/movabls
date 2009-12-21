@@ -9,6 +9,9 @@ class Movabls_Globals {
     private $lock = false;
 
     function __construct() {
+
+        global $_USER,$_SESSION;
+
         $this->data['_SERVER'] = $_SERVER;
         $this->data['_SERVER']['SITE_ID'] = 1;
         $this->data['_SERVER']['DATABASE'] = 'movabls_user';
@@ -16,17 +19,16 @@ class Movabls_Globals {
         $this->data['_POST'] = $_POST;
         $this->data['_FILES'] = $_FILES;
         $this->data['_COOKIE'] = $_COOKIE;
-        if (isset($_SESSION))
-            $this->data['_SESSION'] = $_SESSION;
         $this->data['_REQUEST'] = $_REQUEST;
         $this->data['_ENV'] = $_ENV;
-        $this->data['_USER'] = array(
-            'user_GUID' => '12345',
-            'username' => 'travis',
-            'email' => 'travis@likestripes.com',
-            'groups' => array(1)
-        );
+
+        $this->data['_USER'] = $_USER;
         $this->data['_USER']['groups'][] = 2;
+        $this->data['_USER']['groups'] = array_unique($this->data['_USER']['groups']);
+        $this->data['_USER']['groups'] = array_values($this->data['_USER']['groups']);
+        sort($this->data['_USER']['groups']);
+        
+        $this->data['_SESSION'] = $_SESSION;
         $this->data['_PLACE'] = array();
         $this->data['_ERRORS'] = array();
     }
@@ -69,5 +71,14 @@ class Movabls_Globals {
             'http_status' => $http_status
         );
         
+    }
+
+    function set_session_data($key,$value) {
+
+        if (empty($value))
+            unset($this->data->_SESSION[$key]);
+        else
+            $this->data->_SESSION[$key] = $value;
+
     }
 }

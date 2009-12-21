@@ -16,8 +16,16 @@ function __autoload($name) {
 }
 
 //Override all superglobals with read-only variants
+Movabls_Session::get_session();
 $GLOBALS = new Movabls_Globals();
-unset($_SERVER,$_GET,$_POST,$_FILES,$_COOKIE,$_SESSION,$_REQUEST,$_ENV);
+unset($_SERVER,$_GET,$_POST,$_FILES,$_COOKIE,$_SESSION,$_REQUEST,$_ENV,$_USER);
+
+if (!$GLOBALS->_USER['session_id']) {
+    Movabls_Session::login('email','test@test.test','testpassword');
+    header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
+    die();
+}
+
 //Run it!
 new Movabls_Run;
 

@@ -377,7 +377,10 @@ class Movabls {
             $where[] = "p.permission_type = 'read'";
             $where[] = "p.group_id IN ($groups)";
 
-            $group = " GROUP BY p.movabl_type,p.movabl_GUID";
+            if ($type == 'meta')
+                $group = " GROUP BY p.movabl_type,p.movabl_GUID,m.key";
+            else
+                $group = " GROUP BY p.movabl_type,p.movabl_GUID";               
 
         }
 
