@@ -6,12 +6,13 @@
 class Movabls_Users {
 
     /**
-     * Creates a user in the system database
+     * Creates a user in the system and user databases
      * @param int $user_id
      * @param string $password
+     * @param array $fields = array(fieldname => value)
      * @param mysqli handle $mvsdb
      */
-    public static function create($user_id,$password,$mvsdb = null) {
+    public static function create($user_id,$password,$fields,$mvsdb = null) {
 
         if (empty($mvsdb))
             $mvsdb = self::db_link();
@@ -22,6 +23,8 @@ class Movabls_Users {
 
         $mvsdb->query("INSERT INTO mvs_users (user_id,password,nonce)
                        VALUES ($user_id,'$password','$nonce')");
+
+        //TODO: Add to user database
 
     }
 
@@ -69,6 +72,26 @@ class Movabls_Users {
 
         $session_id = $GLOBALS->_USER['session_id'];
         Movabls_Session::delete_session($session_id);
+
+    }
+
+    /**
+     * Change a user's password
+     * @param user_id $user_id
+     * @param string $password
+     * @param mysqli handle $mvsdb
+     */
+    public static function change_password($user_id,$password,$mvsdb = null) {
+
+        if (empty($mvsdb))
+            $mvsdb = self::db_link();
+
+        $user_id = $mvsdb->real_escape_string($user_id);
+        $nonce = self::generate_nonce();
+        $password = self::generate_password($password, $nonce);
+
+        $mvsdb->query("UPDATE mvs_users SET password = '$password',nonce = '$nonce'
+                       WHERE user_id = $user_id");
 
     }
 

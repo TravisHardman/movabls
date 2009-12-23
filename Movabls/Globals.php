@@ -22,8 +22,6 @@ class Movabls_Globals {
         $this->data['_POST'] = $_POST;
         $this->data['_FILES'] = $_FILES;
         $this->data['_COOKIE'] = $_COOKIE;
-        $this->data['_REQUEST'] = $_REQUEST;
-        $this->data['_ENV'] = $_ENV;
 
         $this->data['_USER'] = $_USER;
         $this->data['_USER']['groups'][] = 2;
