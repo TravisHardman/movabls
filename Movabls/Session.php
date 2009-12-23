@@ -94,7 +94,7 @@ class Movabls_Session {
      * @param string $key
      * @param mixed $value
      */
-    public static function set_data($key,$value) {
+    public static function set($key,$value) {
 
         $mvsdb = self::db_link();
 
@@ -118,7 +118,7 @@ class Movabls_Session {
      * Unsets a session data key
      * @param string $key
      */
-    public static function unset_data($key) {
+    public static function delete($key) {
 
         $mvsdb->query("DELETE mvs_sessiondata
                        WHERE session_id = {$GLOBALS->_USER['session_id']}
@@ -128,48 +128,11 @@ class Movabls_Session {
     }
 
     /**
-     * Creates a session for a user based on a unique field => value and a password
-     * @param string $field = unique field in the users table
-     * @param string $value = value of that unique field for this user
-     * @param string $password = the password the user entered
-     */
-    public static function login($field,$value,$password,$mvsdb = null) {
-
-        if ($GLOBALS->_USER['session_id'])
-            throw new Exception("Already logged in.  Log out before logging in again.", 500);
-
-        if (empty($mvsdb))
-            $mvsdb = self::db_link();
-
-        $field = $mvsdb->real_escape_string($field);
-        $value = $mvsdb->real_escape_string($value);
-
-        $results = $mvsdb->query("SELECT s.* FROM `movabls_user`.`mvs_users` u
-                                  INNER JOIN `movabls_system`.`mvs_users` s ON u.`user_id` = s.`user_id`
-                                  WHERE u.`$field` = '$value'");
-        if ($results->num_rows > 1)
-            throw new Exception ("Login field must be unique",500);
-        elseif ($results->num_rows < 1)
-            throw new Exception ("Incorrect $field - password combination",500);
-
-        $user = $results->fetch_assoc();
-        $results->free();
-
-        //TODO: Rate limit login attempts (ie. 3 attempts per minute)
-
-        if (self::generate_password($password,$user['nonce']) != $user['password'])
-            throw new Exception ("Incorrect $field - password combination",500);
-        else
-            self::create_session($user['user_id'],$mvsdb);
-
-    }
-
-    /**
      * Creates a session for the specified user
      * @param int $user_id
      * @param mysqli handle $mvsdb
      */
-    private static function create_session($user_id,$mvsdb = null) {
+    public static function create_session($user_id,$mvsdb = null) {
 
         if (empty($mvsdb))
             $mvsdb = self::db_link();
@@ -206,38 +169,6 @@ class Movabls_Session {
     }
 
     /**
-     * Public wrapper function to destroy the current user's session
-     */
-    public static function logout() {
-
-        $session_id = $GLOBALS->_USER['session_id'];
-        self::delete_session($session_id);
-
-    }
-
-    /**
-     * Generates a password hash from a password and nonce
-     * @param string $password
-     * @param string $nonce
-     */
-    private static function generate_password($password,$nonce) {
-
-        $combo = $password . $nonce;
-        return hash('sha512',$combo);
-
-    }
-
-    /**
-     * Generates a random nonce for salting passwords
-     * @return string
-     */
-    private static function generate_nonce() {
-
-        return md5(mt_rand());
-
-    }
-
-    /**
      * Creates an authentication token to tie the cookie to the database
      */
     private static function get_token() {
@@ -265,7 +196,7 @@ class Movabls_Session {
      * @param int $session_id
      * @param mysqli handle $mvsdb
      */
-    private static function delete_session($session_id = null,$mvsdb = null) {
+    public static function delete_session($session_id = null,$mvsdb = null) {
         
         if (empty($mvsdb))
             $mvsdb = self::db_link();
@@ -302,26 +233,6 @@ class Movabls_Session {
                        INNER JOIN mvs_sessions s ON d.session_id = s.session_id
                        WHERE s.expires < NOW()");
         $mvsdb->query("DELETE FROM mvs_sessions WHERE expiration < NOW()");
-
-    }
-
-    /**
-     * Creates a user in the system database
-     * @param int $user_id
-     * @param string $password
-     * @param mysqli handle $mvsdb
-     */
-    public static function create_user($user_id,$password,$mvsdb = null) {
-
-        if (empty($mvsdb))
-            $mvsdb = self::db_link();
-            
-        $user_id = $mvsdb->real_escape_string($user_id);
-        $nonce = self::generate_nonce();
-        $password = self::generate_password($password, $nonce);
-
-        $mvsdb->query("INSERT INTO mvs_users (user_id,password,nonce)
-                       VALUES ($user_id,'$password','$nonce')");
 
     }
 

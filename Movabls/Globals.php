@@ -10,6 +10,9 @@ class Movabls_Globals {
 
     function __construct() {
 
+        if (is_object($GLOBALS))
+            throw new Exception('Cannot create a new instance of Movabls_Globals',500);
+
         global $_USER,$_SESSION;
 
         $this->data['_SERVER'] = $_SERVER;
