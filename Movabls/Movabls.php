@@ -574,6 +574,8 @@ class Movabls {
      */
     public static function set_movabl($movabl_type,$data,$movabl_guid = null, $mvsdb = null) {
 
+        //TODO: Add a warning if this is a global movabl - maybe you have to specify an overwrite flag
+
         if (empty($mvsdb))
             $mvsdb = self::db_link();
 
