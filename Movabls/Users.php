@@ -9,22 +9,35 @@ class Movabls_Users {
      * Creates a user in the system and user databases
      * @param int $user_id
      * @param string $password
-     * @param array $fields = array(fieldname => value)
+     * @param array $userfields = array(fieldname => value)
      * @param mysqli handle $mvsdb
+     * @return user_id
      */
-    public static function create($user_id,$password,$fields,$mvsdb = null) {
+    public static function create($password,$userfields,$mvsdb = null) {
 
         if (empty($mvsdb))
             $mvsdb = self::db_link();
 
-        $user_id = $mvsdb->real_escape_string($user_id);
         $nonce = self::generate_nonce();
         $password = self::generate_password($password, $nonce);
 
-        $mvsdb->query("INSERT INTO mvs_users (user_id,password,nonce)
-                       VALUES ($user_id,'$password','$nonce')");
+        $fields = array();
+        foreach ($userfields as $k => $v)
+            $fields[$mvsdb->real_escape_string($k)] = $mvsdb->real_escape_string($v);
 
-        //TODO: Add to user database
+        $fieldnames = $fieldvalues = '';
+        if (!empty($fields)) {
+            $fieldnames = ',`'.implode('`,`',array_keys($fields)).'`';
+            $fieldvalues = ",'".implode("','",array_values($fields))."'";
+        }
+
+        $mvsdb->query("INSERT INTO `movabls_user`.`mvs_users` (password,nonce$fieldnames)
+                       VALUES ('$password','$nonce'$fieldvalues)");
+
+        if ($mvsdb->errno)
+            throw new Exception('MYSQL Error: '.$mvsdb->error,500);
+        else
+            return $mvsdb->insert_id;
 
     }
 
@@ -45,10 +58,11 @@ class Movabls_Users {
         $field = $mvsdb->real_escape_string($field);
         $value = $mvsdb->real_escape_string($value);
 
-        $results = $mvsdb->query("SELECT s.* FROM `movabls_user`.`mvs_users` u
-                                  INNER JOIN `movabls_system`.`mvs_users` s ON u.`user_id` = s.`user_id`
-                                  WHERE u.`$field` = '$value'");
-        if ($results->num_rows > 1)
+        $results = $mvsdb->query("SELECT user_id,password,nonce FROM `movabls_user`.`mvs_users`
+                                  WHERE `$field` = '$value'");
+        if ($mvsdb->errno)
+            throw new Exception('MYSQL Error: '.$mvsdb->error,500);
+        elseif ($results->num_rows > 1)
             throw new Exception ("Login field must be unique",500);
         elseif ($results->num_rows < 1)
             throw new Exception ("Incorrect $field - password combination",500);
@@ -90,8 +104,11 @@ class Movabls_Users {
         $nonce = self::generate_nonce();
         $password = self::generate_password($password, $nonce);
 
-        $mvsdb->query("UPDATE mvs_users SET password = '$password',nonce = '$nonce'
+        $mvsdb->query("UPDATE `movabls_user`.`mvs_users` SET password = '$password',nonce = '$nonce'
                        WHERE user_id = $user_id");
+
+        if ($mvsdb->errno)
+            throw new Exception('MYSQL Error: '.$mvsdb->error,500);
 
     }
 

@@ -69,13 +69,18 @@ class Movabls_Session {
                 //Create $_USER array
                 $results = $mvsdb->query("SELECT * FROM `movabls_user`.`mvs_users`
                                           WHERE user_id = {$session['user_id']}");
+                if ($mvsdb->errno)
+                    throw new Exception('MYSQL Error: '.$mvsdb->error,500);
                 $_USER = $results->fetch_assoc();
                 $_USER['session_id'] = $session['session_id'];
+                unset($_USER['password'],$_USER['nonce']);
                 $results->free();
                 
                 //Add $_USER['groups']
                 $results = $mvsdb->query("SELECT DISTINCT group_id FROM `movabls_user`.`mvs_group_memberships`
                                           WHERE user_id = {$session['user_id']}");
+                if ($mvsdb->errno)
+                    throw new Exception('MYSQL Error: '.$mvsdb->error,500);
                 $_USER['groups'] = array();
                 while($row = $results->fetch_assoc())
                     $_USER['groups'][] = $row['group_id'];
@@ -150,6 +155,8 @@ class Movabls_Session {
         $results = $mvsdb->query("SELECT MIN(g.session_term) AS term FROM `movabls_user`.`mvs_groups` g
                                   INNER JOIN `movabls_user`.`mvs_group_memberships` m ON g.group_id = m.group_id
                                   WHERE m.user_id = $user_id AND g.session_term != 'NULL'");
+        if ($mvsdb->errno)
+            throw new Exception('MYSQL Error: '.$mvsdb->error,500);
         $row = $results->fetch_assoc();
         $results->free();
         $term = $row['term'];
