@@ -47,17 +47,17 @@ class Movabls_Session {
         if ($results->num_rows > 0) {
             $session = $results->fetch_assoc();
             $results->free();
-            
+
             if (strtotime($session['expiration']) < time()) {
                 self::delete_session($session['session_id'],$mvsdb);
                 return;
             }
             else {
-                $expiration = date('Y-m-d h:i:s',time()+$session['term']);
+                //Update expiration times
+                $expiration = date('Y-m-d H:i:s',time()+$session['term']);
                 $mvsdb->query("UPDATE mvs_sessions SET expiration = '$expiration'
                                WHERE session_id = {$session['session_id']}");
-                //TODO: Regenerate cookies with new expiration? How does google do this
-                //without sending cookies on each request?
+                self::set_cookie($type.'session', $session[$type.'session'], $session['term']);
 
                 //Create $_SESSION array
                 $results = $mvsdb->query("SELECT `key`,`value` FROM mvs_sessiondata
@@ -186,8 +186,10 @@ class Movabls_Session {
     private static function set_cookie($name,$token,$term) {
 
         $expiration = time()+$term;
-        $secure = $type == 'sslsession';
+        $secure = $name == 'sslsession';
         setcookie($name,$token,$expiration,'/',$_SERVER['HTTP_HOST'],$secure,true);
+        //TODO: Cookies aren't updating when we set them again.  WTF?  Means we can't reset expirations
+        //or delete the cookies.  That's very annoying.
 
     }
 
@@ -215,8 +217,8 @@ class Movabls_Session {
      */
     private static function remove_cookies() {
 
-        self::set_cookie('ssl','session',false,-86400);
-        self::set_cookie('http','session',false,-86400);
+        self::set_cookie('sslsession',false,-86400);
+        self::set_cookie('httpsession',false,-86400);
 
     }
 
