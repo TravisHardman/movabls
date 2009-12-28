@@ -20,6 +20,7 @@ Movabls_Session::get_session();
 $GLOBALS = new Movabls_Globals();
 unset($_SERVER,$_GET,$_POST,$_FILES,$_COOKIE,$_SESSION,$_REQUEST,$_ENV,$_USER);
 
+//TODO: Delete this once you have a way to log in via the IDE
 if (!$GLOBALS->_USER['session_id']) {
     Movabls_Users::login('email','test@test.test','testpassword');
     header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
