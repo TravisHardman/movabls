@@ -58,8 +58,13 @@ class Movabls_Users {
         $field = $mvsdb->real_escape_string($field);
         $value = $mvsdb->real_escape_string($value);
 
-        $results = $mvsdb->query("SELECT user_id,password,nonce FROM `movabls_user`.`mvs_users`
-                                  WHERE `$field` = '$value'");
+		        $results = $mvsdb->query("SELECT `movabls_system`.`mvs_users`.`user_id`,`movabls_system`.`mvs_users`.`password`,`movabls_system`.`mvs_users`.nonce			
+			FROM `movabls_system`.`mvs_users` INNER JOIN `movabls_user`.`mvs_users`
+			ON `movabls_system`.`mvs_users`.`user_id`=`movabls_user`.`mvs_users`.`user_id`
+			WHERE `$field` = '$value'");
+		
+        /*$results = $mvsdb->query("SELECT user_id,password,nonce FROM `movabls_user`.`mvs_users`
+                                  WHERE `$field` = '$value'");*/
         if ($mvsdb->errno)
             throw new Exception('MYSQL Error: '.$mvsdb->error,500);
         elseif ($results->num_rows > 1)
