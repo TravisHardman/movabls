@@ -7,15 +7,15 @@ class Movabls {
 
     /**
      * Gets a list of all packages on the site
+     * @param mysqli_handle $mvsdb
      * @return array 
      */
-    public static function get_packages() {
+    public static function get_packages($mvsdb=null) {
 
-        $mvsdb = self::db_link();
+        if(empty($mvsdb))
+            $mvsdb = self::db_link();
 
-        $permissions = self::join_permissions('package');
-
-        $result = $mvsdb->query("SELECT x.package_id,x.package_GUID FROM `mvs_packages` AS x $permissions");
+        $result = $mvsdb->query("SELECT package_id,package_GUID FROM `mvs_packages`");
         if(empty($result))
             return array();
 
@@ -41,14 +41,15 @@ class Movabls {
      * @param string $package_guid
      * @param string $movabl_type
      * @param string $movabl_guid
+     * @param mysqli handle $mvsdb
      * @return bool
      */
-    public static function add_to_package($package_guid, $movabl_type, $movabl_guid) {
+    public static function add_to_package($package_guid, $movabl_type, $movabl_guid, $mvsdb=null) {
 
-        if (!in_array(1,$GLOBALS->_USER['groups']))
-            throw new Exception('Only administrators can add Movabls to a package',500);
+        if(empty($mvsdb))
+            $mvsdb = self::db_link();
 
-        $package = self::get_movabl('package', $package_guid);
+        $package = self::get_movabl('package', $package_guid, $mvsdb);
         foreach ($package['contents'] as $movabl) {
             if ($movabl['movabl_type'] == $movabl_type && $movabl['movabl_GUID'] == $movabl_guid)
                 return true;
@@ -58,7 +59,7 @@ class Movabls {
             'movabl_type' => $movabl_type,
             'movabl_GUID' => $movabl_guid
         );
-        self::set_movabl('package',$package);
+        self::set_movabl('package',$package,$mvsdb);
         return true;
 
     }
@@ -68,183 +69,24 @@ class Movabls {
      * @param string $package_guid
      * @param string $movabl_type
      * @param string $movabl_guid
+     * @param mysqli handle $mvsdb
      * @return bool
      */
-    public static function remove_from_package($package_guid, $movabl_type, $movabl_guid) {
+    public static function remove_from_package($package_guid, $movabl_type, $movabl_guid, $mvsdb=null) {
 
-        $package = self::get_movabl('package', $package_guid);
+        if(empty($mvsdb))
+            $mvsdb = self::db_link();
+
+        $package = self::get_movabl('package', $package_guid, $mvsdb);
         foreach ($package['contents'] as $key => $movabl) {
             if ($movabl['movabl_type'] == $movabl_type && $movabl['movabl_GUID'] == $movabl_guid) {
                 unset($package['contents'][$key]);
                 $package['contents'] = array_values($package['contents']);
-                self::set_movabl('package',$package);
+                self::set_movabl('package',$package,$mvsdb);
                 break;
             }
         }
         return true;
-
-    }
-
-    /**
-     * Gets a full index of the site, filtering for certain packages
-     * Places return the full place info
-     * Media, Functions, Interfaces return meta
-     * @param array $packages
-     * @param bool $uncategorized = whether to get movabls not in a package
-     * @return array ('places','media','functions','interfaces')
-     */
-    public static function get_index($packages = 'all',$uncategorized = true) {
-        
-        $mvsdb = self::db_link();
-        
-        $index = self::get_packages_content($packages,$mvsdb);
-
-        //If uncategorized, get all of the movabls not in any packages
-        if ($uncategorized)
-            self::add_uncategorized_to_index($index,$mvsdb);
-
-        //Get meta for all four index arrays
-        if (!empty($index['media'])) {
-            $all_meta = self::get_meta('media',array_keys($index['media']),$mvsdb);
-            foreach ($all_meta as $guid => $meta)
-                $index['media'][$guid] = $meta;
-        }
-        if (!empty($index['functions'])) {
-            $all_meta = self::get_meta('function',array_keys($index['functions']),$mvsdb);
-            foreach ($all_meta as $guid => $meta)
-                $index['functions'][$guid] = $meta;
-        }
-        if (!empty($index['interfaces'])) {
-            $interfaces_meta = self::get_meta('interface',array_keys($index['interfaces']),$mvsdb);
-            foreach ($interfaces_meta as $guid => $meta)
-                $index['interfaces'][$guid]['meta'] = $meta;
-        }
-        if (!empty($index['places'])) {
-            $places_meta = self::get_meta('place',array_keys($index['places']),$mvsdb);
-            foreach ($places_meta as $guid => $meta)
-                $index['places'][$guid]['meta'] = $meta;
-        }
-
-        //Loop through interfaces and add meta to toplevel tags
-        if (!empty($index['interfaces'])) {
-            $tagmeta = self::get_tags_meta('interface',array_keys($index['interfaces']),$mvsdb);
-            foreach ($index['interfaces'] as $row) {
-                if(is_array($row['content'])) {
-                    foreach ($row['content'] as $tag => $value)
-                        $row['content'][$tag]['meta'] = isset($tagmeta[$row['interface_GUID']][$tag]) ? $tagmeta[$row['interface_GUID']][$tag] : array();
-                }
-                $index['interfaces'][$row['interface_GUID']] = $row;
-            }
-        }
-
-        return $index;
-	
-    }
-
-    /**
-     * Gets an index of all movabls contained in the specified packages
-     * @param array $packages
-     * @param mysqli handle $mvsdb
-     * @return array 
-     */
-    private static function get_packages_content($packages = 'all',$mvsdb = null) {
-
-        if (empty($mvsdb))
-            $mvsdb = self::db_link();
-
-        if (!empty($packages) && $packages != 'all') {
-            foreach ($packages as $k => $package)
-                $packages[$k] = $mvsdb->real_escape_string($package);
-        }
-
-        $index = array(
-            'media' => array(),
-            'functions' => array(),
-            'interfaces' => array(),
-            'places' => array()
-        );
-
-        $where = array();
-
-        if ($packages != 'all') {
-            $package_string = "'".implode("','",$packages)."'";
-            $where[] = "package_GUID IN ($package_string)";
-        }
-
-        $permissions = self::join_permissions('package',$where);
-
-        $result = $mvsdb->query("SELECT * FROM mvs_packages x $permissions");
-        
-        //Add package elements to the index array
-        while ($row = $result->fetch_assoc()) {
-            $contents = json_decode($row['contents'],true);
-            foreach ($contents as $movabl)
-                self::add_item_to_index($index,$movabl['movabl_type'],$movabl['movabl_GUID']);
-        }
-        $result->free();
-        
-        //Get all sub-elements of places and interfaces in the selected packages
-        if (!empty($index['places']) || !empty($index['interfaces']))
-            $new = true;
-        else
-            $new = false;
-        while ($new) {
-            
-            $new = false;
-
-            //See if new places came from the last iteration, and add their sub-elements
-            $places = array();
-            foreach ($index['places'] as $guid => $sub) {
-                if ($sub === false)
-                    $places[] = $guid;
-            }
-            if (!empty($places)) {
-                $places_string = "'".implode("','",$places)."'";
-                $result = $mvsdb->query("SELECT * FROM mvs_places WHERE place_GUID IN ($places_string)");
-                if ($result->num_rows == 0) {
-                    foreach ($places as $guid)
-                        unset($index['places'][$guid]);
-                }
-                while ($row = $result->fetch_assoc()) {
-                    $row['inputs'] = json_decode($row['inputs']);
-                    $row['url'] = self::construct_place_url($row['url'],$row['inputs']);
-                    $index['places'][$row['place_GUID']] = $row;
-                    self::add_item_to_index($index,'media',$row['media_GUID']);
-                    self::add_item_to_index($index,'interface',$row['interface_GUID']);
-                }
-                $result->free();
-            }
-
-            //See if new interfaces came from the last iteration, and add their sub-elements
-            $interfaces = array();
-            foreach ($index['interfaces'] as $guid => $sub) {
-                if ($sub === false)
-                    $interfaces[] = $guid;
-            }
-            if (!empty($interfaces)) {
-                $interfaces_string = "'".implode("','",$interfaces)."'";
-                $result = $mvsdb->query("SELECT * FROM mvs_interfaces WHERE interface_GUID IN ($interfaces_string)");
-                if ($result->num_rows == 0) {
-                    foreach ($interfaces as $guid)
-                        unset($index['interfaces'][$guid]);
-                }
-                while ($row = $result->fetch_assoc()) {
-                    $row['content'] = json_decode($row['content'],true);
-                    $index['interfaces'][$row['interface_GUID']] = $row;
-                    self::add_tags_to_index($index,$row['content']);
-                }
-                $result->free();
-            }
-
-            //If there are new places or interfaces, loop through again
-            if (array_search(false,$index['places'],true) !== false)
-                $new = true;
-            else if (array_search(false,$index['interfaces'],true) !== false)
-                $new = true;
-
-        }
-
-        return $index;
 
     }
 
@@ -266,144 +108,105 @@ class Movabls {
         return $url;
 
     }
-
+    
     /**
-     * Checks if an item is in the index and adds it if not
-     * @param array $index
-     * @param string $type
-     * @param string $guid
+     * Gets all movabls that match the specified filters
+     * @param string/array $types
+     * @param string $sort
+     * @param array $packages
+     * @param string $filter
+     * @param mysqli handle $mvsdb
      */
-    private static function add_item_to_index(&$index,$type,$guid) {
-
-        if (empty($type) || empty($guid))
-            return;
-
-        $type = self::table_name($type);
-        if (!isset($index[$type][$guid]))
-            $index[$type][$guid] = false;
-
-    }
-
-    /**
-     * Recurs through the tags and adds all movabls to the index array
-     * @param array $index
-     * @param array $tags
-     */
-    private static function add_tags_to_index(&$index,$tags) {
-        
-        if (!empty($tags)) {
-            foreach ($tags as $value) {
-                if (isset($value['movabl_type']))
-                    self::add_item_to_index($index,$value['movabl_type'],$value['movabl_GUID']);
-                if (isset($value['tags']))
-                    self::add_tags_to_index($index,$value['tags']);
-                elseif (isset($value['interface_GUID'])) {
-                    self::add_item_to_index($index,'interface',$value['interface_GUID']);
-                }
-            }
-        }
-
-    }
-
-    /**
-     * Gets all movabls that aren't part of any package or sub-element of a package
-     * and adds them to the index
-     * @param array $index
-     * @param mysqli handle $mvsdb 
-     */
-    private static function add_uncategorized_to_index(&$index,$mvsdb = null) {
-
-        if (empty($mvsdb))
+    public static function get_index($types = 'all', $sort = null, $packages = 'all', $filter = null, $mvsdb=null) {
+                
+        if(empty($mvsdb))
             $mvsdb = self::db_link();
 
-        $categorized = self::get_packages_content();
-
-        $permissions = self::join_permissions('media');
-        $result = $mvsdb->query("SELECT media_GUID FROM mvs_media AS x $permissions");
-        while($row = $result->fetch_assoc()) {
-            if (!isset($categorized['media'][$row['media_GUID']]))
-                self::add_item_to_index($index,'media',$row['media_GUID']);
+        if($types == 'all')
+            $movabls = array('media'=>array(),'functions'=>array(),'interfaces'=>array(),'places'=>array());
+        elseif(!is_array($types)) {
+            if (!in_array($types,array('media','functions','interfaces','places')))
+                throw new Exception ("Invalid type specified: $type");
+            $movabls = array($types=>array());
         }
-
-        $permissions = self::join_permissions('function');
-        $result = $mvsdb->query("SELECT function_GUID FROM mvs_functions AS x $permissions");
-        while($row = $result->fetch_assoc()) {
-            if (!isset($categorized['functions'][$row['function_GUID']]))
-                self::add_item_to_index($index,'function',$row['function_GUID']);
-        }
-
-        $permissions = self::join_permissions('interface');
-        $result = $mvsdb->query("SELECT * FROM mvs_interfaces AS x $permissions");
-        while($row = $result->fetch_assoc()) {
-            if (!isset($categorized['interfaces'][$row['interface_GUID']])) {
-                $row['content'] = json_decode($row['content'],true);
-                $index['interfaces'][$row['interface_GUID']] = $row;
+        else {
+            $movabls = array();
+            foreach($types as $type) {
+                if (!in_array($type,array('media','functions','interfaces','places')))
+                    throw new Exception ("Invalid type specified: $type");
+                $movabls[$type] = array();
             }
         }
 
-        $permissions = self::join_permissions('place');
-        $result = $mvsdb->query("SELECT * FROM mvs_places AS x $permissions");
-        while($row = $result->fetch_assoc()) {
-            if (!isset($categorized['places'][$row['place_GUID']])) {
-                $row['inputs'] = json_decode($row['inputs']);
-                $row['url'] = self::construct_place_url($row['url'],$row['inputs']);
-                $index['places'][$row['place_GUID']] = $row;
-            }
+        if(in_array('media',$movabls)) {
+            $query = "SELECT media_GUID,mimetype FROM mvs_media";
+            $query = self::query_filter_packages('media',$query,$packages,$mvsdb);
+            $query = self::query_filter_text('media',$query,$filter,$mvsdb);
+            $query = self::query_sort($query,$sort,$mvsdb);
+            $results = $mvsdb->query($query);
+            //TODO: Finish getting index
         }
+    
+    }
+
+    /**
+     * Adds the necessary text to a SQL query to filter the result by package membership
+     * @param string $type
+     * @param string $query
+     * @param array $packages
+     * @param mysqli handle $mvsdb
+     * @return string
+     */
+    private static function query_filter_packages($type,$query,$packages,$mvsdb) {
+
+        if ($packages == 'all')
+            return $query;
+
+        //TODO: this function
+        return $query;
 
     }
 
     /**
-     * Creates a string to append to a SQL query to join permissions
+     * Adds the necessary text to a SQL query to filter the result by meta text search
      * @param string $type
-     * @param array $where = existing where array
+     * @param string $query
+     * @param string $text
+     * @param mysqli handle $mvsdb 
      * @return string
      */
-    private static function join_permissions($type,$where = array()) {
-        
-        $group = $join = '';
+    private static function query_filter_text($type,$query,$text,$mvsdb) {
 
-        if (!$GLOBALS->_USER['is_owner']) {
+        //TODO: this function
+        return $query;
 
-            $groups = "'".implode("','",$GLOBALS->_USER['groups'])."'";
-            
-            if ($type == 'meta')
-                $join = " INNER JOIN mvs_permissions AS p ON p.movabl_GUID = m.movabls_GUID AND p.movabl_type = m.movabls_type";
-            else
-                $join = " INNER JOIN mvs_permissions AS p ON p.movabl_GUID = x.{$type}_GUID";
+    }
 
-            if ($type != 'meta')
-                $where[] = "p.movabl_type = '$type'";
-            $where[] = "p.permission_type = 'read'";
-            $where[] = "p.group_id IN ($groups)";
+    /**
+     * Adds the necessary text to a SQL query to sort the result
+     * @param string $query
+     * @param string $sort
+     * @param mysqli handle $mvsdb
+     * @return string
+     */
+    private static function query_sort($query,$sort,$mvsdb) {
 
-            if ($type == 'meta')
-                $group = " GROUP BY p.movabl_type,p.movabl_GUID,m.key";
-            else
-                $group = " GROUP BY p.movabl_type,p.movabl_GUID";               
-
-        }
-
-        if (!empty($where))
-            $where = 'WHERE '.implode(' AND ',$where);
-        else
-            $where = '';
-
-        return "$join $where $group";
+        //TODO: this function
+        return $query;
 
     }
 
     /**
      * Gets a single movabl by type and GUID
      * @param string $movabl_type
+     * @param string $movabl_guid
+     * @param mysqli handle $mvsdb
      * @param array
      */
-    public static function get_movabl($movabl_type, $movabl_guid) {
+    public static function get_movabl($movabl_type, $movabl_guid, $mvsdb=null) {
 
-        $mvsdb = self::db_link();
-
-        if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'read', $mvsdb))
-            throw new Exception("You do not have permission to view this Movabl",403);
+        if(empty($mvsdb))
+            $mvsdb = self::db_link();
 
         $movabl_type = $mvsdb->real_escape_string($movabl_type);
         $movabl_guid = $mvsdb->real_escape_string($movabl_guid);
@@ -447,7 +250,7 @@ class Movabls {
         }
 
         return $movabl;
-	
+    
     }
 
     /**
@@ -458,20 +261,14 @@ class Movabls {
      * @param mysqli handle $mvsdb
      * @return array
      */
-    public static function get_meta($types,$guids = null,$mvsdb = null) {
+    public static function get_meta($types,$guids = null, $mvsdb = null) {
 
-        if (empty($mvsdb))
+        if(empty($mvsdb))
             $mvsdb = self::db_link();
 
         $meta = array();
 
-        $query = "SELECT m.* FROM `mvs_meta` AS m";
-
-        //If it's a single item, check whether they have permission to view it
-        if (!empty($types) && !is_array($types) && !empty($guids) && !is_array($guids)) {
-            if (!Movabls_Permissions::check_permission($types, $guids, 'read', $mvsdb))
-                throw new Exception("You do not have permission to view this Movabl",403);
-        }        
+        $query = "SELECT m.* FROM `mvs_meta` AS m";       
 
         if (!empty($guids)) {
             if (!is_array($guids))
@@ -491,7 +288,7 @@ class Movabls {
             $where[] = "m.movabls_type IN ($in_string)";
         }
 
-        $query .= ' '.self::join_permissions('meta',$where);
+        $query .= 'WHERE ' . implode(' AND ',$where);
 
         $result = $mvsdb->query($query);
 
@@ -517,18 +314,12 @@ class Movabls {
      */
     public static function get_tags_meta($types = null,$guids = null,$mvsdb = null) {
 
-        if (empty($mvsdb))
+        if(empty($mvsdb))
             $mvsdb = self::db_link();
 
         $meta = array();
 
         $query = "SELECT m.* FROM `mvs_meta` AS m";
-
-        //If it's a single item, check whether they have permission to view it
-        if (!empty($types) && !is_array($types) && !empty($guids) && !is_array($guids)) {
-            if (!Movabls_Permissions::check_permission($types, $guids, 'read', $mvsdb))
-                throw new Exception("You do not have permission to view this Movabl",403);
-        }
 
         if (!empty($guids)) {
             if (!is_array($guids))
@@ -548,20 +339,56 @@ class Movabls {
             $where[] = "m.movabls_type IN ($in_string)";
         }
 
-        $query .= ' '.self::join_permissions('meta',$where);
+        $query .= 'WHERE ' . implode(' AND ',$where);
 
         $result = $mvsdb->query($query);
 
         if (empty($result))
             return $meta;
 
-        while($row = $result->fetch_assoc())
+        while ($row = $result->fetch_assoc())
             $meta[$row['movabls_GUID']][$row['tag_name']][$row['key']] = $row['value'];
 
         $result->free();
 
         return $meta;
 
+    }
+    
+    /**
+     * Searches the specified meta field for the specified query and returns the resulting movabls
+     * along with that meta field for each one.
+     * @param array $types
+     * @param string $field
+     * @param string $query
+     * @param mysqli handle $mvsdb
+     * @return array of movabl types, guids, and fields
+     */
+    public static function quicksearch($types, $field, $query, $mvsdb = null) {
+            
+        if(empty($mvsdb))
+            $mvsdb = self::db_link();
+
+        $field = $mvsdb->real_escape_string($field);
+        $query = $mvsdb->real_escape_string($query);
+        foreach ($types as $k => $type)
+            $types[$k] = $mvsdb->real_escape_string($type);
+        $types = "'" . implode("','",$types) . "'";
+            
+        $result = $mvsdb->query("SELECT movabls_type, movabls_GUID, `value` FROM mvs_meta AS m
+                                 WHERE `key` = '$field' AND `value` LIKE '%$query%'
+                                 AND movabls_type IN ($types)
+                                 ORDER BY `value` ASC");
+        
+        if (empty($result))
+            return array();
+        else {
+            while($row = $result->fetch_assoc()) {
+                $return[] = $row;
+            }
+            return $return;
+        }
+    
     }
 
     /**
@@ -576,14 +403,12 @@ class Movabls {
 
         //TODO: Add a warning if this is a global movabl - maybe you have to specify an overwrite flag
 
-        if (empty($mvsdb))
+        if(empty($mvsdb))
             $mvsdb = self::db_link();
 
-        if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write', $mvsdb))
-            throw new Exception("You do not have permission to edit this Movabl",500);
-
-        if (!in_array(1,$GLOBALS->_USER['groups']) && self::movabls_added($movabl_type,$data,$movabl_guid,$mvsdb))
-            throw new Exception("Only administrators may add new movabls to a place, interface, or package",500);
+        $mvsdb->autocommit(false);
+        
+        $original_data = $data;
 
         if (!empty($data['meta']))
             $meta = $data['meta'];
@@ -623,68 +448,56 @@ class Movabls {
         if (!empty($movabl_guid)) {
             $datastring = self::generate_datastring('update',$data);
             $result = $mvsdb->query("UPDATE `mvs_$table` SET $datastring WHERE {$sanitized_type}_GUID = '$sanitized_guid'");
+            //Delete old mvs_children and mvs_descendants entries
+            if (in_array($movabl_type,array('place','interface','package'))) {
+                $mvsdb->query("DELETE FROM mvs_children WHERE parent_type = '$sanitized_type' AND parent_GUID = '$sanitized_guid'");
+                $mvsdb->query("DELETE FROM mvs_descendants WHERE ancestor_type = '$sanitized_type' AND ancestor_GUID = '$sanitized_guid'");
+            }
         }
         else {
-            $data["{$movabl_type}_guid"] = self::generate_guid($movabl_type);
+            $data["{$sanitized_type}_guid"] = self::generate_guid($sanitized_type);
             $datastring = self::generate_datastring('insert',$data);
             $result = $mvsdb->query("INSERT INTO `mvs_$table` $datastring");
-            $movabl_guid = $data["{$movabl_type}_guid"];
-            //If it's new, we need to give it permissions that pertain to the site
-            Movabls_Permissions::add_site_permissions($movabl_type,$movabl_guid,$mvsdb);
+            $movabl_guid = $data["{$sanitized_type}_guid"];
         }
 
-        //If it has children, we need to clean up any permissions old children may have
-        //inherited from this function or its parents
-        if (in_array($movabl_type,array('place','interface','package')))
-            Movabls_Permissions::reinforce_permissions($movabl_type,$movabl_guid,$mvsdb);
+        //Add new mvs_children and mvs_descendants entries
+        if (in_array($movabl_type,array('place','interface','package'))) {
+            $children = self::extract_children($sanitized_type, $original_data);
+            foreach ($children as $child) {
+                $mvsdb->query("INSERT INTO mvs_children (
+                                child_type,child_GUID,parent_type,parent_GUID
+                               ) VALUES (
+                                '{$child['movabl_type']}','{$child['movabl_GUID']}','$sanitized_type','$sanitized_guid'
+                               )");
+            }
+            $descendants = self::extract_descendants($sanitized_type, $sanitized_guid, $mvsdb);
+            foreach ($descendants as $descendant) {
+                $mvsdb->query("INSERT INTO mvs_descendants (
+                                descendant_type,descendant_GUID,ancestor_type,ancestor_GUID
+                               ) VALUES (
+                                '{$descendant['movabl_type']}','{$descendant['movabl_GUID']}','$sanitized_type','$sanitized_guid'
+                               )");
+            }
+        }
 
         if (!empty($meta))
             self::set_meta($meta,$movabl_type,$movabl_guid,$mvsdb);
         if (!empty($tagsmeta))
             self::set_tags_meta($tagsmeta,$movabl_type,$movabl_guid,$mvsdb);
 
-        return $movabl_guid;	
-    }
+        $mvsdb->commit();
 
-    /**
-     * Determines whether movabls have been added to the movabl specified in this revision
-     * @param string $movabl_type
-     * @param array $newdata
-     * @param string $movabl_guid
-     * @param mysqli handle $mvsdb
-     * @return bool 
-     */
-    private static function movabls_added($movabl_type,$newdata,$movabl_guid = null,$mvsdb = null) {
-
-        if (empty($mvsdb))
-            $mvsdb = self::db_link();
-            
-        if (!in_array($movabl_type,array('package','place','interface')))
-            return false;
-
-        $old_movabls = array();
-        if (!empty($movabl_guid)) {
-            $olddata = self::get_movabl($movabl_type,$movabl_guid);
-            $old_movabls = self::get_submovabls($movabl_type,$olddata);
-        }
-
-        $new_movabls = self::get_submovabls($movabl_type,$newdata);
-
-        foreach ($new_movabls as $movabl) {
-            if (!in_array($movabl,$old_movabls))
-                return true;
-        }
-
-        return false;
-
+        return $movabl_guid;    
     }
     
     /**
-     * Gets a list of movabls that are beneath the one specified
+     * Gets a list of movabls that are directly beneath the one specified
      * @param string $movabl_type
-     * @param array $data 
+     * @param array $data
+     * @return array
      */
-    public static function get_submovabls($movabl_type,$data) {
+    private static function extract_children($movabl_type,$data) {
         
         $sub_movabls = array();
         switch ($movabl_type) {
@@ -697,7 +510,7 @@ class Movabls {
                         'movabl_type' => 'media',
                         'movabl_GUID' => $data['media_GUID']
                     );
-                if (!empty($data['media_GUID']))
+                if (!empty($data['interface_GUID']))
                     $sub_movabls[] = array(
                         'movabl_type' => 'interface',
                         'movabl_GUID' => $data['interface_GUID']
@@ -705,7 +518,7 @@ class Movabls {
                 break;
             case 'interface':
                 if (!empty($data['content']))
-                    $sub_movabls = self::get_tags($data['content']);
+                    $sub_movabls = self::extract_tags($data['content']);
                 break;
         }
         return $sub_movabls;
@@ -713,25 +526,71 @@ class Movabls {
     }
 
     /**
-     * Extracts sub-movabls from an interface
+     * Extracts children from an interface
      * @param tags $tags
      * @param extras array so far $extras
      * @return extras array after this round
      */
-    private static function get_tags($tags,$extras = array()) {
+    private static function extract_tags($tags,$extras = array()) {
 
         if (!empty($tags)) {
             foreach ($tags as $value) {
                 if (isset($value['movabl_type']))
                     $extras[] = array('movabl_type'=>$value['movabl_type'],'movabl_GUID'=>$value['movabl_GUID']);
                 if (isset($value['tags']))
-                    $extras = self::get_tags($value['tags'],$extras);
+                    $extras = self::extract_tags($value['tags'],$extras);
                 elseif (isset($value['interface_GUID']))
                     $extras[] = array('movabl_type'=>'interface','movabl_GUID'=>$value['interface_GUID']);
             }
         }
 
         return $extras;
+
+    }
+
+    /**
+     * Extracts descendants from the mvs_children table
+     * Note: mvs_children must be populated before this function is run
+     * @param string $movabl_type
+     * @param string $movabl_guid
+     * @param mysqli handle $mvsdb
+     * @param array $descendants
+     * @return array
+     */
+    private static function extract_descendants($movabl_type,$movabl_guid,$mvsdb,$descendants) {
+
+        //TODO: test this function and whole set_movabl process
+
+        if (!in_array($movabl_type,array('place','interface','package')))
+            return array();
+
+        $guids = array();
+        foreach ($descendants as $descendant)
+            $guids[] = $descendant['movabl_guid'];
+        $guids_string = "'".implode("','",$guids)."'";
+
+        $children = array();
+        $results = $mvsdb->query("SELECT child_type,child_GUID FROM mvs_children
+                                  WHERE parent_type = '$movabl_type' AND parent_GUID = '$movabl_guid'
+                                  AND child_GUID NOT IN ($guids_string)");
+        if(empty($results))
+            return array();
+        else {
+            while($row = $results->fetch_assoc()) {
+                $children[] = array(
+                    'movabl_type' => $row['child_type'],
+                    'movabl_GUID' => $row['child_GUID']
+                );
+            }
+        }
+
+        $descendants = $children;
+        foreach ($children as $child) {
+            $more = self::extract_descendants($child['movabl_type'], $child['movabl_GUID'], $mvsdb, $descendants);
+            $descendants = array_merge($descendants,$more);
+        }
+        
+        return $descendants;
 
     }
 
@@ -744,15 +603,12 @@ class Movabls {
      * @param mysqli handle $mvsdb
      * @return bool 
      */
-    public static function set_meta($new_meta,$movabl_type,$movabl_guid,$mvsdb = null) {
+    public static function set_meta($new_meta,$movabl_type,$movabl_guid,$mvsdb=null) {
 
-        if (empty($mvsdb))
+        if(empty($mvsdb))
             $mvsdb = self::db_link();
 
-        if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write', $mvsdb))
-            throw new Exception("You do not have permission to edit this Movabl",500);
-
-        $old_meta = self::get_meta($movabl_type,$movabl_guid);
+        $old_meta = self::get_meta($movabl_type,$movabl_guid,$mvsdb);
         if (!empty($old_meta[$movabl_guid]))
             $old_meta = $old_meta[$movabl_guid];
         else
@@ -802,13 +658,10 @@ class Movabls {
      * @param mysqli handle $mvsdb
      * @return bool
      */
-    public static function set_tags_meta($new_tags_meta,$movabl_type,$movabl_guid,$mvsdb = null) {
+    public static function set_tags_meta($new_tags_meta,$movabl_type,$movabl_guid,$mvsdb=null) {
 
-        if (empty($mvsdb))
+        if(empty($mvsdb))
             $mvsdb = self::db_link();
-
-        if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write', $mvsdb))
-            throw new Exception("You do not have permission to edit this Movabl",500);
 
         $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
         $sanitized_type = $mvsdb->real_escape_string($movabl_type.'_tag');
@@ -866,19 +719,41 @@ class Movabls {
         return true;
 
     }
+    
+    /**
+     * Gets all fields used for metadata on the site
+     * @param mysqli handle $mvsdb
+     * @return array
+     */
+    public static function get_meta_fields($mvsdb=null) {
+            
+        if(empty($mvsdb))
+            $mvsdb = self::db_link();
+
+        $result = $mvsdb->query("SELECT DISTINCT `key` FROM mvs_meta ORDER BY `key` ASC");
+
+        $fields = array();
+        if (!empty($result)) {
+            while ($row = $result->fetch_assoc())
+                $fields[] = $row['key'];
+        }
+        $result->free();
+        
+        return $fields;
+    
+    }
 
     /**
      * Delete a movabl from the system
      * @param mixed $movabl_type
      * @param mixed $movabl_guid
+     * @param mysqli handle $mvsdb
      * @return true
      */
-    public static function delete_movabl($movabl_type,$movabl_guid) {
+    public static function delete_movabl($movabl_type,$movabl_guid,$mvsdb=null) {
 
-        $mvsdb = self::db_link();
-
-        if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write', $mvsdb))
-            throw new Exception("You do not have permission to delete this Movabl",500);
+        if(empty($mvsdb))
+            $mvsdb = self::db_link();
 
         $table = self::table_name($movabl_type);
         $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
@@ -889,7 +764,8 @@ class Movabls {
         self::set_meta(array(),$movabl_type,$movabl_guid,$mvsdb);
         self::set_tags_meta(array(),$movabl_type,$movabl_guid,$mvsdb);
         self::delete_references($sanitized_type,$sanitized_guid,$mvsdb);
-        Movabls_Permissions::delete_permissions($sanitized_type,$sanitized_guid,$mvsdb);
+
+        $mvsdb->query("DELETE FROM `mvs_children` WHERE parent_type = '$movabl_type' AND parent_GUID = '$movabl_GUID'");
 
         return true;
 
@@ -907,36 +783,44 @@ class Movabls {
         $results = $mvsdb->query("SELECT * FROM mvs_packages
                                   WHERE contents LIKE '%\"movabl_type\":\"$movabl_type\",\"movabl_GUID\":\"$movabl_guid\"%'
                                   OR contents LIKE '%\"movabl_GUID\":\"$movabl_guid\",\"movabl_type\":\"$movabl_type\"%'");
-        while ($row = $results->fetch_assoc()) {
-            unset($row['package_id']);
-            $row['contents'] = json_decode($row['contents'],true);
-            foreach ($row['contents'] as $k => $content) {
-                if ($content == array('movabl_type'=>$movabl_type,'movabl_GUID'=>$movabl_guid))
-                    unset($row['contents'][$k]);
+        if (!empty($results)) {
+            while ($row = $results->fetch_assoc()) {
+                unset($row['package_id']);
+                $row['contents'] = json_decode($row['contents'],true);
+                foreach ($row['contents'] as $k => $content) {
+                    if ($content == array('movabl_type'=>$movabl_type,'movabl_GUID'=>$movabl_guid))
+                        unset($row['contents'][$k]);
+                }
+                self::set_movabl('package', $row, $row['package_GUID'], $mvsdb);
             }
-            self::set_movabl('package', $row, $row['package_GUID'], $mvsdb);
+            $results->free();
         }
-        $results->free();
 
         //Places
         $results = $mvsdb->query("SELECT * FROM mvs_places
                                   WHERE {$movabl_type}_GUID LIKE '%$movabl_guid%'");
-        while ($row = $results->fetch_assoc()) {
-            unset($row['place_id'],$row[$movabl_type.'_GUID']);
-            self::set_movabl('place', $row, $row['place_GUID'], $mvsdb);
+        if (!empty($results)) {
+            while ($row = $results->fetch_assoc()) {
+                unset($row['place_id'],$row[$movabl_type.'_GUID']);
+                self::set_movabl('place', $row, $row['place_GUID'], $mvsdb);
+            }
+            $results->free();
         }
-        $results->free();
 
         //Interface
         $results = $mvsdb->query("SELECT * FROM mvs_interfaces
                                   WHERE content LIKE '%$movabl_guid%'");
-        while ($row = $results->fetch_assoc()) {
-            unset($row['interface_id']);
-            $row['content'] = json_decode($row['content'],true);
-            $row['content'] = self::delete_from_interface($row['content'],$movabl_type,$movabl_guid,$mvsdb);
-            self::set_movabl('interface', $row, $row['interface_GUID'], $mvsdb);
+        if (!empty($results)) {
+            while ($row = $results->fetch_assoc()) {
+                unset($row['interface_id']);
+                $row['content'] = json_decode($row['content'],true);
+                $row['content'] = self::delete_from_interface($row['content'],$movabl_type,$movabl_guid,$mvsdb);
+                self::set_movabl('interface', $row, $row['interface_GUID'], $mvsdb);
+            }
+            $results->free();
         }
-        $results->free();
+
+        $mvsdb->query("DELETE FROM mvs_children WHERE child_type = '$movabl_type' AND child_GUID = '$movabl_guid'");
 
     }
 
@@ -1001,9 +885,9 @@ class Movabls {
                 );
                 break;
             case 'place':
-				if (!empty($data['interface_GUID']))
-					$clean_interface_GUID =  $mvsdb->real_escape_string($data['interface_GUID']);
-				$data = array(
+                if (!empty($data['interface_GUID']))
+                    $clean_interface_GUID =  $mvsdb->real_escape_string($data['interface_GUID']);
+                $data = array(
                     'url'           => $mvsdb->real_escape_string($data['url']),
                     'inputs'        => !empty($data['inputs']) ? $mvsdb->real_escape_string(json_encode($data['inputs'])) : '',
                     'https'         => $data['https'] ? '1' : '0',
@@ -1098,6 +982,25 @@ class Movabls {
     }
 
     /**
+     * Gets all groups present on this site
+     * @param mysqli handle $mvsdb
+     * @return groups array
+     */
+    public static function get_groups($mvsdb=null) {
+
+        if(empty($mvsdb))
+            $mvsdb = self::db_link();
+
+        $results = $mvsdb->query("SELECT * FROM `{$GLOBALS->_SERVER['DATABASE']}`.mvs_groups");
+        while($row = $results->fetch_assoc())
+            $return[] = $row;
+        $results->free();
+
+        return $return;
+
+    }
+
+    /**
      * Gets the name of the table associated with a type of movabl
      * @param string $movabl_type
      * @return string 
@@ -1113,20 +1016,21 @@ class Movabls {
         return $table;
         
     }
-    
+
     /**
      * Gets the handle to access the database
-     * @return mysqli handle 
+     * @return mysqli handle
      */
     private static function db_link() {
-        
+
+        if (!in_array(1,$GLOBALS->_USER['groups']))
+            throw new Exception("You must be an administrator to access the Movabls API");
+
         $mvsdb = new mysqli('localhost','root','h4ppyf4rmers','movabls_system');
-        if (mysqli_connect_errno()) {
-            printf("Connect failed: %s\n", mysqli_connect_error());
-            exit();
-        }
+        if (mysqli_connect_errno())
+            throw new Exception("Database connection failed: ".mysqli_connect_error());
         return $mvsdb;
-        
+
     }
 
 }

@@ -67,7 +67,7 @@ class Movabls_Users {
         elseif ($results->num_rows < 1)
             throw new Exception ("Incorrect $field - password combination",500);
 
-        $user = $results->fetch_assoc();
+		$user = $results->fetch_assoc();
         $results->free();
 
         //TODO: Rate limit login attempts (ie. 3 attempts per minute)
@@ -141,10 +141,8 @@ class Movabls_Users {
     private static function db_link() {
 
         $mvsdb = new mysqli('localhost','root','h4ppyf4rmers','movabls_system');
-        if (mysqli_connect_errno()) {
-            printf("Connect failed: %s\n", mysqli_connect_error());
-            exit();
-        }
+        if (mysqli_connect_errno())
+            throw new Exception("Database connection failed: ".mysqli_connect_error());
         return $mvsdb;
 
     }

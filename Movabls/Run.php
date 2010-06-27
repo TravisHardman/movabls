@@ -24,6 +24,8 @@ class Movabls_Run {
 
             //Get database handle
             $this->mvsdb = new mysqli('localhost','root','h4ppyf4rmers','movabls_system');
+            if (mysqli_connect_errno())
+                throw new Exception("Database connection failed: ".mysqli_connect_error());
 
             //Get session
             Movabls_Session::get_session($this->mvsdb);
@@ -127,7 +129,7 @@ class Movabls_Run {
         else
             $this->add_place($place);
 
-        if (!Movabls_Permissions::check_permission('place', $place->place_GUID, 'execute', $this->mvsdb))
+        if (!self::check_permission($place->place_GUID, $this->mvsdb))
             throw new Exception('You do not have permission to access this place',403);
 
         if ($place->https && !$GLOBALS->_SERVER['HTTPS']) {
@@ -136,6 +138,39 @@ class Movabls_Run {
         }
         
         return $place;
+
+    }
+
+    /**
+     * Check whether the current user has access to a place
+     * @param string $place_guid
+     * @param mysqli handle $mvsdb
+     * @return boolean
+     */
+    private static function check_permission($place_guid,$mvsdb = null) {
+
+        if (in_array(1,$GLOBALS->_USER['groups']))
+            return true;
+
+        if (empty($GLOBALS->_USER['groups']))
+            return false;
+
+        if (empty($mvsdb))
+            $mvsdb = self::db_link();
+
+        $place_guid = $mvsdb->real_escape_string($place_guid);
+        foreach ($GLOBALS->_USER['groups'] as $k => $group)
+            $groups[$k] = $mvsdb->real_escape_string($group);
+        $groups = "'".implode("','",$groups)."'";
+
+        $results = $mvsdb->query("SELECT permission_id FROM mvs_permissions
+                                WHERE place_guid $guid
+                                AND group_id IN ($groups)");
+
+        if ($results->num_rows == 0)
+            return false;
+        else
+            return true;
 
     }
 
@@ -199,6 +234,8 @@ class Movabls_Run {
                 return null;
                 
             $interface = json_decode($interface->content);
+            if ($interface === null)
+                throw new Exception("Invalid Interface JSON - $interface_GUID",500);
             $this->interfaces->$interface_GUID = $interface;
             $this->get_tags($interface);
         }
@@ -257,7 +294,7 @@ class Movabls_Run {
         
         while ($row = $result->fetch_object()) {
 
-            $content_mime_type = split("/",$row->mimetype);
+            $content_mime_type = explode("/",$row->mimetype);
 
             if ($content_mime_type[0] != "text")
                 $row->content = (binary)$row->content;
@@ -365,7 +402,7 @@ class Movabls_Run {
      */
     private function add_place($place,$toplevel = null) {
 
-        $place->inputs = json_decode($place->inputs);
+		$place->inputs = json_decode($place->inputs);
 
         if (!empty($toplevel))
             $GLOBALS->_PLACE = $this->extract_url_variables($place->url,$toplevel,$place->inputs);
@@ -391,7 +428,7 @@ class Movabls_Run {
         );
         $this->stack->push($info);
 
-        if ($handle = create_function($argstring, $code))
+		if ($handle = create_function($argstring, $code))
             $this->places->{$place->place_GUID}->handle = $handle;
         else
             throw new Exception('Syntax Error in Place URL',500);
@@ -591,16 +628,20 @@ class Movabls_Run {
         //Try to run the user's custom error place
         try {
             //To prevent an infinite loop, check to see if we're already running the error place
+            $error_urls = array(
+                'http://'.$GLOBALS->_SERVER['HTTP_HOST'].'%',
+                'https://'.$GLOBALS->_SERVER['HTTP_HOST'].'%'
+            );
             foreach ($this->places as $place) {
-                if (!empty($place) && $place->url == '%')
+				if (!empty($place) && in_array($place->url,$error_urls))
                     throw new Exception('Error place contains errors!');
             }
             print_r($this->run_place('%'));
         }
         catch (Exception $error_place) {
-            if ($error_place->getMessage() != 'Error place contains errors!')
+			if ($error_place->getMessage() != 'Error place contains errors!')
                 $this->error_handler('Exception',$error_place->getMessage(),$error_place->getFile(),$error_place->getLine(),$error_place->getCode());
-            echo 'Error place contains errors!<br /><br />Dumping $GLOBALS->_ERRORS:<br /><br />';
+			echo 'Error place contains errors!<br /><br />Dumping $GLOBALS->_ERRORS:<br /><br />';
             print_r($GLOBALS->_ERRORS);
         }
         exit(1);
